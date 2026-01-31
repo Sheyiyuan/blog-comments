@@ -44,17 +44,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Install pnpm (npm mirror)
+        shell: sh
+        run: |
+          set -euo pipefail
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          npm config set registry https://registry.npmmirror.com
+          npm i -g pnpm@9
+          pnpm -v
+
+          # Keep pnpm store inside workspace for easy caching
+          pnpm config set store-dir .pnpm-store
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
         with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          path: .pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Cache Astro/Vite build artifacts
         uses: actions/cache@v4
