@@ -13,9 +13,7 @@ concurrency:
 
 jobs:
   build-deploy:
-    runs-on:
-      - self-hosted
-      - Alpine
+    runs-on: Alpine
 
     steps:
       - name: Checkout
