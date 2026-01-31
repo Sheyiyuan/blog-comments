@@ -28,10 +28,10 @@ jobs:
 
           if command -v apk >/dev/null 2>&1; then
             ALPINE_VER="$(cut -d. -f1,2 /etc/alpine-release)"
-            cat > /etc/apk/repositories <<EOF
-https://mirrors.aliyun.com/alpine/v${ALPINE_VER}/main
-https://mirrors.aliyun.com/alpine/v${ALPINE_VER}/community
-EOF
+            printf '%s\n' \
+              "https://mirrors.aliyun.com/alpine/v${ALPINE_VER}/main" \
+              "https://mirrors.aliyun.com/alpine/v${ALPINE_VER}/community" \
+              > /etc/apk/repositories
             apk update
             apk add --no-cache nodejs npm git || apk add --no-cache nodejs-current npm git
             node -v
