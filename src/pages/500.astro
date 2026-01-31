@@ -1,0 +1,27 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { url } from "@utils/url-utils";
+
+interface Props {
+	error: unknown;
+}
+const { error } = Astro.props;
+---
+
+<Layout title="500" description="服务器错误" disableBackground={true}>
+	<section class="w-full min-h-screen flex items-center justify-center text-center">
+		<div class="w-full flex flex-col items-center justify-center text-center gap-6 px-10">
+			<img src={url("/icons/12.png")} alt="500" class="w-28 h-28 md:w-36 md:h-36" />
+			<div class="text-3xl md:text-4xl font-bold text-90">
+			    诶？ 服务器出错了 !
+			</div>
+			<div class="text-base md:text-lg text-50">
+				{error instanceof Error ? error.message : "Unknown error"}
+			</div>
+			<a href={url("/")} class="btn-card rounded-xl px-6 h-11 inline-flex items-center justify-center font-bold text-90">
+				返回主页
+			</a>
+		</div>
+	</section>
+
+</Layout>
