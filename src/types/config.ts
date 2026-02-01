@@ -142,6 +142,26 @@ export type ExpressiveCodeConfig = {
 	theme: string;
 };
 
+export type GlassConfig = {
+	/** 是否启用毛玻璃（半透明 + backdrop blur） */
+	enable: boolean;
+
+	/** blur 半径（px） */
+	blur: number;
+
+	/**
+	 * 卡片背景不透明度（0~1）。
+	 * 值越小越“透”，但对比度会下降。
+	 */
+	cardOpacity: number;
+
+	/** 顶栏弹出面板/浮层不透明度（0~1） */
+	panelOpacity: number;
+
+	/** 是否显示细边框（提升玻璃边缘层次） */
+	border: boolean;
+};
+
 export type GiscusConfig = {
 	enable: boolean;
 

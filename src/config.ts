@@ -1,6 +1,7 @@
 import type {
 	ExpressiveCodeConfig,
 	GiscusConfig,
+	GlassConfig,
 	LicenseConfig,
 	NavBarConfig,
 	ProfileConfig,
@@ -75,6 +76,20 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Note: Some styles (such as background color) are being overridden, see the astro.config.mjs file.
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
+};
+
+/**
+ * 毛玻璃（半透明 + backdrop blur）效果配置。
+ * 说明：
+ * - enable=false 会自动回退为不透明背景 + 无模糊。
+ * - opacity 建议在 0.7~0.9，太低会影响可读性。
+ */
+export const glassConfig: GlassConfig = {
+	enable: true,
+	blur: 14,
+	cardOpacity: 0.75,
+	panelOpacity: 0.75,
+	border: true,
 };
 
 export const giscusConfig: GiscusConfig = {

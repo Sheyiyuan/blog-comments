@@ -5,7 +5,7 @@ import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
-import { profileConfig, siteConfig } from "@/config";
+import { glassConfig, profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -155,7 +155,7 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, glassConfig}}>
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
 			switch (theme) {
@@ -176,6 +176,18 @@ const bannerOffset =
 			// Load the hue from local storage
 			const hue = localStorage.getItem('hue') || configHue;
 			document.documentElement.style.setProperty('--hue', hue);
+
+			// Glassmorphism config (from src/config.ts)
+			const glassEnabled = !!glassConfig?.enable;
+			const glassBlur = glassEnabled ? Number(glassConfig?.blur ?? 0) : 0;
+			const cardOpacity = glassEnabled ? Number(glassConfig?.cardOpacity ?? 1) : 1;
+			const panelOpacity = glassEnabled ? Number(glassConfig?.panelOpacity ?? 1) : 1;
+			const borderOpacity = glassEnabled && glassConfig?.border ? 1 : 0;
+
+			document.documentElement.style.setProperty('--glass-blur', `${Math.max(0, glassBlur)}px`);
+			document.documentElement.style.setProperty('--glass-card-opacity', String(Math.min(1, Math.max(0, cardOpacity))));
+			document.documentElement.style.setProperty('--glass-panel-opacity', String(Math.min(1, Math.max(0, panelOpacity))));
+			document.documentElement.style.setProperty('--glass-border-opacity', String(borderOpacity));
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));

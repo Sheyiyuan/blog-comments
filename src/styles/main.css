@@ -2,7 +2,11 @@
 
 @layer components {
     .card-base {
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
+        @apply rounded-[var(--radius-large)] overflow-hidden transition;
+        background-color: color-mix(in oklch, var(--card-bg) calc(var(--glass-card-opacity, 1) * 100%), transparent);
+        border: 1px solid color-mix(in oklch, var(--line-color) calc(var(--glass-border-opacity, 0) * 100%), transparent);
+        -webkit-backdrop-filter: blur(var(--glass-blur, 0px));
+        backdrop-filter: blur(var(--glass-blur, 0px));
     }
     h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote, code, pre, table, th, td, strong {
         @apply transition;
@@ -21,7 +25,11 @@
         @apply transition rounded-md p-1.5 -m-1.5 expand-animation;
     }
     .float-panel {
-        @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
+        @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden transition shadow-xl dark:shadow-none;
+        background-color: color-mix(in oklch, var(--float-panel-bg) calc(var(--glass-panel-opacity, 1) * 100%), transparent);
+        border: 1px solid color-mix(in oklch, var(--line-color) calc(var(--glass-border-opacity, 0) * 100%), transparent);
+        -webkit-backdrop-filter: blur(var(--glass-blur, 0px));
+        backdrop-filter: blur(var(--glass-blur, 0px));
     }
     .float-panel-closed {
         @apply -translate-y-1 opacity-0 pointer-events-none
