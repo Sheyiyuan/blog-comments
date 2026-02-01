@@ -1,0 +1,120 @@
+---
+import Markdown from "@components/misc/Markdown.astro";
+import { friendsConfig } from "../config";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+import MarkdownIt from "markdown-it";
+import sanitizeHtml from "sanitize-html";
+
+function getFaviconUrl(siteUrl: string): string | null {
+	try {
+		const u = new URL(siteUrl);
+		return `${u.origin}/favicon.ico`;
+	} catch {
+		return null;
+	}
+}
+
+function getPlaceholderIconDataUri(name: string): string {
+	const letter = (name?.trim()?.[0] ?? "?").toUpperCase();
+	const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="rgba(0,0,0,0.06)" />
+  <text x="32" y="40" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-size="28" font-weight="700" fill="rgba(0,0,0,0.55)">${letter}</text>
+</svg>`;
+	return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+const md = new MarkdownIt({
+	html: false,
+	linkify: true,
+});
+
+function renderInlineMarkdown(markdown: string): string {
+	return sanitizeHtml(md.render(markdown));
+}
+
+const siteUrl = Astro.site?.toString() ?? "https://blog.sheyiyuan.cn/";
+const siteIcon = `${siteUrl.replace(/\/+$/, "/")}icons/01.png`;
+
+const introHtml = renderInlineMarkdown(`这里收录一些我在路途中遇到的朋友们。\n`);
+
+const contentHtml = renderInlineMarkdown(`
+### 交换友链
+
+如果你也想把我们写进彼此的笔记里，见证彼此的旅行，欢迎交换友链。
+
+#### 交换规则
+
+- 您的网站有正式的域名并且有定期更新和维护；
+- 您的网站内容不违反中华人民共和国国家法律；
+- 先为您的网站添加本站友链；
+- 不接受纯商业推广、采集站、或包含敏感内容的站点；
+
+#### 申请方式
+
+请通过邮件[联系我](mailto:sheyiyuantan90@qq.com)，并附上友链信息。
+
+#### 本站友链信息
+
+- 站点名称：社亦园的旅行笔记
+- 站点链接：${siteUrl}
+- 站点简介：世界没了我可能会更好，所以我要继续活着
+- 头像/图标：${siteIcon}
+`);
+---
+
+<MainGridLayout title={i18n(I18nKey.friends)} description={i18n(I18nKey.friends)}>
+	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+		<div class="card-base z-10 px-9 py-6 relative w-full ">
+			<Markdown class="mt-2">
+				<div set:html={introHtml} />
+			</Markdown>
+
+			{friendsConfig.links.length > 0 && (
+				<div class="mt-6">
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						{friendsConfig.links.map((l) => {
+							const placeholderIcon = getPlaceholderIconDataUri(l.name);
+							const iconSrc = l.avatar ?? getFaviconUrl(l.url) ?? placeholderIcon;
+							return (
+							<a
+								href={l.url}
+								target={(l.newTab ?? true) ? "_blank" : null}
+								rel={(l.newTab ?? true) ? "noopener noreferrer" : null}
+								class="card-base rounded-2xl p-4 hover:scale-[1.01] active:scale-[0.99] transition block"
+							>
+								<div class="flex gap-3 items-center">
+									<img
+										src={iconSrc}
+										alt={l.name}
+										loading="lazy"
+										decoding="async"
+										class="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 object-cover"
+										onerror={`this.onerror=null;this.src=${JSON.stringify(placeholderIcon)};`}
+									/>
+									<div class="min-w-0">
+										<div class="font-bold text-black/80 dark:text-white/80 truncate">
+											{l.name}
+										</div>
+										{l.description && (
+											<div class="text-sm text-black/55 dark:text-white/55 line-clamp-2">
+												{l.description}
+											</div>
+										)}
+									</div>
+							</div>
+						</a>
+						);
+						})}
+					</div>
+				</div>
+			)}
+
+			<Markdown class="mt-8">
+				<div set:html={contentHtml} />
+			</Markdown>
+		</div>
+	</div>
+</MainGridLayout>
