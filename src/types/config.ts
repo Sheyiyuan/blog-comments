@@ -69,6 +69,7 @@ export enum LinkPreset {
 	Home = 0,
 	Archive = 1,
 	About = 2,
+	Friends = 3,
 }
 
 export type NavBarLink = {
@@ -116,6 +117,23 @@ export type LicenseConfig = {
 	enable: boolean;
 	name: string;
 	url: string;
+};
+
+export type FriendLink = {
+	/** 站点名称 */
+	name: string;
+	/** 站点地址 */
+	url: string;
+	/** 一句话简介（可选） */
+	description?: string;
+	/** 站点图标/头像（可选，建议放 public 下用绝对路径） */
+	avatar?: string;
+	/** 是否在新标签页打开（默认 true） */
+	newTab?: boolean;
+};
+
+export type FriendsConfig = {
+	links: FriendLink[];
 };
 
 export type LIGHT_DARK_MODE =
