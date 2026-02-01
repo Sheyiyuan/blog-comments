@@ -188,3 +188,26 @@ export type GiscusConfig = {
 		dark: string;
 	};
 };
+
+export type SponsorConfig = {
+	/** 是否启用文章末尾赞助按钮 */
+	enable: boolean;
+
+	/** 按钮文案 */
+	buttonText: string;
+
+	/** 弹窗标题 */
+	title: string;
+
+	/** (可选) 按钮旁提示文案 */
+	tip?: string;
+
+	/** (可选) 弹窗底部补充说明 */
+	footerText?: string;
+
+	/** 赞助方式二维码 */
+	methods: {
+		name: string;
+		qrImage: string;
+	}[];
+};

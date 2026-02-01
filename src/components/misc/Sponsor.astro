@@ -1,0 +1,142 @@
+---
+import { Icon } from "astro-icon/components";
+import { sponsorConfig } from "@/config";
+
+interface Props {
+	class?: string;
+}
+
+const className = Astro.props.class;
+
+const cfg = sponsorConfig;
+const methods = (cfg?.methods ?? []).filter((m) => !!m?.qrImage);
+const dialogId = "sponsor-dialog";
+const columnCount = Math.min(2, Math.max(1, methods.length));
+---
+
+{cfg?.enable && methods.length > 0 && (
+	<div
+		class:list={[
+			className,
+			"rounded-xl card-base px-6 md:px-7 py-5 flex flex-col gap-4",
+		]}
+	>
+		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+			{cfg.tip ? (
+				<div class="text-sm text-black/60 dark:text-white/60">{cfg.tip}</div>
+			) : (
+				<div></div>
+			)}
+
+			<button
+				type="button"
+				class="btn-card rounded-xl px-5 h-11 inline-flex items-center justify-center font-bold gap-2 active:scale-[0.98]"
+				data-sponsor-open={dialogId}
+			>
+				<Icon
+					name="material-symbols:volunteer-activism-rounded"
+					class="text-[1.4rem] text-[var(--primary)]"
+				/>
+				<span class="text-black/80 dark:text-white/80">{cfg.buttonText}</span>
+			</button>
+		</div>
+
+		<dialog id={dialogId} class="sponsor-dialog">
+			<div class="sponsor-dialog__panel rounded-2xl card-base px-6 md:px-7 py-6" style={`--sponsor-cols: ${columnCount};`}>
+				<div class="flex items-start justify-between gap-4 mb-4">
+					<div class="font-bold text-lg text-black/90 dark:text-white/90">
+						{cfg.title}
+					</div>
+					<button
+						type="button"
+						class="btn-card rounded-lg w-10 h-10 flex items-center justify-center"
+						data-sponsor-close
+						aria-label="Close"
+					>
+						<Icon
+							name="material-symbols:close-rounded"
+							class="text-[1.5rem] text-black/60 dark:text-white/60"
+						/>
+					</button>
+				</div>
+
+				<div class="sponsor-dialog__grid">
+					{methods.map((m) => (
+						<div class="sponsor-dialog__method rounded-xl bg-black/5 dark:bg-white/10 p-4 flex flex-col items-center gap-3">
+							<div class="font-bold text-black/80 dark:text-white/80">
+								{m.name}
+							</div>
+							<img
+								src={m.qrImage}
+								alt={`${m.name} 赞赏码`}
+								loading="lazy"
+								decoding="async"
+								class="sponsor-dialog__qr rounded-lg bg-white p-2"
+							/>
+						</div>
+					))}
+				</div>
+
+				{cfg.footerText && (
+					<div class="mt-4 text-xs text-black/50 dark:text-white/50">
+						{cfg.footerText}
+					</div>
+				)}
+			</div>
+		</dialog>
+	</div>
+)}
+
+<style>
+	.sponsor-dialog {
+		border: none;
+		padding: 0;
+		background: transparent;
+		max-width: none;
+	}
+
+	/*
+	  Shrink-to-fit panel:
+	  - Width follows actual content (QR images) + gaps/padding.
+	  - Still capped to viewport on small screens.
+	*/
+	.sponsor-dialog__panel {
+		display: inline-block;
+		width: fit-content;
+		max-width: calc(100vw - 2.5rem);
+		box-sizing: border-box;
+	}
+
+	.sponsor-dialog__grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+		justify-content: center;
+	}
+
+	@media (min-width: 640px) {
+		.sponsor-dialog__grid {
+			grid-template-columns: repeat(var(--sponsor-cols, 2), max-content);
+		}
+	}
+
+	.sponsor-dialog__method {
+		width: max-content;
+		max-width: 100%;
+	}
+
+	/*
+	  Render at intrinsic size (so dialog adapts), but cap to avoid overflow.
+	  If your QR images are huge, they will scale down.
+	*/
+	.sponsor-dialog__qr {
+		display: block;
+		width: auto;
+		height: auto;
+		max-width: min(18rem, calc(100vw - 6rem));
+	}
+
+	.sponsor-dialog::backdrop {
+		background: rgba(0, 0, 0, 0.45);
+	}
+</style>

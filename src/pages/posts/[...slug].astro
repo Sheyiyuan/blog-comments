@@ -2,13 +2,14 @@
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
+import Sponsor from "@components/misc/Sponsor.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n, getTranslation } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
-import { giscusConfig, licenseConfig } from "src/config";
+import { giscusConfig, licenseConfig, sponsorConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import Giscus from "../../components/misc/Giscus.astro";
 import PostMetadata from "../../components/PostMeta.astro";
@@ -50,6 +51,7 @@ const jsonLd = {
 };
 
 const commentsEnabled = entry.data.comments !== false && giscusConfig.enable;
+const sponsorEnabled = entry.data.sponsor !== false && sponsorConfig.enable;
 ---
 <MainGridLayout banner={entry.data.image} bannerBasePath={path.join("content/posts/", getDir(entry.id))} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
@@ -113,6 +115,8 @@ const commentsEnabled = entry.data.comments !== false && giscusConfig.enable;
             </Markdown>
 
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
+
+            {sponsorEnabled && <Sponsor class="mb-6 onload-animation" />}
 
             {commentsEnabled && (
                 <div class="mb-6 rounded-xl card-base px-6 md:px-7 py-6 onload-animation">

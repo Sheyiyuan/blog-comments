@@ -194,6 +194,49 @@ const bannerOffset =
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 		</script>
+
+		<!-- Sponsor dialog delegation (installed once; works across Swup navigations) -->
+		<script is:inline>
+			(() => {
+				if (window.__sponsorDialogDelegationInstalled) return;
+				window.__sponsorDialogDelegationInstalled = true;
+
+				const isDialog = (el) => el && el.tagName === 'DIALOG';
+				const getDialogById = (id) => {
+					if (!id) return null;
+					const el = document.getElementById(id);
+					return isDialog(el) ? el : null;
+				};
+
+				document.addEventListener('click', (e) => {
+					const openBtn = e.target?.closest?.('[data-sponsor-open]');
+					if (openBtn) {
+						const dialogId = openBtn.getAttribute('data-sponsor-open');
+						const dialog = getDialogById(dialogId);
+						if (dialog?.showModal) dialog.showModal();
+						return;
+					}
+
+					const closeBtn = e.target?.closest?.('[data-sponsor-close]');
+					if (closeBtn) {
+						const dialog = closeBtn.closest('dialog');
+						if (dialog?.close) dialog.close();
+						return;
+					}
+
+					// Click on backdrop closes the dialog
+					if (isDialog(e.target) && e.target.open) {
+						const rect = e.target.getBoundingClientRect();
+						const inside =
+							rect.top <= e.clientY &&
+							e.clientY <= rect.bottom &&
+							rect.left <= e.clientX &&
+							e.clientX <= rect.right;
+						if (!inside) e.target.close();
+					}
+				});
+			})();
+		</script>
 		<style define:vars={{
 			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,

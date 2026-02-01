@@ -6,6 +6,7 @@ import type {
 	NavBarConfig,
 	ProfileConfig,
 	SiteConfig,
+	SponsorConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
@@ -112,4 +113,17 @@ export const giscusConfig: GiscusConfig = {
 		light: "light",
 		dark: "transparent_dark",
 	},
+};
+
+export const sponsorConfig: SponsorConfig = {
+	enable: true,
+	buttonText: "赞助",
+	title: "感谢你的支持",
+	tip: "如果这篇文章对你有帮助，可以请我喝杯咖啡～",
+	methods: [
+		{
+			name: "使用微信扫描二维码赞助我",
+			qrImage: "/images/sponsor/wechat.jpg",
+		},
+	],
 };
