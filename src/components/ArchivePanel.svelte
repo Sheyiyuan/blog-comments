@@ -17,7 +17,7 @@ interface Post {
 		title: string;
 		tags: string[];
         category?: string | null;
-		published: Date;
+        published: Date | string;
 	};
 }
 
@@ -32,6 +32,11 @@ function formatDate(date: Date) {
 	const month = (date.getMonth() + 1).toString().padStart(2, "0");
 	const day = date.getDate().toString().padStart(2, "0");
 	return `${month}-${day}`;
+}
+
+function toDate(value: Date | string) {
+    if (value instanceof Date) return value;
+    return new Date(value);
 }
 
 function formatTag(tagList: string[]) {
@@ -66,11 +71,18 @@ onMount(async () => {
 
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
-			const year = post.data.published.getFullYear();
+            const published = toDate(post.data.published);
+            const year = published.getFullYear();
 			if (!acc[year]) {
 				acc[year] = [];
 			}
-			acc[year].push(post);
+            acc[year].push({
+                ...post,
+                data: {
+                    ...post.data,
+                    published,
+                },
+            });
 			return acc;
 		},
 		{} as Record<number, Post[]>,
@@ -114,7 +126,7 @@ onMount(async () => {
                     <div class="flex flex-row justify-start items-center h-full">
                         <!-- date -->
                         <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
-                            {formatDate(post.data.published)}
+                                {formatDate(toDate(post.data.published))}
                         </div>
 
                         <!-- dot and line -->
