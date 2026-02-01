@@ -1,99 +1,174 @@
-# 🍥Fuwari  
-![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen) 
-![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue) 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-saicaca%2Ffuwari-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/saicaca/fuwari)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_shield&issueType=license)
+# Fuwari Blog（基于 Astro）
 
-A static blog template built with [Astro](https://astro.build).
+![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
+![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-[**🖥️ Live Demo (Vercel)**](https://fuwari.vercel.app)
+这是一个使用 Astro + Tailwind CSS 构建的静态博客站点。本仓库基于上游主题 [saicaca/fuwari](https://github.com/saicaca/fuwari) 进行二次定制与增强。
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+## 特性
 
-🌏 README in
-[**中文**](https://github.com/saicaca/fuwari/blob/main/docs/README.zh-CN.md) /
-[**日本語**](https://github.com/saicaca/fuwari/blob/main/docs/README.ja.md) /
-[**한국어**](https://github.com/saicaca/fuwari/blob/main/docs/README.ko.md) /
-[**Español**](https://github.com/saicaca/fuwari/blob/main/docs/README.es.md) /
-[**ไทย**](https://github.com/saicaca/fuwari/blob/main/docs/README.th.md) /
-[**Tiếng Việt**](https://github.com/saicaca/fuwari/blob/main/docs/README.vi.md) /
-[**Bahasa Indonesia**](https://github.com/saicaca/fuwari/blob/main/docs/README.id.md) (Provided by the community and may not always be up-to-date)
+- Astro 5 + Tailwind CSS
+- Swup 页面切换与过渡动画
+- 亮/暗色模式、主题色可配置
+- 响应式布局（移动端/桌面端）
+- 目录（TOC）、RSS、Sitemap
+- Pagefind 本地全文搜索（构建时自动生成索引）
+- 扩展 Markdown：数学公式（KaTeX）、Mermaid、Admonition、GitHub 卡片等
+- 代码块增强：Expressive Code（行号、可折叠、语言徽章、自定义复制按钮、自动换行）
 
-## ✨ Features
+## 在原主题基础上的优化/增强（本仓库定制项）
 
-- [x] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- [x] Smooth animations and page transitions
-- [x] Light / dark mode
-- [x] Customizable theme colors & banner
-- [x] Responsive design
-- [x] Search functionality with [Pagefind](https://pagefind.app/)
-- [x] [Markdown extended features](https://github.com/saicaca/fuwari?tab=readme-ov-file#-markdown-extended-syntax)
-- [x] Table of contents
-- [x] RSS feed
+以下内容以“本仓库代码实际包含的功能”为准，便于你二次维护：
 
-## 🚀 Getting Started
+- 标签显示优化：文章卡片与正文元信息处的标签支持自动换行，并对超长标签进行断词，避免横向溢出（见 `PostMeta` 相关实现）。
+- Bilibili 视频嵌入指令：支持用 Markdown 指令插入 B 站视频 iframe（见 `::bilibili{bv="BV..."}`）。
+- Mermaid 渲染增强：`mermaid` 代码块会输出为居中容器，展示更友好。
+- 脚注体验增强：正文页对脚注标题的 i18n 与“返回引用”按钮样式做了额外处理（不修改原 DOM，兼顾 SEO）。
+- 构建/搜索优化：`pnpm build` 会在 Astro 构建后自动运行 Pagefind；并通过 `pagefind.yml` 排除 KaTeX、搜索面板等不应被索引的内容。
+- 部署工作流（可选）：提供 Gitea Actions 工作流，在 Alpine runner 上构建并 rsync 发布到指定目录（按需修改）。
 
-1. Create your blog repository:
-    - [Generate a new repository](https://github.com/saicaca/fuwari/generate) from this template or fork this repository.
-    - Or run one of the following commands:
-       ```sh
-       npm create fuwari@latest
-       yarn create fuwari
-       pnpm create fuwari@latest
-       bun create fuwari@latest
-       deno run -A npm:create-fuwari@latest
-       ```
-2. To edit your blog locally, clone your repository, run `pnpm install` to install dependencies.
-    - Install [pnpm](https://pnpm.io) `npm install -g pnpm` if you haven't.
-3. Edit the config file `src/config.ts` to customize your blog.
-4. Run `pnpm new-post <filename>` to create a new post and edit it in `src/content/posts/`.
-5. Deploy your blog to Vercel, Netlify, GitHub Pages, etc. following [the guides](https://docs.astro.build/en/guides/deploy/). You need to edit the site configuration in `astro.config.mjs` before deployment.
+## 快速开始
 
-## 📝 Frontmatter of Posts
+### 环境要求
+
+- Node.js >= 20
+- pnpm >= 9（本仓库通过 `preinstall` 强制使用 pnpm）
+
+### 安装与运行
+
+在仓库根目录执行：
+
+```bash
+pnpm install
+pnpm dev
+```
+
+启动后访问：`http://localhost:4321/`
+
+## 配置说明
+
+### 站点配置
+
+- 主要站点配置在 `src/config.ts`：站点标题、语言、导航、作者信息、背景、TOC、许可声明等。
+- 部署相关配置在 `astro.config.mjs`：
+    - `site`：你的站点域名（用于 RSS、Sitemap、OG 等）
+    - `base`：若部署在子路径（例如 `https://example.com/blog/`），需要设置为 `/blog/`
+
+## 写作（文章）
+
+### 文章位置
+
+文章存放在 `src/content/posts/` 下（支持多级目录）。
+
+### 新建文章
+
+```bash
+pnpm new-post <文件名或路径>
+```
+
+示例：
+
+```bash
+pnpm new-post "linux/arch-linux-setup"
+```
+
+会生成 `src/content/posts/linux/arch-linux-setup.md` 并写入基础 frontmatter。
+
+### Frontmatter 示例
 
 ```yaml
 ---
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new Astro blog.
-image: ./cover.jpg
-tags: [Foo, Bar]
-category: Front-end
+title: 我的第一篇文章
+published: 2026-02-01
+description: "一句话简介"
+image: "" # 可填图片路径（如 ./images/cover.jpg）
+tags: [Linux, Astro]
+category: "随笔"
 draft: false
-lang: jp      # Set only if the post's language differs from the site's language in `config.ts`
+lang: "" # 仅当文章语言与站点默认语言不同才需要设置
 ---
 ```
 
-## 🧩 Markdown Extended Syntax
+## Markdown 扩展语法
 
-In addition to Astro's default support for [GitHub Flavored Markdown](https://github.github.com/gfm/), several extra Markdown features are included:
+### Admonition（提示块）
 
-- Admonitions ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#admonitions))
-- GitHub repository cards ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#github-repository-cards))
-- Enhanced code blocks with Expressive Code ([Preview](https://fuwari.vercel.app/posts/expressive-code/) / [Docs](https://expressive-code.com/))
+```md
+:::note[可选标题]
+这里是内容。
+:::
+```
 
-## ⚡ Commands
+支持的类型：`note` / `tip` / `important` / `caution` / `warning`。
 
-All commands are run from the root of the project, from a terminal:
+### GitHub 仓库卡片
 
-| Command                    | Action                                              |
-|:---------------------------|:----------------------------------------------------|
-| `pnpm install`             | Installs dependencies                               |
-| `pnpm dev`                 | Starts local dev server at `localhost:4321`         |
-| `pnpm build`               | Build your production site to `./dist/`             |
-| `pnpm preview`             | Preview your build locally, before deploying        |
-| `pnpm check`               | Run checks for errors in your code                  |
-| `pnpm format`              | Format your code using Biome                        |
-| `pnpm new-post <filename>` | Create a new post                                   |
-| `pnpm astro ...`           | Run CLI commands like `astro add`, `astro check`    |
-| `pnpm astro --help`        | Get help using the Astro CLI                        |
+```md
+::github{repo="owner/repo"}
+```
 
-## ✏️ Contributing
+### Bilibili 视频嵌入
 
-Check out the [Contributing Guide](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md) for details on how to contribute to this project.
+```md
+::bilibili{bv="BVxxxxxxxxxxx"}
+```
 
-## 📄 License
+### Mermaid
 
-This project is licensed under the MIT License.
+````md
+```mermaid
+graph TD
+    A --> B
+```
+````
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_large&issueType=license)
+### 数学公式（KaTeX）
+
+- 行内：`$E=mc^2$`
+- 块级：
+
+```md
+$$
+\int_a^b f(x)\,dx
+$$
+```
+
+## 搜索（Pagefind）
+
+- `pnpm build` 会在 `astro build` 后自动执行 `pagefind --site dist` 生成搜索索引。
+- 排除规则见 `pagefind.yml`（例如 KaTeX 渲染节点、搜索面板等）。
+
+## 常用命令
+
+| 命令 | 作用 |
+|---|---|
+| `pnpm install` | 安装依赖 |
+| `pnpm dev` | 本地开发（默认 `localhost:4321`） |
+| `pnpm check` | Astro 检查（类型/内容等） |
+| `pnpm build` | 构建（含 Pagefind 索引） |
+| `pnpm preview` | 预览构建产物 |
+| `pnpm new-post <name>` | 新建文章 |
+| `pnpm format` | 使用 Biome 格式化 `src` |
+| `pnpm lint` | 使用 Biome 检查并自动修复 `src` |
+
+## 部署
+
+### 通用方式
+
+Astro 支持部署到 Vercel / Netlify / GitHub Pages / 自建服务器等。部署前请先修改 `astro.config.mjs` 中的 `site` / `base`。
+
+### Gitea Actions（本仓库自带，可选）
+
+本仓库提供了一个 Gitea Actions 工作流：`.gitea/workflows/deploy.yml`。
+
+- 触发：推送到 `main` 分支
+- 动作：安装依赖 → `pnpm build` → 将 `dist/` 同步到目标目录
+- 默认目标目录：`/home/blog/web`（按需修改工作流中的 `TARGET_DIR`）
+
+## 致谢
+
+- 上游主题：Fuwari（https://github.com/saicaca/fuwari）
+
+## 许可
+
+上游 Fuwari 使用 MIT License。本仓库如需对外发布/开源，建议补充 `LICENSE` 文件，并遵循上游许可与署名要求。
