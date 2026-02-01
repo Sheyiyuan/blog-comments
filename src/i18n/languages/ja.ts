@@ -13,6 +13,9 @@ export const ja: Translation = {
 	[Key.recentPosts]: "最近の投稿",
 
 	[Key.comments]: "コメント",
+	[Key.commentsClosed]: "コメントは閉鎖されています",
+
+	[Key.pinned]: "固定",
 
 	[Key.untitled]: "タイトルなし",
 	[Key.uncategorized]: "カテゴリなし",

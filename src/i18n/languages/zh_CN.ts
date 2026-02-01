@@ -13,6 +13,9 @@ export const zh_CN: Translation = {
 	[Key.recentPosts]: "最新文章",
 
 	[Key.comments]: "评论",
+	[Key.commentsClosed]: "评论区已关闭",
+
+	[Key.pinned]: "置顶",
 
 	[Key.untitled]: "无标题",
 	[Key.uncategorized]: "未分类",

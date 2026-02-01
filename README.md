@@ -24,7 +24,10 @@
 - Bilibili 视频嵌入指令：支持用 Markdown 指令插入 B 站视频 iframe（见 `::bilibili{bv="BV..."}`）。
 - Mermaid 渲染增强：`mermaid` 代码块会输出为居中容器，展示更友好。
 - 脚注体验增强：正文页对脚注标题的 i18n 与“返回引用”按钮样式做了额外处理（不修改原 DOM，兼顾 SEO）。
-- 评论区（Giscus）：已接入 Giscus 评论；支持全局开关与单篇文章通过 frontmatter 关闭（见下文“评论（Giscus）”）。
+- 评论区（Giscus）：已接入 Giscus 评论；支持全局开关与单篇通过 frontmatter 关闭（见下文“评论（Giscus）”）。当单篇关闭时，会在评论区位置显示“评论区已关闭”的提示卡片（若全局禁用则不显示评论相关区域）。
+- 随笔（Essays）：新增独立的随笔内容集合与页面（列表 `/essays/`、详情 `/essays/<date-hash>/`），并提供独立 RSS（`/essays/rss.xml`）。
+- 置顶（pin）：支持在文章/随笔 frontmatter 中通过 `pin: <int>` 置顶排序，并在列表卡片显示“置顶”标识。
+- 日期时间链路增强：frontmatter 支持 `YYYY-MM-DD` 与 `YYYY-MM-DD HH:mm`；仅写日期时自动补齐默认时间（默认 `16:00`）；时区支持偏移格式（默认 `+08:00`，兼容 IANA）；页面展示按分钟精度，JSON-LD/RSS 输出机器可读时间。
 - 全站毛玻璃（Glass）：支持半透明 + backdrop blur，并可分别调节卡片与面板/浮层的不透明度（见 `glassConfig.cardOpacity` / `glassConfig.panelOpacity`）。
 - 文章末尾赞助按钮：在每篇文章末尾提供“赞助”按钮，点击弹窗展示赞赏码；支持全局开关与单篇关闭（见下文“赞助（Sponsor）”）。
 - 侧栏标签可收起：左侧栏 Tags 超过阈值会折叠，点击“更多”展开后，同一按钮会切换为“收起”，一键恢复折叠。
@@ -75,7 +78,9 @@ pnpm dev
 - 全局配置：`src/config.ts` 中的 `giscusConfig`
     - `enable`：全局开关
     - `repo` / `repoId` / `category` / `categoryId`：按 giscus.app 要求填写
-- 单篇文章开关：frontmatter 里设置 `comments: false` 可关闭该篇评论区（默认 `true`）
+- 单篇开关：frontmatter 里设置 `comments: false` 可关闭该条内容（文章/随笔）的评论区（默认 `true`）。
+    - 若全局 `enable: true` 但单篇关闭，会在评论区位置显示“评论区已关闭”的提示卡片。
+    - 若全局 `enable: false`，不渲染任何评论相关区域。
 
 ### 赞助（Sponsor）
 
@@ -127,6 +132,28 @@ comments: true # 是否开启评论（默认 true）
 sponsor: true # 是否显示赞助按钮（默认 true）
 ---
 ```
+
+## 写作（随笔）
+
+### 随笔位置
+
+随笔存放在 `src/content/essays/` 下。
+
+### Frontmatter 示例
+
+```yaml
+---
+published: 2026-02-01 16:00
+title: "" # 可选；为空时 UI 不展示标题，但会用于 SEO/搜索派生标题
+tags: [随笔]
+pin: 0 # 可选；>0 则置顶排序
+comments: true # 是否开启评论（默认 true）
+draft: false
+slugSeed: "" # 可选；用于稳定 URL（不填则从标题/正文派生）
+---
+```
+
+随笔详情页路由采用“发表日期 + 标题/正文派生 seed 的 hash”，格式类似：`/essays/YYYY-MM-DD-xxxxxxxxxx/`。
 
 ## Markdown 扩展语法
 

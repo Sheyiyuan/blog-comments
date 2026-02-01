@@ -14,6 +14,10 @@ import { LinkPreset } from "./types/config";
 export const siteConfig: SiteConfig = {
 	title: "社亦园的旅行笔记",
 	subtitle: "平淡无奇笔记本",
+	dateTime: {
+		timeZone: "+08:00",
+		defaultTime: "16:00",
+	},
 	/**
 	 * 站点语言代码：用于导航/按钮等 UI 文案的 i18n。
 	 * 可选值见 `SiteConfig.lang` 类型定义（如：'en', 'zh_CN', 'ja' 等）。
@@ -96,6 +100,7 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.About,
 		LinkPreset.Archive,
+		{ name: "随笔", url: "/essays/" },
 		LinkPreset.Home,
 		LinkPreset.Friends,
 	],

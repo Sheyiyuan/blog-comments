@@ -5,6 +5,7 @@ description: 本博客支持的所有 Markdown 功能、组件和扩展的综合
 tags: [Guide, Markdown, Features]
 category: Guides
 draft: true
+pin: 1
 ---
 
 本指南涵盖了本博客支持的所有 Markdown 语法、扩展功能和自定义组件。

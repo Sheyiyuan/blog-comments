@@ -10,9 +10,16 @@ async function getRawSortedPosts() {
 	});
 
 	const sorted = allBlogPosts.sort((a, b) => {
-		const dateA = new Date(a.data.published);
-		const dateB = new Date(b.data.published);
-		return dateA > dateB ? -1 : 1;
+		const pinA = Number(a.data.pin ?? 0);
+		const pinB = Number(b.data.pin ?? 0);
+		if (pinA !== pinB) return pinB - pinA;
+
+		const dateA = new Date(a.data.published).getTime();
+		const dateB = new Date(b.data.published).getTime();
+		if (dateA !== dateB) return dateB - dateA;
+
+		// Tie-breaker: stable-ish deterministic sort
+		return a.slug.localeCompare(b.slug);
 	});
 	return sorted;
 }
@@ -118,4 +125,40 @@ export async function getCategoryList(): Promise<Category[]> {
 		});
 	}
 	return ret;
+}
+
+// ===== Essays (随笔) =====
+
+async function getRawSortedEssays() {
+	const allEssays = await getCollection("essays", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	});
+
+	const sorted = allEssays.sort((a, b) => {
+		const pinA = Number(a.data.pin ?? 0);
+		const pinB = Number(b.data.pin ?? 0);
+		if (pinA !== pinB) return pinB - pinA;
+
+		const dateA = new Date(a.data.published).getTime();
+		const dateB = new Date(b.data.published).getTime();
+		if (dateA !== dateB) return dateB - dateA;
+
+		// Tie-breaker: stable-ish deterministic sort
+		return a.slug.localeCompare(b.slug);
+	});
+
+	return sorted;
+}
+
+export async function getSortedEssays() {
+	return getRawSortedEssays();
+}
+
+export type EssayForList = {
+	entry: CollectionEntry<"essays">;
+};
+
+export async function getSortedEssaysList(): Promise<EssayForList[]> {
+	const sortedFullEssays = await getRawSortedEssays();
+	return sortedFullEssays.map((entry) => ({ entry }));
 }

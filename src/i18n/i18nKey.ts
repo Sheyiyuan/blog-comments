@@ -10,6 +10,9 @@ enum I18nKey {
 	recentPosts = "recentPosts",
 
 	comments = "comments",
+	commentsClosed = "commentsClosed",
+
+	pinned = "pinned",
 
 	untitled = "untitled",
 	uncategorized = "uncategorized",

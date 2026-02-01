@@ -13,6 +13,9 @@ export const ko: Translation = {
 	[Key.recentPosts]: "최근 게시물",
 
 	[Key.comments]: "댓글",
+	[Key.commentsClosed]: "댓글이 닫혔습니다",
+
+	[Key.pinned]: "고정",
 
 	[Key.untitled]: "제목 없음",
 	[Key.uncategorized]: "분류되지 않음",

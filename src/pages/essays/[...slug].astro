@@ -1,0 +1,104 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import Markdown from "@components/misc/Markdown.astro";
+import Giscus from "@components/misc/Giscus.astro";
+import I18nKey from "@i18n/i18nKey";
+import { getTranslation } from "@i18n/translation";
+import { giscusConfig } from "@/config";
+import { siteConfig, profileConfig } from "@/config";
+import { getSortedEssays } from "@utils/content-utils";
+import { getEssayExcerptFromBody, getEssayDisplayTitle, getEssayRouteSlug } from "@utils/essay-utils";
+import { formatDateTimeToISOWithOffset, formatDateTimeToYYYYMMDDHHmm } from "@utils/date-utils";
+import { Icon } from "astro-icon/components";
+
+export async function getStaticPaths() {
+	const entries = await getSortedEssays();
+	return entries.map((entry) => ({
+		params: { slug: getEssayRouteSlug(entry) },
+		props: { entry },
+	}));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+
+const manualTitle = (entry.data.title ?? "").trim();
+const title = getEssayDisplayTitle(entry);
+const excerpt = getEssayExcerptFromBody(entry.body);
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "BlogPosting",
+	headline: title,
+	description: excerpt || title,
+	keywords: entry.data.tags,
+	author: {
+		"@type": "Person",
+		name: profileConfig.name,
+		url: Astro.site,
+	},
+	datePublished: formatDateTimeToISOWithOffset(entry.data.published),
+	inLanguage: entry.data.lang
+		? entry.data.lang.replace("_", "-")
+		: siteConfig.lang.replace("_", "-"),
+};
+
+const tr = getTranslation(entry.data.lang || siteConfig.lang);
+const commentsGloballyEnabled = giscusConfig.enable;
+const commentsClosedForEntry = entry.data.comments === false;
+---
+
+<MainGridLayout title={title} description={excerpt} headings={headings} setOGTypeArticle={true}>
+	<script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+
+	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
+		<div id="essay-container" class="card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full">
+			<div class="relative onload-animation">
+				<!-- Keep Pagefind meta title for search even if UI title is hidden -->
+				<span data-pagefind-meta="title" class="sr-only">{title}</span>
+				{manualTitle && (
+					<div
+						data-pagefind-body
+						data-pagefind-weight="10"
+						class="transition w-full block font-bold mb-3
+							text-3xl md:text-[2.25rem]/[2.75rem]
+							text-black/90 dark:text-white/90
+							md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+							before:absolute before:top-[0.75rem] before:left-[-1.125rem]
+						"
+					>
+						{manualTitle}
+					</div>
+				)}
+			</div>
+
+			<div class="flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-3 mb-5 onload-animation">
+				<span class="text-50 text-sm font-medium">{formatDateTimeToYYYYMMDDHHmm(entry.data.published)}</span>
+				{entry.data.tags?.length ? (
+					<span class="text-50 text-sm font-medium">· {entry.data.tags.join(" / ")}</span>
+				) : null}
+			</div>
+
+			<Markdown class="mb-6 markdown-content onload-animation">
+				<Content />
+			</Markdown>
+
+
+			{commentsGloballyEnabled && (
+				<div class="mb-6 rounded-xl card-base px-6 md:px-7 py-6 onload-animation">
+					{commentsClosedForEntry ? (
+						<div>
+							<div class="flex items-center gap-2 mb-1 text-black/60 dark:text-white/60">
+								<Icon name="material-symbols:comments-disabled-outline-rounded" class="text-[1.25rem]" />
+								<div class="font-medium">{tr[I18nKey.comments]}</div>
+							</div>
+							<div class="text-sm text-black/50 dark:text-white/50">{tr[I18nKey.commentsClosed]}</div>
+						</div>
+					) : (
+						<Giscus />
+					)}
+				</div>
+			)}
+		</div>
+	</div>
+</MainGridLayout>

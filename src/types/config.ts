@@ -4,6 +4,16 @@ export type SiteConfig = {
 	title: string;
 	subtitle: string;
 
+	/**
+	 * 日期时间配置：用于 frontmatter 的解析、页面展示与 URL 派生等。
+	 * - timeZone 默认 +08:00
+	 * - defaultTime 默认 16:00（仅当 frontmatter 只写日期时补齐时间）
+	 */
+	dateTime?: {
+		timeZone?: string;
+		defaultTime?: string;
+	};
+
 	lang:
 		| "en"
 		| "zh_CN"

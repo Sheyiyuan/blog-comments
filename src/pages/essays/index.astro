@@ -1,0 +1,28 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import EssayCard from "@components/EssayCard.astro";
+import { getSortedEssays } from "@utils/content-utils";
+
+const essays = await getSortedEssays();
+
+let delay = 0;
+const interval = 50;
+---
+
+<MainGridLayout title="随笔" description="短篇记录与碎片化想法">
+	<div class="transition flex flex-col rounded-[var(--radius-large)] overflow-visible py-1 md:py-0 md:gap-4 mb-4">
+		{essays.length === 0 ? (
+			<div class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6 text-75">
+				这里还没有随笔。
+			</div>
+		) : (
+			essays.map((entry) => (
+				<EssayCard
+					entry={entry}
+					class:list="onload-animation"
+					style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+				/>
+			))
+		)}
+	</div>
+</MainGridLayout>

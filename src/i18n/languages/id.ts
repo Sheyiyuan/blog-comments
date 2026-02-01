@@ -13,6 +13,9 @@ export const id: Translation = {
 	[Key.recentPosts]: "Postingan Terbaru",
 
 	[Key.comments]: "Komentar",
+	[Key.commentsClosed]: "Komentar ditutup",
+
+	[Key.pinned]: "Disematkan",
 
 	[Key.untitled]: "Tanpa Judul",
 	[Key.uncategorized]: "Tanpa Kategori",
