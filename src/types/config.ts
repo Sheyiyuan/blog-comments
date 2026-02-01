@@ -141,3 +141,30 @@ export type BlogPostData = {
 export type ExpressiveCodeConfig = {
 	theme: string;
 };
+
+export type GiscusConfig = {
+	enable: boolean;
+
+	/** GitHub repo, e.g. "owner/repo" */
+	repo: string;
+	repoId: string;
+	category: string;
+	categoryId: string;
+
+	/**
+	 * See https://giscus.app
+	 * Usually "pathname" is the most stable mapping for static sites.
+	 */
+	mapping?: "pathname" | "url" | "title" | "og:title" | "specific" | "number";
+	strict?: "0" | "1";
+	reactionsEnabled?: "0" | "1";
+	emitMetadata?: "0" | "1";
+	inputPosition?: "top" | "bottom";
+	lang?: string;
+	loading?: "lazy" | "eager";
+
+	theme?: {
+		light: string;
+		dark: string;
+	};
+};

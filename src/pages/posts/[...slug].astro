@@ -8,8 +8,9 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
-import { licenseConfig } from "src/config";
+import { giscusConfig, licenseConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
+import Giscus from "../../components/misc/Giscus.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
@@ -47,6 +48,8 @@ const jsonLd = {
 		: siteConfig.lang.replace("_", "-"),
 	// TODO include cover image here
 };
+
+const commentsEnabled = entry.data.comments !== false && giscusConfig.enable;
 ---
 <MainGridLayout banner={entry.data.image} bannerBasePath={path.join("content/posts/", getDir(entry.id))} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
@@ -110,6 +113,12 @@ const jsonLd = {
             </Markdown>
 
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
+
+            {commentsEnabled && (
+                <div class="mb-6 rounded-xl card-base px-6 md:px-7 py-6 onload-animation">
+                    <Giscus />
+                </div>
+            )}
 
         </div>
     </div>

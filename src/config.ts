@@ -1,5 +1,6 @@
 import type {
 	ExpressiveCodeConfig,
+	GiscusConfig,
 	LicenseConfig,
 	NavBarConfig,
 	ProfileConfig,
@@ -74,4 +75,26 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Note: Some styles (such as background color) are being overridden, see the astro.config.mjs file.
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
+};
+
+export const giscusConfig: GiscusConfig = {
+	// 填好下面的 repo/repoId/category/categoryId 后，将 enable 改为 true 即可启用
+	enable: true,
+	repo: "Sheyiyuan/blog-comments",
+	repoId: "R_kgDORF2quw",
+	category: "Comments",
+	categoryId: "DIC_kwDORF2qu84C1tXq",
+
+	mapping: "pathname",
+	strict: "0",
+	reactionsEnabled: "1",
+	emitMetadata: "0",
+	inputPosition: "top",
+	lang: "zh-CN",
+	loading: "lazy",
+
+	theme: {
+		light: "light",
+		dark: "transparent_dark",
+	},
 };

@@ -1,0 +1,137 @@
+---
+import { giscusConfig } from "@/config";
+
+interface Props {
+	class?: string;
+}
+
+const className = Astro.props.class;
+
+const isConfigValid =
+	giscusConfig.enable &&
+	!!giscusConfig.repo &&
+	!!giscusConfig.repoId &&
+	!!giscusConfig.category &&
+	!!giscusConfig.categoryId;
+---
+
+{isConfigValid ? (
+	<div class:list={["giscus-wrapper", className]}>
+		<div id="giscus-container" class="giscus"></div>
+		<script
+			is:inline
+			define:vars={{
+				repo: giscusConfig.repo,
+				repoId: giscusConfig.repoId,
+				category: giscusConfig.category,
+				categoryId: giscusConfig.categoryId,
+				mapping: giscusConfig.mapping ?? "pathname",
+				strict: giscusConfig.strict ?? "0",
+				reactionsEnabled: giscusConfig.reactionsEnabled ?? "1",
+				emitMetadata: giscusConfig.emitMetadata ?? "0",
+				inputPosition: giscusConfig.inputPosition ?? "top",
+				lang: giscusConfig.lang ?? "zh-CN",
+				loading: giscusConfig.loading ?? "lazy",
+				lightTheme: giscusConfig.theme?.light ?? "light",
+				darkTheme: giscusConfig.theme?.dark ?? "transparent_dark",
+			}}
+		>
+			// @ts-nocheck
+			const GISCUS_ORIGIN = "https://giscus.app";
+
+			const getTheme = () =>
+				document.documentElement.classList.contains("dark")
+					? darkTheme
+					: lightTheme;
+
+			const setGiscusTheme = (theme) => {
+				const iframe = document.querySelector("iframe.giscus-frame");
+				if (!iframe) return;
+				iframe.contentWindow?.postMessage(
+					{
+						giscus: {
+							setConfig: {
+								theme,
+							},
+						},
+					},
+					GISCUS_ORIGIN,
+				);
+			};
+
+			const loadGiscus = () => {
+				const container = document.getElementById("giscus-container");
+				if (!container) return;
+
+				container.innerHTML = "";
+				const script = document.createElement("script");
+				script.src = "https://giscus.app/client.js";
+				script.async = true;
+				script.crossOrigin = "anonymous";
+
+				script.setAttribute("data-repo", repo);
+				script.setAttribute("data-repo-id", repoId);
+				script.setAttribute("data-category", category);
+				script.setAttribute("data-category-id", categoryId);
+				script.setAttribute("data-mapping", mapping);
+				script.setAttribute("data-strict", strict);
+				script.setAttribute("data-reactions-enabled", reactionsEnabled);
+				script.setAttribute("data-emit-metadata", emitMetadata);
+				script.setAttribute("data-input-position", inputPosition);
+				script.setAttribute("data-theme", getTheme());
+				script.setAttribute("data-lang", lang);
+				script.setAttribute("data-loading", loading);
+
+				container.appendChild(script);
+			};
+
+			const init = () => {
+				loadGiscus();
+
+				const observer = new MutationObserver(() => {
+					setGiscusTheme(getTheme());
+				});
+				observer.observe(document.documentElement, {
+					attributes: true,
+					attributeFilter: ["class"],
+				});
+
+				// Re-init on Swup navigation
+				if (window.swup) {
+					window.swup.hooks.on("page:view", () => {
+						loadGiscus();
+						setGiscusTheme(getTheme());
+					});
+				} else {
+					document.addEventListener("swup:enable", () => {
+						window.swup?.hooks.on("page:view", () => {
+							loadGiscus();
+							setGiscusTheme(getTheme());
+						});
+					});
+				}
+			};
+
+			init();
+		</script>
+	</div>
+) : (
+	import.meta.env.DEV && (
+		<div class:list={["giscus-wrapper", className]}>
+			<div class="transition text-50 text-sm">
+				评论系统未配置：请先在 <code>src/config.ts</code> 填写 giscusConfig 并启用。
+			</div>
+		</div>
+	)
+)}
+
+<style>
+	.giscus-wrapper {
+		width: 100%;
+	}
+
+	.giscus-wrapper :global(.giscus),
+	.giscus-wrapper :global(.giscus-frame) {
+		width: 100%;
+	}
+</style>
