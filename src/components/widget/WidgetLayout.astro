@@ -23,16 +23,20 @@ const className = Astro.props.class;
         <slot></slot>
     </div>
     {isCollapsed && (
-        <div class="px-4 -mb-2 flex flex-col gap-2">
-            <button class="btn-plain rounded-lg w-full h-9 widget-expand-btn">
-                <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
-                    <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> {i18n(I18nKey.more)}
-                </div>
-            </button>
-            {canCollapse && (
-                <button class="btn-plain rounded-lg w-full h-9 widget-collapse-btn hidden">
-                    <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
+        <div class="px-4 -mb-2">
+            {canCollapse ? (
+                <button class="btn-plain rounded-lg w-full h-9 widget-toggle-btn">
+                    <div class="widget-toggle-more text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
+                        <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> {i18n(I18nKey.more)}
+                    </div>
+                    <div class="widget-toggle-collapse hidden text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
                         <Icon name="material-symbols:expand-less-rounded" class="text-[1.75rem]"></Icon> {i18n(I18nKey.collapse)}
+                    </div>
+                </button>
+            ) : (
+                <button class="btn-plain rounded-lg w-full h-9 widget-expand-btn">
+                    <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
+                        <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> {i18n(I18nKey.more)}
                     </div>
                 </button>
             )}
@@ -57,19 +61,30 @@ const className = Astro.props.class;
             const id = this.dataset.id;
             const wrapper = this.querySelector(`#${id}`);
             const expandBtn = this.querySelector('.widget-expand-btn');
-            const collapseBtn = this.querySelector('.widget-collapse-btn');
+            const toggleBtn = this.querySelector('.widget-toggle-btn');
+            const toggleMore = this.querySelector('.widget-toggle-more');
+            const toggleCollapse = this.querySelector('.widget-toggle-collapse');
 
             expandBtn?.addEventListener('click', () => {
                 wrapper?.classList.remove('collapsed');
                 expandBtn.classList.add('hidden');
-                collapseBtn?.classList.remove('hidden');
             });
 
-            collapseBtn?.addEventListener('click', () => {
-                wrapper?.classList.add('collapsed');
-                collapseBtn.classList.add('hidden');
-                expandBtn?.classList.remove('hidden');
-            });
+            if (toggleBtn && wrapper) {
+                let expanded = false;
+                toggleBtn.addEventListener('click', () => {
+                    expanded = !expanded;
+                    if (expanded) {
+                        wrapper.classList.remove('collapsed');
+                        toggleMore?.classList.add('hidden');
+                        toggleCollapse?.classList.remove('hidden');
+                    } else {
+                        wrapper.classList.add('collapsed');
+                        toggleCollapse?.classList.add('hidden');
+                        toggleMore?.classList.remove('hidden');
+                    }
+                });
+            }
         }
     }
 
