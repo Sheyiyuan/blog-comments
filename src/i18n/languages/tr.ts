@@ -31,6 +31,7 @@ export const tr: Translation = {
 	[Key.systemMode]: "Sistem",
 
 	[Key.more]: "Daha Fazla",
+	[Key.collapse]: "Daralt",
 
 	[Key.author]: "Yazar",
 	[Key.publishedAt]: "Yayınlanma:",
