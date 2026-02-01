@@ -24,6 +24,10 @@
 - Bilibili 视频嵌入指令：支持用 Markdown 指令插入 B 站视频 iframe（见 `::bilibili{bv="BV..."}`）。
 - Mermaid 渲染增强：`mermaid` 代码块会输出为居中容器，展示更友好。
 - 脚注体验增强：正文页对脚注标题的 i18n 与“返回引用”按钮样式做了额外处理（不修改原 DOM，兼顾 SEO）。
+- 评论区（Giscus）：已接入 Giscus 评论；支持全局开关与单篇文章通过 frontmatter 关闭（见下文“评论（Giscus）”）。
+- 全站毛玻璃（Glass）：支持半透明 + backdrop blur，并可分别调节卡片与面板/浮层的不透明度（见 `glassConfig.cardOpacity` / `glassConfig.panelOpacity`）。
+- 文章末尾赞助按钮：在每篇文章末尾提供“赞助”按钮，点击弹窗展示赞赏码；支持全局开关与单篇关闭（见下文“赞助（Sponsor）”）。
+- 侧栏标签可收起：左侧栏 Tags 超过阈值会折叠，点击“更多”展开后，同一按钮会切换为“收起”，一键恢复折叠。
 - 构建/搜索优化：`pnpm build` 会在 Astro 构建后自动运行 Pagefind；并通过 `pagefind.yml` 排除 KaTeX、搜索面板等不应被索引的内容。
 - 部署工作流（可选）：提供 Gitea Actions 工作流，在 Alpine runner 上构建并 rsync 发布到指定目录（按需修改）。
 
@@ -53,6 +57,39 @@ pnpm dev
 - 部署相关配置在 `astro.config.mjs`：
     - `site`：你的站点域名（用于 RSS、Sitemap、OG 等）
     - `base`：若部署在子路径（例如 `https://example.com/blog/`），需要设置为 `/blog/`
+
+### 毛玻璃（Glass）
+
+全站支持毛玻璃（半透明 + backdrop blur）。相关配置在 `src/config.ts` 的 `glassConfig`：
+
+- `enable`：开关
+- `blur`：模糊半径（px）
+- `cardOpacity`：卡片区域不透明度（0~1）
+- `panelOpacity`：面板/浮层不透明度（0~1）（例如顶栏弹出面板、浮层等）
+- `border`：是否显示细边框
+
+### 评论（Giscus）
+
+已集成 Giscus 评论区：
+
+- 全局配置：`src/config.ts` 中的 `giscusConfig`
+    - `enable`：全局开关
+    - `repo` / `repoId` / `category` / `categoryId`：按 giscus.app 要求填写
+- 单篇文章开关：frontmatter 里设置 `comments: false` 可关闭该篇评论区（默认 `true`）
+
+### 赞助（Sponsor）
+
+文章页正文末尾会渲染一个赞助按钮，点击后使用原生 `<dialog>` 弹窗展示二维码。
+
+- 弹窗宽度会根据二维码图片大小与数量自适应（并在小屏自动限制最大宽度，避免溢出）。
+- 为兼容 Swup 页面切换，按钮/弹窗采用全局事件委托方式绑定（无需额外框架水合）。
+
+- 全局配置：`src/config.ts` 中的 `sponsorConfig`
+    - `enable`：全局开关
+    - `buttonText` / `title` / `tip` / `footerText`：文案
+    - `methods`：赞助方式列表（`name` + `qrImage`）
+- 二维码图片建议放到：`public/images/sponsor/`
+    - 例如：`/images/sponsor/wechat.jpg`
 
 ## 写作（文章）
 
@@ -86,6 +123,8 @@ tags: [Linux, Astro]
 category: "随笔"
 draft: false
 lang: "" # 仅当文章语言与站点默认语言不同才需要设置
+comments: true # 是否开启评论（默认 true）
+sponsor: true # 是否显示赞助按钮（默认 true）
 ---
 ```
 
