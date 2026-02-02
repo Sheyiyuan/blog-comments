@@ -4,7 +4,7 @@ title: "迟到的2025年度总结"
 tags: ["随笔"]
 pin: 0
 comments: true
-draft: true
+draft: false
 slugSeed: ""
 ---
 
