@@ -124,6 +124,14 @@ pnpm dev
 ### 新建文章
 
 ```bash
+pnpm new
+```
+
+该命令会进入交互式向导，可选择：类型（篇章/随笔）、格式（文件夹/单文件）、标题、（篇章）分类、时间（默认当前时间）。
+
+兼容/快速模式（非交互）：
+
+```bash
 pnpm new-post <文件名或路径>
 ```
 
@@ -140,7 +148,7 @@ pnpm new-post "linux/arch-linux-setup"
 ```yaml
 ---
 title: 我的第一篇文章
-published: 2026-02-01
+published: 2026-02-01 16:00
 description: "一句话简介"
 image: "" # 可填图片路径（如 ./images/cover.jpg）
 tags: [Linux, Astro]
@@ -151,6 +159,8 @@ comments: true # 是否开启评论（默认 true）
 sponsor: true # 是否显示赞助按钮（默认 true）
 ---
 ```
+
+`published` 支持 `YYYY-MM-DD` 与 `YYYY-MM-DD HH:mm`；推荐使用精确到分钟的时间格式。
 
 ## 写作（随笔）
 
@@ -240,7 +250,8 @@ $$
 | `pnpm check` | Astro 检查（类型/内容等） |
 | `pnpm build` | 构建（含 Pagefind 索引） |
 | `pnpm preview` | 预览构建产物 |
-| `pnpm new-post <name>` | 新建文章 |
+| `pnpm new` | 交互式新建稿件（篇章/随笔） |
+| `pnpm new-post <name>` | 新建文章（兼容/快速模式） |
 | `pnpm format` | 使用 Biome 格式化 `src` |
 | `pnpm lint` | 使用 Biome 检查并自动修复 `src` |
 
