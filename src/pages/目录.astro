@@ -1,0 +1,16 @@
+---
+// Astro 采用“基于文件系统”的路由：
+// - 该文件会映射到 `/目录/`
+// - 如果你希望 `/目录/` 与 `/archive/` 显示相同内容，可以复用同一套组件逻辑
+import ArchivePanel from "@components/ArchivePanel.svelte";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedPostsList } from "../utils/content-utils";
+
+const sortedPostsList = await getSortedPostsList();
+---
+
+<MainGridLayout title={i18n(I18nKey.archive)}>
+	<ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+</MainGridLayout>
