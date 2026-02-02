@@ -1,5 +1,7 @@
 enum I18nKey {
 	home = "home",
+	passage = "passage",
+	essays = "essays",
 	about = "about",
 	archive = "archive",
 	friends = "friends",
@@ -8,6 +10,11 @@ enum I18nKey {
 	tags = "tags",
 	categories = "categories",
 	recentPosts = "recentPosts",
+	recentEssays = "recentEssays",
+	noPosts = "noPosts",
+	noEssays = "noEssays",
+	essaysDescription = "essaysDescription",
+	passageDescription = "passageDescription",
 
 	comments = "comments",
 	commentsClosed = "commentsClosed",

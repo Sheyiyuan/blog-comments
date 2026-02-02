@@ -2,7 +2,9 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_CN: Translation = {
-	[Key.home]: "笔记",
+	[Key.home]: "封面",
+	[Key.passage]: "篇章",
+	[Key.essays]: "随笔",
 	[Key.about]: "扉页",
 	[Key.archive]: "目次",
 	[Key.friends]: "友人帐",
@@ -10,7 +12,12 @@ export const zh_CN: Translation = {
 
 	[Key.tags]: "标签",
 	[Key.categories]: "分类",
-	[Key.recentPosts]: "最新文章",
+	[Key.recentPosts]: "最新篇章",
+	[Key.recentEssays]: "最新随笔",
+	[Key.noPosts]: "这里还没有篇章。",
+	[Key.noEssays]: "这里还没有随笔。",
+	[Key.essaysDescription]: "短篇记录与碎片化想法",
+	[Key.passageDescription]: "篇章与长文归档",
 
 	[Key.comments]: "评论",
 	[Key.commentsClosed]: "评论区已关闭",

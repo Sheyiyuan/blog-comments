@@ -3,6 +3,8 @@ import type { Translation } from "../translation";
 
 export const th: Translation = {
 	[Key.home]: "หน้าแรก",
+	[Key.passage]: "บทความ",
+	[Key.essays]: "บันทึกสั้น",
 	[Key.about]: "หน้าชื่อเรื่อง",
 	[Key.archive]: "สารบัญ",
 	[Key.friends]: "เพื่อน",
@@ -11,6 +13,11 @@ export const th: Translation = {
 	[Key.tags]: "ป้ายกำกับ",
 	[Key.categories]: "หมวดหมู่",
 	[Key.recentPosts]: "โพสต์ล่าสุด",
+	[Key.recentEssays]: "บันทึกสั้นล่าสุด",
+	[Key.noPosts]: "ยังไม่มีบทความ",
+	[Key.noEssays]: "ยังไม่มีบันทึกสั้น",
+	[Key.essaysDescription]: "บันทึกสั้นและความคิดที่กระจัดกระจาย",
+	[Key.passageDescription]: "บทความและโพสต์แบบยาว",
 
 	[Key.comments]: "ความคิดเห็น",
 	[Key.commentsClosed]: "ปิดการแสดงความคิดเห็นแล้ว",

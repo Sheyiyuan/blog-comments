@@ -3,6 +3,8 @@ import type { Translation } from "../translation";
 
 export const tr: Translation = {
 	[Key.home]: "Anasayfa",
+	[Key.passage]: "Yazılar",
+	[Key.essays]: "Denemeler",
 	[Key.about]: "Başlık Sayfası",
 	[Key.archive]: "İçindekiler",
 	[Key.friends]: "Dostlar",
@@ -11,6 +13,11 @@ export const tr: Translation = {
 	[Key.tags]: "Taglar",
 	[Key.categories]: "Katagoriler",
 	[Key.recentPosts]: "Son Paylaşımlar",
+	[Key.recentEssays]: "Son Denemeler",
+	[Key.noPosts]: "Henüz yazı yok.",
+	[Key.noEssays]: "Henüz deneme yok.",
+	[Key.essaysDescription]: "Kısa notlar ve parçalı düşünceler",
+	[Key.passageDescription]: "Yazılar ve uzun makaleler",
 
 	[Key.comments]: "Yorumlar",
 	[Key.commentsClosed]: "Yorumlar kapalı",

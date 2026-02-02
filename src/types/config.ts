@@ -80,6 +80,17 @@ export enum LinkPreset {
 	Archive = 1,
 	About = 2,
 	Friends = 3,
+	Passage = 4,
+	Essays = 5,
+}
+
+/**
+ * Homepage section ordering presets.
+ * Used by `homePageConfig.sections`.
+ */
+export enum HomeSectionPreset {
+	Essays = 0,
+	Posts = 1,
 }
 
 export type NavBarLink = {

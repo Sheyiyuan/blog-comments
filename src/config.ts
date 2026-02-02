@@ -9,7 +9,7 @@ import type {
 	SiteConfig,
 	SponsorConfig,
 } from "./types/config";
-import { LinkPreset } from "./types/config";
+import { HomeSectionPreset, LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
 	title: "社亦园的旅行笔记",
@@ -98,13 +98,29 @@ export const navBarConfig: NavBarConfig = {
 	 *    { name: "GitHub", url: "https://github.com/<name>", external: true },
 	 */
 	links: [
+		LinkPreset.Home,
 		LinkPreset.About,
 		LinkPreset.Archive,
-		{ name: "随笔", url: "/essays/" },
-		LinkPreset.Home,
+		LinkPreset.Passage,
+		LinkPreset.Essays,
 		LinkPreset.Friends,
 	],
 };
+
+/**
+ * 首页展示配置：
+ * - sections：控制首页展示顺序/显示哪些板块（类似导航栏 links 数组）
+ * - recentEssays / recentPosts：控制各板块展示数量
+ */
+export const homePageConfig = {
+	sections: [HomeSectionPreset.Posts, HomeSectionPreset.Essays],
+	recentEssays: {
+		count: 3,
+	},
+	recentPosts: {
+		count: 4,
+	},
+} as const;
 
 export const profileConfig: ProfileConfig = {
 	/**

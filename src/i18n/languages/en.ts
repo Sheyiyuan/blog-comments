@@ -3,6 +3,8 @@ import type { Translation } from "../translation";
 
 export const en: Translation = {
 	[Key.home]: "Home",
+	[Key.passage]: "Posts",
+	[Key.essays]: "Essays",
 	[Key.about]: "Title Page",
 	[Key.archive]: "Index",
 	[Key.friends]: "Friends",
@@ -11,6 +13,11 @@ export const en: Translation = {
 	[Key.tags]: "Tags",
 	[Key.categories]: "Categories",
 	[Key.recentPosts]: "Recent Posts",
+	[Key.recentEssays]: "Recent Essays",
+	[Key.noPosts]: "No posts yet.",
+	[Key.noEssays]: "No essays yet.",
+	[Key.essaysDescription]: "Short notes and fragmented thoughts",
+	[Key.passageDescription]: "Posts and longer articles",
 
 	[Key.comments]: "Comments",
 	[Key.commentsClosed]: "Comments are closed",

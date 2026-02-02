@@ -55,12 +55,30 @@ pnpm dev
 
 ## 配置说明
 
+### 路由与命名（本仓库约定）
+
+为了更贴近“笔记/书籍”的信息架构，本仓库对首页与文章列表做了路由重组，并在 UI 文案中使用以下命名：
+
+- **封面**：站点首页 `/`，聚合展示「最新随笔」+「最新篇章」（展示数量与顺序可配置，见下文）。
+- **篇章**：原“文章列表”迁移到 `/passage/`（支持分页）。
+- **随笔**：随笔列表 `/essays/`，详情 `/essays/<date-hash>/`，RSS `/essays/rss.xml`。
+
+兼容性：旧的 `/<page>/`（原首页分页）会跳转到 `/passage/<page>/`。
+
 ### 站点配置
 
 - 主要站点配置在 `src/config.ts`：站点标题、语言、导航、作者信息、背景、TOC、许可声明等。
 - 部署相关配置在 `astro.config.mjs`：
     - `site`：你的站点域名（用于 RSS、Sitemap、OG 等）
     - `base`：若部署在子路径（例如 `https://example.com/blog/`），需要设置为 `/blog/`
+
+### 首页（封面）展示
+
+首页展示由 `src/config.ts` 的 `homePageConfig` 控制：
+
+- `sections`：控制首页展示哪些板块以及显示顺序（例如：先随笔后篇章 / 先篇章后随笔 / 只显示篇章）。
+- `recentEssays.count`：控制“最新随笔”展示条数。
+- `recentPosts.count`：控制“最新篇章”展示条数。
 
 ### 毛玻璃（Glass）
 

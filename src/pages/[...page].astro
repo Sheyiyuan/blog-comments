@@ -1,10 +1,8 @@
 ---
 import type { GetStaticPaths } from "astro";
-import Pagination from "../components/control/Pagination.astro";
-import PostPage from "../components/PostPage.astro";
-import { PAGE_SIZE } from "../constants/constants";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { getSortedPosts } from "../utils/content-utils";
+import { PAGE_SIZE } from "@constants/constants";
+import { getSortedPosts } from "@utils/content-utils";
+import { url } from "@utils/url-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
@@ -14,10 +12,21 @@ export const getStaticPaths = (async ({ paginate }) => {
 
 const { page } = Astro.props;
 
-const len = page.data.length;
+const currentPage = Number(page?.currentPage ?? 1);
+const targetUrl =
+	currentPage <= 1 ? url("/passage/") : url(`/passage/${currentPage}/`);
 ---
 
-<MainGridLayout>
-    <PostPage page={page}></PostPage>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
-</MainGridLayout>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="refresh" content={`0; url=${targetUrl}`} />
+		<link rel="canonical" href={targetUrl} />
+		<title>Moved</title>
+	</head>
+	<body>
+		<p>
+			Moved to <a href={targetUrl}>{targetUrl}</a>
+		</p>
+	</body>
+</html>

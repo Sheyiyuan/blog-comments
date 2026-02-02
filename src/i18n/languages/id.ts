@@ -3,6 +3,8 @@ import type { Translation } from "../translation";
 
 export const id: Translation = {
 	[Key.home]: "Beranda",
+	[Key.passage]: "Postingan",
+	[Key.essays]: "Esai",
 	[Key.about]: "Halaman Judul",
 	[Key.archive]: "Daftar Isi",
 	[Key.friends]: "Teman",
@@ -11,6 +13,11 @@ export const id: Translation = {
 	[Key.tags]: "Tag",
 	[Key.categories]: "Kategori",
 	[Key.recentPosts]: "Postingan Terbaru",
+	[Key.recentEssays]: "Esai Terbaru",
+	[Key.noPosts]: "Belum ada postingan.",
+	[Key.noEssays]: "Belum ada esai.",
+	[Key.essaysDescription]: "Catatan singkat dan pikiran terpecah",
+	[Key.passageDescription]: "Postingan dan artikel panjang",
 
 	[Key.comments]: "Komentar",
 	[Key.commentsClosed]: "Komentar ditutup",

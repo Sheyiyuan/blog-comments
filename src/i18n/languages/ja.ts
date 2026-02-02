@@ -3,6 +3,8 @@ import type { Translation } from "../translation";
 
 export const ja: Translation = {
 	[Key.home]: "Home",
+	[Key.passage]: "投稿",
+	[Key.essays]: "随筆",
 	[Key.about]: "扉",
 	[Key.archive]: "目次",
 	[Key.friends]: "友人帳",
@@ -11,6 +13,11 @@ export const ja: Translation = {
 	[Key.tags]: "タグ",
 	[Key.categories]: "カテゴリ",
 	[Key.recentPosts]: "最近の投稿",
+	[Key.recentEssays]: "最近の随筆",
+	[Key.noPosts]: "投稿はまだありません。",
+	[Key.noEssays]: "随筆はまだありません。",
+	[Key.essaysDescription]: "短い記録と断片的な考え",
+	[Key.passageDescription]: "投稿と長文記事",
 
 	[Key.comments]: "コメント",
 	[Key.commentsClosed]: "コメントは閉鎖されています",

@@ -7,6 +7,14 @@ export const LinkPresets: { [key in LinkPreset]: NavBarLink } = {
 		name: i18n(I18nKey.home),
 		url: "/",
 	},
+	[LinkPreset.Passage]: {
+		name: i18n(I18nKey.passage),
+		url: "/passage/",
+	},
+	[LinkPreset.Essays]: {
+		name: i18n(I18nKey.essays),
+		url: "/essays/",
+	},
 	[LinkPreset.About]: {
 		name: i18n(I18nKey.about),
 		url: "/about/",
