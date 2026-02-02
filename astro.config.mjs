@@ -22,6 +22,7 @@ import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.m
 import { BilibiliComponent } from "./src/plugins/rehype-component-bilibili.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
+import { remarkEssaysGallery } from "./src/plugins/remark-essays-gallery.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkMermaidAddon } from "./src/plugins/remark-mermaid-addon.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
@@ -111,6 +112,7 @@ export default defineConfig({
 			remarkMermaidAddon,
 			remarkReadingTime,
 			remarkExcerpt,
+			remarkEssaysGallery,
 			remarkGithubAdmonitionsToDirectives,
 			remarkDirective,
 			remarkSectionize,
