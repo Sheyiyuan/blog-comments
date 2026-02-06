@@ -95,6 +95,19 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ] || [ -z "${CF_PAGES_PROJECT:-}" ]; then
+            echo "Missing Cloudflare Pages secrets. Please set CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, CF_PAGES_PROJECT." >&2
+            exit 1
+          fi
+          pnpm dlx wrangler@3 pages deploy dist --project-name "${CF_PAGES_PROJECT}" --branch "${GITEA_REF_NAME:-main}"
+
       - name: Deploy to /home/blog/web/
         env:
           TARGET_DIR: /home/blog/web
