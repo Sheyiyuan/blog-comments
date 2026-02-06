@@ -2,7 +2,6 @@
 title: "你真的需要 Linux 吗？——Linux 新人避坑指南"
 published: 2026-02-06 16:26
 description: ""
-image: ""
 tags:
     - "linux"
     - "windows"
