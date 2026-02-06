@@ -4,6 +4,7 @@ import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
 const currentYear = new Date().getFullYear();
+const showIcp = import.meta.env.PUBLIC_SHOW_ICP !== "false";
 ---
 
 <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">-->
@@ -18,6 +19,8 @@ const currentYear = new Date().getFullYear();
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" rel="noopener noreferrer" href="https://astro.build">Astro</a> &
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" rel="noopener noreferrer" href="https://github.com/saicaca/fuwari">Fuwari</a>
         <br>
-        <a class="transition link text-[var(--primary)] font-medium" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">湘ICP备2024078728号</a>
+        {showIcp && (
+            <a class="transition link text-[var(--primary)] font-medium" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">湘ICP备2024078728号</a>
+        )}
     </div>
 </div>

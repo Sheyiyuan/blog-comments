@@ -92,25 +92,46 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm build
+      - name: Build (CN)
+        env:
+          ASTRO_OUT_DIR: dist-cn
+          PUBLIC_SHOW_ICP: "true"
+        run: |
+          set -euo pipefail
+          pnpm astro build
+          pnpm exec pagefind --site dist-cn
+
+      - name: Build (CF)
+        env:
+          ASTRO_OUT_DIR: dist-com
+          PUBLIC_SHOW_ICP: "false"
+        run: |
+          set -euo pipefail
+          pnpm astro build
+          pnpm exec pagefind --site dist-com
 
       - name: Deploy to Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+          DIST_DIR: dist-com
         run: |
           set -euo pipefail
           if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ] || [ -z "${CF_PAGES_PROJECT:-}" ]; then
             echo "Missing Cloudflare Pages secrets. Please set CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, CF_PAGES_PROJECT." >&2
             exit 1
           fi
-          pnpm dlx wrangler@3 pages deploy dist --project-name "${CF_PAGES_PROJECT}" --branch "${GITEA_REF_NAME:-main}"
+          if [ ! -d "${DIST_DIR}" ]; then
+            echo "${DIST_DIR} not found; build may have failed" >&2
+            exit 1
+          fi
+          pnpm dlx wrangler@3 pages deploy "${DIST_DIR}" --project-name "${CF_PAGES_PROJECT}" --branch "${GITEA_REF_NAME:-main}"
 
       - name: Deploy to /home/blog/web/
         env:
           TARGET_DIR: /home/blog/web
+          DIST_DIR: dist-cn
         run: |
           echo "[deploy] uname: $(uname -a)"
           echo "[deploy] id: $(id)"
@@ -157,13 +178,13 @@ jobs:
               ;;
           esac
 
-          if [ ! -d dist ]; then
-            echo "dist/ not found; build may have failed" >&2
+          if [ ! -d "${DIST_DIR}" ]; then
+            echo "${DIST_DIR} not found; build may have failed" >&2
             exit 1
           fi
 
           echo "[deploy] dist preview:"
-          ls -al dist | sed -n '1,200p'
+          ls -al "${DIST_DIR}" | sed -n '1,200p'
 
           mkdir -p "${TARGET_DIR}"
 
@@ -171,11 +192,11 @@ jobs:
           ls -al "${TARGET_DIR}" || true
 
           if command -v rsync >/dev/null 2>&1; then
-            rsync -a --delete dist/ "${TARGET_DIR}/"
+            rsync -a --delete "${DIST_DIR}/" "${TARGET_DIR}/"
           else
             echo "rsync not found; falling back to rm + cp" >&2
             rm -rf "${TARGET_DIR}"/*
-            cp -a dist/. "${TARGET_DIR}/"
+            cp -a "${DIST_DIR}"/. "${TARGET_DIR}/"
           fi
 
           echo "[deploy] target after sync:"

@@ -28,10 +28,14 @@ import { remarkMermaidAddon } from "./src/plugins/remark-mermaid-addon.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
 // https://astro.build/config
+const site = process.env.ASTRO_SITE ?? "https://blog.sheyiyuan.com/";
+const outDir = process.env.ASTRO_OUT_DIR ?? "./dist";
+
 export default defineConfig({
-	site: "https://blog.sheyiyuan.com/",
+	site,
 	base: "/",
 	trailingSlash: "always",
+	outDir,
 	integrations: [
 		tailwind({
 			nesting: true,
