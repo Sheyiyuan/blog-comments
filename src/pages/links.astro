@@ -35,7 +35,7 @@ function renderInlineMarkdown(markdown: string): string {
 	return sanitizeHtml(md.render(markdown));
 }
 
-const siteUrl = Astro.site?.toString() ?? "https://blog.sheyiyuan.cn/";
+const siteUrl = Astro.site?.toString() ?? "https://blog.sheyiyuan.com/";
 const siteIcon = `${siteUrl.replace(/\/+$/, "/")}icons/01.png`;
 
 const introHtml = renderInlineMarkdown(`这里收录一些我在路途中遇到的朋友们。\n`);
