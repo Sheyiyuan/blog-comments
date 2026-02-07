@@ -119,5 +119,21 @@ jobs:
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
           ssh-keyscan -p "${DEPLOY_PORT}" "${DEPLOY_HOST}" >> ~/.ssh/known_hosts
 
-          sshpass -p "${DEPLOY_PASSWORD}" rsync -az --delete -e "ssh -p ${DEPLOY_PORT}" "${DIST_DIR}/" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
+          # Preflight: ensure the destination exists and is writable.
+          # A common failure is that the target dir (or some subdirs) were created by root in a previous deploy.
+          sshpass -p "${DEPLOY_PASSWORD}" \
+            ssh -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "mkdir -p '${DEPLOY_PATH}' && test -w '${DEPLOY_PATH}'" \
+            || {
+              echo "[deploy] ERROR: destination is not writable: ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}" >&2
+              echo "[deploy] Please fix permissions on the server, e.g.:" >&2
+              echo "  sudo chown -R ${DEPLOY_USER}:${DEPLOY_USER} '${DEPLOY_PATH}'" >&2
+              echo "  sudo find '${DEPLOY_PATH}' -type d -exec chmod u+rwx {} \;" >&2
+              echo "  sudo find '${DEPLOY_PATH}' -type f -exec chmod u+rw {} \;" >&2
+              echo "[deploy] current dir info:" >&2
+              sshpass -p "${DEPLOY_PASSWORD}" ssh -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" "ls -ld '${DEPLOY_PATH}' || true" >&2
+              exit 1
+            }
+
+          sshpass -p "${DEPLOY_PASSWORD}" rsync -az --delete --mkpath -e "ssh -p ${DEPLOY_PORT}" "${DIST_DIR}/" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
 
