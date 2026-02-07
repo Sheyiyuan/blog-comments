@@ -6,7 +6,6 @@
 这是一个使用 Astro + Tailwind CSS 构建的静态博客站点。本仓库基于上游主题 [saicaca/fuwari](https://github.com/saicaca/fuwari) 进行二次定制与增强。
 
 ## 特性
-
 - Astro 5 + Tailwind CSS
 - Swup 页面切换与过渡动画
 - 亮/暗色模式、主题色可配置
@@ -261,6 +260,35 @@ $$
 
 Astro 支持部署到 Vercel / Netlify / GitHub Pages / 自建服务器等。部署前请先修改 `astro.config.mjs` 中的 `site` / `base`。
 
+### GitHub Actions（本仓库自带，可选）
+
+本仓库提供了 GitHub Actions 工作流：`.github/workflows/deploy.yml`。
+
+- 触发：推送到 `main` 分支
+- 构建：分别输出 `dist-cn` / `dist-com`，并生成 Pagefind 索引
+- 部署：
+    - Cloudflare Pages（`dist-com`）
+    - 服务器 rsync 增量推送（`dist-cn`）
+
+需要在 GitHub 仓库设置中配置以下 Secrets（Actions → Secrets and variables → Actions）：
+
+- `CLOUDFLARE_API_TOKEN`：Cloudflare API Token（需有 Pages Deploy 权限）
+- `CLOUDFLARE_ACCOUNT_ID`：Cloudflare Account ID
+- `CF_PAGES_PROJECT`：Cloudflare Pages 项目名
+
+服务器 rsync 增量部署需额外配置以下 Secrets：
+
+- `DEPLOY_HOST`：服务器地址（域名或 IP）
+- `DEPLOY_USER`：SSH 用户名
+- `DEPLOY_PASSWORD`：SSH 密码（GitHub Actions 中通过 sshpass 使用）
+- `DEPLOY_PATH`：服务器目标目录（例如 `/home/blog/web`）
+- `DEPLOY_PORT`：SSH 端口（可选，默认 22）
+
+可选说明：
+
+- 若不需要 rsync 部署，可删除工作流中的 `Deploy to server (rsync)` 这一步。
+- 若仅想保留 Cloudflare 部署，可移除 `Build (CN)` 这一步。
+
 ### Gitea Actions（本仓库自带，可选）
 
 本仓库提供了一个 Gitea Actions 工作流：`.gitea/workflows/deploy.yml`。
@@ -275,4 +303,11 @@ Astro 支持部署到 Vercel / Netlify / GitHub Pages / 自建服务器等。部
 
 ## 许可
 
-上游 Fuwari 使用 MIT License。本仓库如需对外发布/开源，建议补充 `LICENSE` 文件，并遵循上游许可与署名要求。
+本仓库采用“代码许可 + 内容许可”双许可：
+
+- **代码（主题/站点实现）**：MIT License，见 [LICENSE](./LICENSE)
+    - 基于上游主题 Fuwari（MIT License）进行二次定制，使用/再分发时请保留许可与署名。
+- **内容（文章/随笔/图片等）**：CC BY-NC-SA 4.0，见 [LICENSE-CONTENT](./LICENSE-CONTENT)
+    - 转载/改编需保留署名，并附上原文链接（源站 URL）或本仓库链接；不得用于商业用途；改编需同许可共享。
+
+注：仓库中可能包含第三方依赖与资源文件，其许可与权利声明以原作者/原项目为准。

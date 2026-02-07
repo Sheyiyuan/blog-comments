@@ -1,0 +1,27 @@
+内容许可（Content License）
+
+除非另有说明，本仓库中的原创文章、随笔与图片等内容（主要位于 src/content/ 及其子目录）采用以下许可协议：
+
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+你可以：
+- 转载、复制、传播
+- 在非商业目的下改编、演绎
+
+但必须同时满足：
+- 署名：保留作者署名“Sheyiyuan”
+- 链接：附上原文链接（源站 URL）或本仓库链接（GitHub 仓库地址）
+- 非商业：不得用于商业目的
+- 相同方式共享：若改编/再创作，需以相同许可（CC BY-NC-SA 4.0）发布
+
+例外：
+- 第三方引用内容（如转载文章/图片/代码片段等）以其原许可或权利声明为准。
+
+第三方资源（图片 / 字体 / 图标等）说明：
+
+- 依赖与运行时资源：本项目通过 npm 依赖引入的第三方库、字体与图标资源（位于 node_modules/）不适用本文件的内容许可，其授权条款以各依赖包自身的 LICENSE / NOTICE 为准。
+	- 字体相关依赖示例：@fontsource-variable/jetbrains-mono、@fontsource/roboto
+	- 图标相关依赖示例：@iconify/*、@iconify-json/*（不同图标集许可可能不同）
+- 仓库内静态资源：public/、src/assets/ 等目录中的图片、图标、SVG、字体等资源文件（例如 public/icons/、public/images/），若包含来自上游主题或其他第三方的素材，其版权归原作者所有，使用与分发需遵循原许可或原出处的要求。
+- 如你认为本仓库中的任何资源侵犯了你的权利，请联系我以便及时更正或移除。
