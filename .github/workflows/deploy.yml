@@ -1,0 +1,123 @@
+name: Build and Deploy (Linux)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST || '' }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER || '' }}
+      DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD || '' }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm (npm mirror)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          npm config set registry https://registry.npmmirror.com
+          npm i -g pnpm@9
+          pnpm -v
+
+          # Keep pnpm store inside workspace for easy caching
+          pnpm config set store-dir .pnpm-store
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: .pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Cache Astro/Vite build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .astro
+            node_modules/.vite
+          key: ${{ runner.os }}-astro-vite-${{ hashFiles('pnpm-lock.yaml', 'astro.config.mjs', 'src/**') }}
+          restore-keys: |
+            ${{ runner.os }}-astro-vite-${{ hashFiles('pnpm-lock.yaml') }}-
+            ${{ runner.os }}-astro-vite-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (CN)
+        env:
+          ASTRO_OUT_DIR: dist-cn
+          PUBLIC_SHOW_ICP: "true"
+        run: |
+          set -euo pipefail
+          pnpm astro build
+          pnpm exec pagefind --site dist-cn
+
+      - name: Build (CF)
+        env:
+          ASTRO_OUT_DIR: dist-com
+          PUBLIC_SHOW_ICP: "false"
+        run: |
+          set -euo pipefail
+          pnpm astro build
+          pnpm exec pagefind --site dist-com
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+          DIST_DIR: dist-com
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ] || [ -z "${CF_PAGES_PROJECT:-}" ]; then
+            echo "Missing Cloudflare Pages secrets. Please set CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, CF_PAGES_PROJECT." >&2
+            exit 1
+          fi
+          if [ ! -d "${DIST_DIR}" ]; then
+            echo "${DIST_DIR} not found; build may have failed" >&2
+            exit 1
+          fi
+          pnpm dlx wrangler@3 pages deploy "${DIST_DIR}" --project-name "${CF_PAGES_PROJECT}" --branch "${GITHUB_REF_NAME:-main}"
+
+      - name: Deploy to server (rsync)
+        if: ${{ env.DEPLOY_HOST != '' && env.DEPLOY_USER != '' && env.DEPLOY_PASSWORD != '' && env.DEPLOY_PATH != '' }}
+        env:
+          DIST_DIR: dist-cn
+        run: |
+          set -euo pipefail
+
+          if [ ! -d "${DIST_DIR}" ]; then
+            echo "${DIST_DIR} not found; build may have failed" >&2
+            exit 1
+          fi
+
+          sudo apt-get update
+          sudo apt-get install -y rsync sshpass
+
+          mkdir -p ~/.ssh
+
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          ssh-keyscan -p "${DEPLOY_PORT}" "${DEPLOY_HOST}" >> ~/.ssh/known_hosts
+
+          sshpass -p "${DEPLOY_PASSWORD}" rsync -az --delete -e "ssh -p ${DEPLOY_PORT}" "${DIST_DIR}/" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
+
