@@ -176,7 +176,7 @@ function buildPostFrontmatter({ title, published, category }) {
 		`image: ""\n` +
 		"tags: []\n" +
 		`category: ${category ? JSON.stringify(category) : '""'}\n` +
-		"draft: false\n" +
+		"draft: true\n" +
 		"pin: 0\n" +
 		`lang: ""\n` +
 		"comments: true\n" +
@@ -193,7 +193,7 @@ function buildEssayFrontmatter({ title, published }) {
 		`tags: ["随笔"]\n` +
 		"pin: 0\n" +
 		"comments: true\n" +
-		"draft: false\n" +
+		"draft: true\n" +
 		`slugSeed: ""\n` +
 		"---\n\n"
 	);
@@ -207,7 +207,7 @@ function validateDateOrDateTime(value) {
 
 async function main() {
 	const args = process.argv.slice(2);
-		const dryRun = args.includes("--dry-run");
+	const dryRun = args.includes("--dry-run");
 	if (args.includes("-h") || args.includes("--help")) {
 		printHelp();
 		return;
@@ -298,15 +298,15 @@ async function main() {
 		console.log(`  时间: ${published}`);
 		console.log(`  路径: ${path.relative(ROOT, targetPath)}`);
 
-			if (!dryRun) {
-				const confirm = await promptSelect(rl, "确认创建？", ["是", "否"], 0);
-				if (confirm !== "是") {
-					console.log("已取消。\n");
-					return;
-				}
+		if (!dryRun) {
+			const confirm = await promptSelect(rl, "确认创建？", ["是", "否"], 0);
+			if (confirm !== "是") {
+				console.log("已取消。\n");
+				return;
 			}
+		}
 
-			if (!dryRun && fs.existsSync(targetPath)) {
+		if (!dryRun && fs.existsSync(targetPath)) {
 			console.error(`目标文件已存在：${path.relative(ROOT, targetPath)}`);
 			process.exitCode = 1;
 			return;
@@ -316,17 +316,17 @@ async function main() {
 			? buildPostFrontmatter({ title, published, category })
 			: buildEssayFrontmatter({ title, published });
 
-			if (dryRun) {
-				printDivider();
-				console.log("DRY RUN（不落盘）");
-				console.log(`将创建：${path.relative(ROOT, targetPath)}`);
-				console.log(frontmatter);
-				return;
-			}
+		if (dryRun) {
+			printDivider();
+			console.log("DRY RUN（不落盘）");
+			console.log(`将创建：${path.relative(ROOT, targetPath)}`);
+			console.log(frontmatter);
+			return;
+		}
 
-			ensureDir(path.dirname(targetPath));
-			fs.writeFileSync(targetPath, frontmatter, "utf8");
-			console.log(`创建成功：${path.relative(ROOT, targetPath)}`);
+		ensureDir(path.dirname(targetPath));
+		fs.writeFileSync(targetPath, frontmatter, "utf8");
+		console.log(`创建成功：${path.relative(ROOT, targetPath)}`);
 	} finally {
 		rl.close();
 	}
