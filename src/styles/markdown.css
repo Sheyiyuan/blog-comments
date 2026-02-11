@@ -1,4 +1,11 @@
 .custom-md {
+    &.markdown-content {
+        p, li {
+            text-align: justify;
+            text-justify: inter-ideograph;
+        }
+    }
+
     h1 {
         @apply text-3xl;
     }
