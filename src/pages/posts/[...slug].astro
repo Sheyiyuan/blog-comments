@@ -4,14 +4,14 @@ import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import Sponsor from "@components/misc/Sponsor.astro";
 import I18nKey from "@i18n/i18nKey";
-import { i18n, getTranslation } from "@i18n/translation";
+import { getTranslation, i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import { giscusConfig, licenseConfig, sponsorConfig } from "src/config";
-import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import Giscus from "../../components/misc/Giscus.astro";
+import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateTimeToISOWithOffset } from "../../utils/date-utils";
@@ -43,10 +43,11 @@ const jsonLd = {
 		name: profileConfig.name,
 		url: Astro.site,
 	},
-    datePublished: formatDateTimeToISOWithOffset(entry.data.published),
-    ...(entry.data.updated && entry.data.updated.getTime() !== entry.data.published.getTime()
-        ? { dateModified: formatDateTimeToISOWithOffset(entry.data.updated) }
-        : {}),
+	datePublished: formatDateTimeToISOWithOffset(entry.data.published),
+	...(entry.data.updated &&
+	entry.data.updated.getTime() !== entry.data.published.getTime()
+		? { dateModified: formatDateTimeToISOWithOffset(entry.data.updated) }
+		: {}),
 	inLanguage: entry.data.lang
 		? entry.data.lang.replace("_", "-")
 		: siteConfig.lang.replace("_", "-"),
@@ -56,6 +57,7 @@ const jsonLd = {
 const commentsGloballyEnabled = giscusConfig.enable;
 const commentsClosedForEntry = entry.data.comments === false;
 const sponsorEnabled = entry.data.sponsor !== false && sponsorConfig.enable;
+const firstLineIndent = entry.data.firstLineIndent || "0em";
 ---
 <MainGridLayout banner={entry.data.image} bannerBasePath={path.join("content/posts/", getDir(entry.id))} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
@@ -114,7 +116,7 @@ const sponsorEnabled = entry.data.sponsor !== false && sponsorConfig.enable;
             }
 
 
-            <Markdown class="mb-6 markdown-content onload-animation">
+			<Markdown class="mb-6 markdown-content onload-animation" style={`--md-first-line-indent: ${firstLineIndent};`}>
                 <Content />
             </Markdown>
 

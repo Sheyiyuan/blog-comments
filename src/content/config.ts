@@ -18,6 +18,7 @@ const postsCollection = defineCollection({
 		draft: z.boolean().optional().default(false),
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),
+		firstLineIndent: z.string().optional().default("0em"),
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
 		lang: z.string().optional().default(""),

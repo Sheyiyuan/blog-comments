@@ -1,8 +1,14 @@
 .custom-md {
     &.markdown-content {
+        --md-first-line-indent: 0em;
+
         p, li {
             text-align: justify;
             text-justify: inter-ideograph;
+        }
+
+        > p {
+            text-indent: var(--md-first-line-indent);
         }
     }
 

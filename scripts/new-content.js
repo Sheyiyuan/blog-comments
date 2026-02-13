@@ -174,6 +174,7 @@ function buildPostFrontmatter({ title, published, category }) {
 		`published: ${published}\n` +
 		`description: ""\n` +
 		`image: ""\n` +
+		`firstLineIndent: "0em"\n` +
 		"tags: []\n" +
 		`category: ${category ? JSON.stringify(category) : '""'}\n` +
 		"draft: true\n" +
