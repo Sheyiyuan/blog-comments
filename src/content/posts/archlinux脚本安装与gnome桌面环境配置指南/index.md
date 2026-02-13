@@ -1,5 +1,5 @@
 ---
-title: "ArchLinux脚本安装与gnome桌面环境配置指南"
+title: "Arch Linux 脚本安装与 GNOME 桌面环境配置指南"
 
 published: 2025-09-30
 category: "技术分享"
@@ -20,17 +20,17 @@ draft: true
 
 - **第一次安装：** 主包第一次安装的时候跟着网上的视频使用 `archinstall`脚本安装，大问题没有但是有不少小问题，不过凑合也能用。但是由于主包没有看arch wiki，把引导分区放在了windows磁盘，windows更新后引导项被篡改导致开不了机，并且那个时候不懂怎么抢救，索性重装了。
 
-- **第二次安装：** 主包这次跟着[archliunx简明指南](https://arch.icekylin.online/guide/)和[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)两篇文档并参考[arch wiki](https://wiki.archlinux.org/)手动安装了一遍，但是由于铸币主包没有记录好自己都安装了些什么，导致各种掉引导、掉驱动、掉声音、掉网络之类的问题，始终解决不掉，主包于是决定这次重装把自己的所有安装过程全部记录下来。如果成功了可以给其他想入坑arch的萌新参考，失败也方便复盘查找原因。
+- **第二次安装：** 主包这次跟着[archlinux 简明指南](https://arch.icekylin.online/guide/)和[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)两篇文档并参考[Arch Wiki](https://wiki.archlinux.org/)手动安装了一遍，但是由于主包当时没有记录好自己都安装了些什么，导致各种掉引导、掉驱动、掉声音、掉网络之类的问题，始终解决不掉。主包于是决定这次重装把自己的所有安装过程全部记录下来：如果成功了可以给其他想入坑 Arch 的萌新参考，失败也方便复盘查找原因。
 
-本文的主干部分源自[archliunx简明指南](https://arch.icekylin.online/guide/)和[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)两篇文档，并补充主包自己安装过程中与指南不一样的部分。由于主包使用实体机安装，拍照效果不好，在安装部分不会有任何我自己的图片，如果有也是从[archliunx简明指南](https://arch.icekylin.online/guide/)上拿过来的（后期在虚拟机上重装一遍后补上也说不定（））。
+本文的主干部分源自[archlinux 简明指南](https://arch.icekylin.online/guide/)和[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)两篇文档，并补充主包自己安装过程中与指南不一样的部分。由于主包使用实体机安装，拍照效果不好，在安装部分不会有任何我自己的图片，如果有也是从[archlinux 简明指南](https://arch.icekylin.online/guide/)上拿过来的（后期在虚拟机上重装一遍后补上也说不定（））。
 
 ## 前期准备
 
 ### 解决双系统导致的时间错乱
 
-安装双系统的机器在Linux使用一段时间后切换回windows就会出现时间错乱的情况，这是因为两个系统对于硬件时钟的处理方式不同（[CSDN博客：双系统时间不一致解决方案](https://blog.csdn.net/zhouchen1998/article/details/108893660)）
+安装双系统的机器在 Linux 使用一段时间后切换回 Windows 就会出现时间错乱的情况，这是因为两个系统对硬件时钟的处理方式不同（[CSDN博客：双系统时间不一致解决方案](https://blog.csdn.net/zhouchen1998/article/details/108893660)）。
 
-在Windows中以管理员身份运行Powershell，输入下面的命令：
+在 Windows 中以管理员身份运行 PowerShell，输入下面的命令：
 
 ```
 Reg add HKLM\SYSTEM\CurrentControlSet\Control\TimeZoneInformation /v RealTimeIsUniversal /t REG_DWORD /d 1
@@ -50,7 +50,7 @@ Ventoy的具体使用方法参考官网教程或者网上其他文档，没有�
 
 ### vi 基础操作说明
 
-vi是命令行中使用的一种文本编辑器，还有vim，neovim等编辑器的操作也和vi相同。vi是大部分Linux系统安装过程中或多或少会用到的编辑器（一般默认为vi，不过推荐安装vim或neovim代替vi），这里简单介绍一些常用的操作，详细的文档读者可以自行查找。
+vi 是命令行中使用的一种文本编辑器，vim、neovim 等编辑器的操作也和 vi 类似。vi 是大部分 Linux 系统安装过程中或多或少会用到的编辑器（一般默认为 vi，不过推荐安装 vim 或 neovim 代替 vi），这里简单介绍一些常用的操作，详细文档读者可以自行查找。
 
 `i` 键在当前光标进入编辑模式，注意编辑模式中所有指令失效变成正常输入
 
@@ -88,13 +88,14 @@ vi是命令行中使用的一种文本编辑器，还有vim，neovim等编辑器
 
 ### 1.连接网络
 
-使用 `iwctl`工具连接无线网络，在命令行输入 `iwctl`后回车进入交互式命令行。需要注意这里只能使用英文名wifi，使用中文会乱码导致无法连接。
+使用 `iwctl` 工具连接无线网络，在命令行输入 `iwctl` 后回车进入交互式命令行。需要注意这里只建议使用英文名 Wi‑Fi，使用中文可能乱码导致无法连接。
 
 ```
 # 启动交互式命令行
 iwctl
 
-# 获取可用wifi列表
+# （可选）先扫描，再获取可用 Wi-Fi 列表 
+station wlan0 scan
 station wlan0 get-networks
 
 # 连接网络
@@ -105,18 +106,15 @@ station wlan0 connect [wifi名称]
 exit
 ```
 
-### 可选：更新archinstall
+### 可选：更新 archinstall
 
-Arch会在每个月第一天发布最新的安装镜像，如果你的镜像不是最新的镜像，建议按照以下方式更新 `archinstall`脚本，避免一些奇奇怪怪的错误。
+Arch 会在每个月第一天发布最新的安装镜像。如果你的镜像不是最新的镜像，建议在 Live 环境里更新 `archinstall`，避免一些奇奇怪怪的错误。
 
 ```
-# 更新数据库
-pacman -Sy
-#pacman是包管理器，管理软件的安装、卸载之类的-S代表安装;-Sy代表同步数据库
-# 更新密钥
-pacman -S archlinux-keyring
-# 更新archinstall脚本
-pacman -S archinstall
+# 更新数据库（Live 环境临时用没问题；装好系统后尽量避免只用 -Sy 造成部分升级）
+pacman -Syy
+# 更新密钥与 archinstall
+pacman -S --needed archlinux-keyring archinstall
 ```
 
 ### 2.使用archinstall安装
@@ -131,25 +129,23 @@ archinstall
 
 #### Mirrors and repositories 设置镜像源
 
-1. 选择第一项 `Select regions`设置自己的所在地。加载会比较慢，耐心等一等。
-
-3. 选择第三项 `optional repositories`回车激活 `multilib`。这是32位程序的源。
+1. 选择第一项 `Select regions` 设置自己的所在地。加载会比较慢，耐心等一等。
+2. 选择第三项 `optional repositories`，回车激活 `multilib`（32 位程序的源）。
 
 #### Disk configuration 磁盘分区
 
-选择partitioning进入磁盘分区
+选择 partitioning 进入磁盘分区。
 
-- 情况一：整块空闲硬盘安装arch
+- 情况一：整块空闲硬盘安装 Arch
 
-1. 选择第一项进行自动分区 > 要使用的硬盘 > btrfs（这是文件系统） > yes（这里是问你是否使用推荐子卷布局） > ues compression（透明压缩）
+1. 选择第一项进行自动分区 > 要使用的硬盘 > btrfs（文件系统） > yes（是否使用推荐子卷布局） > use compression（透明压缩）
+2. 选择 btrfs snapshots（快照软件） > Snapper，选择 back 返回。
 
-3. 选择btrfs snapshots（这是快照软件） > Snapper 选择back返回
+- 情况二：和其他系统共享同一块硬盘：选择第二项手动分区 > 要使用的硬盘
 
-- 情况二：和其他系统共享同一块硬盘 选择第二项手动分区 > 要使用的硬盘
+1. 创建启动分区：选中要使用的空闲空间 > Size（分区大小）1024MB > Filesystem（文件系统）FAT32 > Mountpoint（挂载点）/boot
 
-1. 创建启动分区 选中要使用的空闲空间 > Size（分区大小）1024MB > Filesystem（文件系统）FAT32 > Mountpoint（挂载点）/boot
-
-3. 创建swap分区 **如果你不需要睡眠功能的话跳过这一步**。睡眠指的是把系统当前状态写入硬盘，然后电脑完全断电，下一次开机恢复到睡眠前的状态。 swap交换空间与虚拟内存和睡眠有关。建议设置zram作为日常swap，**仅在需要睡眠的时候设置硬盘swap**。有swap分区或者swap文件两种方式，前者配置更简单，后者配置稍复杂，但是更加灵活。
+2. 创建 swap 分区（可选）：**如果你不需要“休眠到硬盘（hibernate）”的话可以跳过这一步**。休眠指把系统当前状态写入硬盘，然后电脑完全断电，下一次开机恢复到休眠前的状态。swap 交换空间与虚拟内存和休眠有关。建议设置 zram 作为日常 swap，**仅在需要休眠时再配置硬盘 swap**。swap 有分区或文件两种方式：分区更简单，文件更灵活。
 
 | 内存 | 不需要睡眠 | 需要睡眠 | 不建议超过 |  |
 | --- | --- | --- | --- | --- |
@@ -178,7 +174,7 @@ archinstall
  Size参考上面的表 > linux-swap
 ```
 
-3. 创建root分区 Size部分直接回车分配全部空间 > btrfs > 选中刚刚创建的btrfs，回车。选择Mark/Unmark as compressed设置透明压缩；再选择Set subvolumes（创建子卷）> Add subvolume 至少需要创建root子卷和home子卷，Subvolume name设置成 @，对应Subvolume mountpoint是 / ； @home 对应 /home confirm and exit > confirm and exit > back 退出出硬盘分区
+3. 创建 root 分区：Size 部分直接回车分配全部空间 > btrfs > 选中刚刚创建的 btrfs 回车。选择 Mark/Unmark as compressed 设置透明压缩；再选择 Set subvolumes（创建子卷）> Add subvolume，至少创建 root 子卷和 home 子卷：Subvolume name 设为 `@`，对应 mountpoint 为 `/`；`@home` 对应 `/home`。最后 confirm and exit > confirm and exit > back 退出硬盘分区。
 
 #### Swap（zram交换空间）
 
@@ -215,6 +211,7 @@ archinstall
 - Bluetooth > Yes 自动安装蓝牙
 
 - Audio > pipewire 自动安装音视频服务 pipewire是新技术，兼容旧的pulseautio等服务，选pipewire就行了。
+- Audio > pipewire 自动安装音视频服务。pipewire 是新方案，兼容旧的 pulseaudio 等服务，选 pipewire 就行。
 
 #### Kernel（系统内核）
 
@@ -230,7 +227,7 @@ tab键选择。要续航选linux，要性能选linux-zen，其他选项有兴趣
 
 必须安装：vim（任意文本编辑器）、os-prober（双系统需要）
 
-如果你安装了其他内核，比如我使用linux-zen，可以把头文件linux-zen-header勾选上。
+如果你安装了其他内核，比如我使用 linux-zen，可以把头文件 `linux-zen-headers` 勾选上。
 
 可选安装中文字体：wqy-zenhei（文泉驿字体）、noto-fonts（谷歌开源字体）、noto-fonts-emoji（表情）
 
@@ -248,17 +245,16 @@ tab键选择。要续航选linux，要性能选linux-zen，其他选项有兴趣
 
 ### 3.双系统
 
-安装完成后配置windows和linux的双系统。
+安装完成后配置 Windows 和 Linux 的双系统。
 
-1. 选择exit archinstall，退出archinstall
-
-3. 挂载windwos的启动分区
+1. 选择 exit archinstall，退出 archinstall。
+2. 挂载 Windows 的 EFI 启动分区（ESP，FAT32）。
 
 ```
    lsblk -pf #列出当前分区情况
 ```
 
-找到ntfs上面的fat分区，通常是nvme1n1p1或者0n1p1。可以用fdisk -l （小写字母l）查看更详细的分区信息。找到后挂载到/mnt下的任意一个目录，比如/mnt/winboot。
+找到 Windows 所在磁盘上的 EFI System Partition（FAT32，常见类似 `nvme0n1p1`/`nvme1n1p1`）。可以用 `fdisk -l`（小写字母 l）查看更详细的分区信息。找到后挂载到 `/mnt` 下的任意一个目录，比如 `/mnt/winboot`。
 
 ```
    mount /dev/nvme1n1p1 /mnt/winboot 
@@ -270,53 +266,51 @@ tab键选择。要续航选linux，要性能选linux-zen，其他选项有兴趣
    arch-chroot /mnt #进入刚刚安装的系统
 ```
 
-4. 编辑grub源文件启用os-prober
+4. 编辑 grub 配置启用 os-prober
 
 ```
    vim /etc/default/grub 
 
    i键进入编辑模式
 
-   取消最后一行GRUB_DISABLE_OS_PROBER=false的注释
+  确保存在并设置：GRUB_DISABLE_OS_PROBER=false（取消注释或新增一行）
 
    esc退出编辑模式
 
    :wq 冒号小写wq保存并退出
 ```
 
-5. 禁用watchdog 在GRUB\_CMDLNE\_LINUX\_DEFAULT=""里面添加参数
+5. 禁用 watchdog：在 `GRUB_CMDLINE_LINUX_DEFAULT=""` 里添加参数
 
 ```
    nowatchdog modprobe.blacklist=sp5100_tco
 ```
 
-intelcpu用户把sp5100\_tco换成iTCO\_wdt
+Intel CPU 用户把 `sp5100_tco` 换成 `iTCO_wdt`。
 
-6. GRUB\_DEFAULT=0改成saved，再取消GRUB\_SAVEDEFAULT=true的注释。这一步是记住开机的选择。
+6. 将 `GRUB_DEFAULT=0` 改成 `GRUB_DEFAULT=saved`，再取消 `GRUB_SAVEDEFAULT=true` 的注释。这一步用于记住上一次开机选择。
 
-8. 生成grub的配置文件
+7. 生成 grub 的配置文件
 
 ```
    grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-8. exit 退出chroot
-
-10. reboot 重启
-
-12. 更改bios启动项
+8. exit 退出 chroot
+9. reboot 重启
+10. 如有需要，进入 BIOS/UEFI 调整启动项顺序。
 
 ## 安装桌面环境
 
 ### 网络连接
 
-设置开机自启并立即启动 `networkmanager` 服务：
+设置开机自启并立即启动 `NetworkManager` 服务：
 
 ```
 systemctl enable --now NetworkManager
 ```
 
-若为无线连接，则需要在启动 `networkmanager` 后使用 `nmtui` 连接网络：
+若为无线连接，则需要在启动 `NetworkManager` 后使用 `nmtui` 连接网络：
 
 ```
 nmtui
@@ -352,7 +346,13 @@ linux替换为自己的内核，比如zen内核是linux-zen-headers
 sudo pacman -S mesa lib32-mesa vulkan-intel lib32-vulkan-intel
 ```
 
-- Nvidia sudo pacman -S nvidia-dkms nvidia-settings nvidia-utils lib32-nvidia-utils 显卡驱动的选择在[CodeNames · freedesktop.org](https://nouveau.freedesktop.org/CodeNames.html)这个页面搜索自己的显卡，看看对应的family是什么。然后在[NVIDIA - ArchWiki](https://wiki.archlinux.org/title/NVIDIA)这个页面查找对应的显卡驱动。nv160family往后的显卡用nvidia-open，nv110到190如果nvidia-open表现不佳的话可以使用nvidia。nvidia-open是内核模块开源的驱动，不是完全的开源驱动。非stable内核要安装的驱动不一样，具体看wiki，例如zen内核装nvidia-open-dkms。
+- Nvidia
+
+``` 
+sudo pacman -S --needed nvidia-dkms nvidia-settings nvidia-utils lib32-nvidia-utils
+```
+
+显卡驱动的选择：先在[CodeNames · freedesktop.org](https://nouveau.freedesktop.org/CodeNames.html)搜索自己的显卡，确认对应的 family；然后在[NVIDIA - ArchWiki](https://wiki.archlinux.org/title/NVIDIA)查对应驱动。NV160 family 往后的显卡通常可用 `nvidia-open`；NV110~NV190 如果 `nvidia-open` 表现不佳可以使用 `nvidia`。注意：非 stable 内核要安装的驱动包可能不同，具体看 wiki，例如 zen 内核常见是 `nvidia-open-dkms`。
 
 - AMD A卡不需要自己安装驱动，检查一下vulkan驱动就行
 
@@ -381,13 +381,15 @@ sudo pacman -S mesa lib32-mesa vulkan-intel lib32-vulkan-intel
 #### 安装gnome最小环境
 
 ```
-pacman -S gnome-desktop gdm ghostty gnome-control-center gnome-software flatpak
+sudo pacman -S --needed gnome-shell gdm gnome-control-center gnome-software flatpak
 ```
 
-jack选择pipewire-jack
+终端模拟器可按需安装（例如 `ghostty`/`gnome-console` 等）。
+
+如果在安装音频相关组件时提示选择 JACK provider，一般选择 `pipewire-jack`。
 
 ```
-gnome-desktop 最小化安装gnome
+gnome-shell GNOME 桌面最小核心
 gdm 是显示管理器(gnome display manager)
 ghostty 是一个可高度自定义的终端模拟器（terminal emulator)
 gnome-control-center 是设置中心
@@ -469,10 +471,10 @@ aur上面很多包没有代理是无法下载的，所以一定要先配置好�
   Server = https://repo.huaweicloud.com/archlinuxcn/$arch 
 ```
 
-同步数据库并安装archlinuxcn密钥
+同步数据库并安装 archlinuxcn 密钥
 
 ```
-  sudo pacman -Sy archlinuxcn-keyring 
+  sudo pacman -Syu --needed archlinuxcn-keyring
 ```
 
 安装代理软件clash-verge-rev和aur助手yay
@@ -532,7 +534,7 @@ sudo vim /etc/environment
 ```
 
 ```
-XIM="fcitx" #解决wechat用不了输入法的问题
+XIM=fcitx # 解决 WeChat 可能用不了输入法的问题
 GTK_IM_MODULE=fcitx
 QT_IM_MODULE=fcitx
 XMODIFIERS=@im=fcitx
@@ -591,7 +593,11 @@ XDG_CURRENT_DESKTOP=GNOME #解决某些软件里面输入法吞字的问题
   decibels 是可以显示波形的音频播放器，这只是个音频播放器，不是音乐播放器
 ```
 
-- 从aur安装常用软件 [WPS Office - Arch Linux 中文维基](https://wiki.archlinuxcn.org/wiki/WPS_Office)yay -S linuxqq-appimage wechat-appimage wps-office-cn wps-office-mui-zh-cn obsidian-appimage albert
+- 从 AUR 安装常用软件（示例）
+
+```bash
+yay -S linuxqq-appimage wechat-appimage wps-office-cn wps-office-mui-zh-cn obsidian-appimage albert
+```
 
 ```
   linuxqq linux版qq
@@ -601,8 +607,8 @@ XDG_CURRENT_DESKTOP=GNOME #解决某些软件里面输入法吞字的问题
   obsidian-appimage 是markdown编辑器
 ```
 
-- 关于wps打开文件的问题  
-    wps在linux上会出现设置打开方式后无法通过双击打开文档文件的问题，要解决这个问题xu yc在设置里切换窗口管理模式, 改成多组件模式,就可以双击打开文件了，这个时候再切回原来的模式也不会影响文件打开（Linux，很神奇吧）
+- 关于 WPS 打开文件的问题  
+  WPS 在 Linux 上可能出现“设置打开方式后仍无法通过双击打开文档”的问题。一般在设置里切换窗口管理模式，改成“多组件模式”后即可双击打开；之后再切回原来的模式通常也不影响文件打开。（Linux，很神奇吧）
 
 - 关于字体 从网上搜索常用办公字体，下载解压后存放到 `~/.local/share/fonts`里面（在这个目录下新建文件夹整理字体文件）。放进去之后刷新字体缓存 。 `fc-cache --force`
 
@@ -695,9 +701,9 @@ flatpak install flathub com.mattjakeman.ExtensionManager
 
 - tiling shell 窗口平铺，tilingshell是用布局平铺,另一个叫forge是hyprland那种自动平铺但是很卡。推荐用tilingshell，记得自定义快捷键，我快捷键是super+w/a/s/d对应上下左右移动窗口，Super+Alt+w/a/s/d对应上下左右扩展窗口，super+Z取消平铺，super+C把窗口移动到屏幕中心
 
-- tiling assistant 这个扩展提供最基础的四角平铺和上下左右半屏平铺功能。设置里gaps和tiling shell调成一样的，禁用keybinds里general一项的第1/2/4项，仅保留resote window size。
+- tiling assistant 这个扩展提供最基础的四角平铺和上下左右半屏平铺功能。设置里 gaps 和 tiling shell 调成一样的，禁用 keybinds 里 general 一项的第 1/2/4 项，仅保留 restore window size。
 
-- 可选：forge 如果你更喜欢窗口管理器那样无预设布局的自动平铺功能，可以安装forge。装了这个就不要装tiling shell和tilling assitant了。我没有深入用过这个扩展，所以设置的部分就自己探索吧。
+- 可选：forge 如果你更喜欢窗口管理器那样无预设布局的自动平铺功能，可以安装 forge。装了这个就不要装 tiling shell 和 tiling assistant 了。我没有深入用过这个扩展，所以设置部分就自己探索吧。
 
 - color picker 获取屏幕上的颜色，对自定义非常有用
 
@@ -811,11 +817,11 @@ sudo pacman -S gnome-tweaks
 
 ##### 显卡切换
 
-更推荐使用switcheroo-control进行管理
+更推荐使用 switcheroo-control 进行管理
 
 ```
-sudo pacman -S switcher-control
-sudo systemctl enable --now switcheroo-conttol
+sudo pacman -S --needed switcheroo-control
+sudo systemctl enable --now switcheroo-control
 ```
 
 这样可以在运行软件时右键选择使用哪个显卡运行
@@ -866,11 +872,10 @@ sudo systemctl enable --now grub-btrfsd
 
 - 滚挂 archlinux是滚动发行版。滚动是英文直译，原词是rolling，指一种推送更新的方式，只要有新版本就会推送，由用户管理更新。对应的另一种更新方式是定期更新一个大版本，例如fedora是六个月一更新，由发行方管理更新。 滚挂，指的是滚动更新的发行版因为更新导致系统异常。这通常是用户操作不当、忽略官方公告等原因导致的。只要学习一下正确的更新方式和快照的使用方法就不用担心滚挂问题。 通常软件更新不用担心。**出现密钥（keyring）、内核、驱动、固件、引导程序之类的更新要留个心眼，先不第一时间更新，等一手社区或者官方消息。** 另一个重点是滚动更新的发行版的软件通常会适配最新的依赖，如果长期不更新可能会无法使用软件。
 
-- 良好的使用习惯 btrfs文件系统已经足够稳定，“不作死就不会死”。使用时遵循以下几点：
+- 良好的使用习惯 btrfs 文件系统已经足够稳定，但仍建议谨慎操作。使用时遵循以下几点：
 
-1. **别第一时间更新，别长时间不更新，密钥单独更新，重要程序更新前创建快照**
-
-3. **明白自己的行为会造成怎样的后果，做不了解的事情前创建快照**
+1. **别第一时间更新，也别长时间不更新；重要程序更新前创建快照；密钥相关更新多留意**
+2. **明白自己的行为会造成怎样的后果；做不了解的事情前创建快照**
 
 ### 进阶美化与个性化配置
 
@@ -937,11 +942,11 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 #### 音乐播放器
 
-由于fucking 网易没有对网易云音乐的Linux版本进行维护，这里我们使用第三方网易云音乐播放器 `netease-cloud-music-gtk`，这是一个用rust构建的轻量第三方网易云播放器，除了不能添加编辑歌单以外，使用体验很好。
+由于网易云音乐的 Linux 官方客户端长期缺乏维护，这里使用第三方播放器 `netease-cloud-music-gtk4`。它是用 Rust 构建的轻量第三方网易云播放器，除了不能添加/编辑歌单以外，使用体验很好。
 
 ```
 # archlinuxcn repo
-sudo pacman -Syu netease-cloud-music-gtk4
+sudo pacman -Syu --needed netease-cloud-music-gtk4
 # AUR
 yay -S netease-cloud-music-gtk4
 ```
@@ -950,7 +955,7 @@ yay -S netease-cloud-music-gtk4
 
 > 为什么不使用 `yesplaymusic`？
 > 
-> yesplaymmusic在使用时经常会出现账号风控的情况，较为不稳定，故这里不做推荐。
+> yesplaymusic 在使用时经常会出现账号风控的情况，较为不稳定，故这里不做推荐。
 
 #### 游戏
 
