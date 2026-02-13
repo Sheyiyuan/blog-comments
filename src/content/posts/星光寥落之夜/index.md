@@ -9,6 +9,7 @@ tags:
   - "明日方舟"
   - "星极（明日方舟）"
 image: "images/1759243177-asutesia.jpg"
+firstLineIndent: "2em"
 ---
 
 _她在夜空的孤岛中重获新生_

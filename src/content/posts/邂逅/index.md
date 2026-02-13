@@ -8,6 +8,7 @@ tags:
   - "叶洛华"
   - "李绫星"
 image: "images/5e615841-e89d-4cea-a55f-537777f9d7e7-e1764902943557.png"
+firstLineIndent: "2em"
 ---
 
 夏末，已是快开学的时候，天气并不显得很热。

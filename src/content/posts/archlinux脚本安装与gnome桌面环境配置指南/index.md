@@ -11,7 +11,7 @@ tags:
   - "美化"
   - "配置"
 image: "images/1759239147-arch-scaled.webp"
-draft: true
+draft: false
 ---
 
 ## 前情提要
@@ -797,8 +797,6 @@ sudo pacman -S power-profiles-daemon
 sudo systemctl enable --now power-profiles-daemon 
 ```
 
-> 不建议使用tlp或者auto-cpufreq，意义不大，这个易用而且足够。如果想折腾的话可以看附录[TLP相关](#TLP相关)。tlp和auto-cpufreq都有对应的gnome扩展，但未经验证，不保证能用。
-
 ##### 实用插件扩展
 
 power tracker 显示电池充放电  
@@ -876,6 +874,7 @@ sudo systemctl enable --now grub-btrfsd
 
 1. **别第一时间更新，也别长时间不更新；重要程序更新前创建快照；密钥相关更新多留意**
 2. **明白自己的行为会造成怎样的后果；做不了解的事情前创建快照**
+3. **定期清理较旧的快照，保持系统整洁，否则可能会导致硬盘整个被快照占满**
 
 ### 进阶美化与个性化配置
 
