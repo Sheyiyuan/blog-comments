@@ -3,12 +3,39 @@ import ArchivePanel from "@components/ArchivePanel.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPostsList } from "../utils/content-utils";
+import { getNoteUrlBySlug, getPostUrlBySlug } from "@utils/url-utils";
+import { getSortedNotesList, getSortedPostsList } from "../utils/content-utils";
 
-const sortedPostsList = await getSortedPostsList();
+const [sortedPostsList, sortedNotesList] = await Promise.all([
+	getSortedPostsList(),
+	getSortedNotesList(),
+]);
+
+const mergedList = [
+	...sortedPostsList.map((item) => ({
+		slug: item.slug,
+		url: getPostUrlBySlug(item.slug),
+		data: item.data,
+	})),
+	...sortedNotesList.map((item) => ({
+		slug: item.slug,
+		url: getNoteUrlBySlug(item.slug),
+		data: item.data,
+	})),
+].sort((a, b) => {
+	const pinA = Number(a.data.pin ?? 0);
+	const pinB = Number(b.data.pin ?? 0);
+	if (pinA !== pinB) return pinB - pinA;
+
+	const dateA = new Date(a.data.published).getTime();
+	const dateB = new Date(b.data.published).getTime();
+	if (dateA !== dateB) return dateB - dateA;
+
+	return a.slug.localeCompare(b.slug);
+});
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+<MainGridLayout title={i18n(I18nKey.archive)} sidebarContentType="all">
+    <ArchivePanel sortedPosts={mergedList} client:only="svelte"></ArchivePanel>
 </MainGridLayout>
 

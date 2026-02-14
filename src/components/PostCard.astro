@@ -10,7 +10,8 @@ import PostMetadata from "./PostMeta.astro";
 
 interface Props {
 	class?: string;
-	entry: CollectionEntry<"posts">;
+	entry: CollectionEntry<"posts"> | CollectionEntry<"notes">;
+	collection?: "posts" | "notes";
 	title: string;
 	url: string;
 	published: Date;
@@ -21,9 +22,11 @@ interface Props {
 	description: string;
 	draft: boolean;
 	style: string;
+	archiveBasePath?: string;
 }
 const {
 	entry,
+	collection = "posts",
 	title,
 	url,
 	published,
@@ -33,6 +36,7 @@ const {
 	image,
 	description,
 	style,
+	archiveBasePath = "/archive/",
 } = Astro.props;
 const className = Astro.props.class;
 
@@ -66,7 +70,7 @@ const isPinned = Number(entry.data.pin ?? 0) > 0;
         </a>
 
         <!-- metadata -->
-        <PostMetadata published={published} updated={updated} tags={tags} category={category} hideTagsForMobile={true} hideUpdateDate={true} class="mb-4"></PostMetadata>
+        <PostMetadata published={published} updated={updated} tags={tags} category={category} hideTagsForMobile={true} hideUpdateDate={true} class="mb-4" archiveBasePath={archiveBasePath}></PostMetadata>
 
         <!-- description -->
         <div class:list={[["transition text-75 mb-3.5 pr-4", {"line-clamp-2 md:line-clamp-1": !description}]]}>
@@ -97,7 +101,7 @@ const isPinned = Number(entry.data.pin ?? 0) > 0;
                   class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-5xl">
             </Icon>
         </div>
-        <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
+        <ImageWrapper src={image} basePath={path.join(`content/${collection}/`, getDir(entry.id))} alt="Cover Image of the Post"
                   class="w-full h-full">
         </ImageWrapper>
     </a>}

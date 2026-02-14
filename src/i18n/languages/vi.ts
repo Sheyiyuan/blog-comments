@@ -4,6 +4,7 @@ import type { Translation } from "../translation";
 export const vi: Translation = {
 	[Key.home]: "Trang chủ",
 	[Key.passage]: "Bài viết",
+	[Key.notes]: "Ghi chú",
 	[Key.essays]: "Tản văn",
 	[Key.about]: "Trang nhan đề",
 	[Key.archive]: "Mục lục",

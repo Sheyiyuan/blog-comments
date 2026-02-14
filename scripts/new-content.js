@@ -8,6 +8,7 @@ import readline from "node:readline/promises";
 
 const ROOT = process.cwd();
 const POSTS_DIR = path.join(ROOT, "src", "content", "posts");
+const NOTES_DIR = path.join(ROOT, "src", "content", "notes");
 const ESSAYS_DIR = path.join(ROOT, "src", "content", "essays");
 
 function formatDate(d) {
@@ -88,8 +89,8 @@ function walkMarkdownFiles(dir) {
 	return result;
 }
 
-function collectExistingPostCategories() {
-	const files = walkMarkdownFiles(POSTS_DIR);
+function collectExistingCategories(baseDir) {
+	const files = walkMarkdownFiles(baseDir);
 	const categories = new Set();
 
 	for (const file of files) {
@@ -112,7 +113,7 @@ function printDivider() {
 
 function printHelp() {
 	console.log(
-		"交互式新建稿件工具\n\n用法:\n  pnpm new\n\n选项:\n  --dry-run   仅输出将创建的路径与 frontmatter（不落盘）\n\n说明:\n  - 交互式选择类型（篇章/随笔）、格式（文件夹/单文件）、标题、（篇章）分类、时间\n  - 默认创建“文件夹模式”：<slug>/index.md\n",
+		"交互式新建稿件工具\n\n用法:\n  pnpm new\n\n选项:\n  --dry-run   仅输出将创建的路径与 frontmatter（不落盘）\n\n说明:\n  - 交互式选择类型（篇章/笔记/随笔）、格式（文件夹/单文件）、标题、（篇章/笔记）分类、时间\n  - 默认创建“文件夹模式”：<slug>/index.md\n",
 	);
 }
 
@@ -214,9 +215,13 @@ async function main() {
 		return;
 	}
 
-	if (!fs.existsSync(POSTS_DIR) || !fs.existsSync(ESSAYS_DIR)) {
+	if (
+		!fs.existsSync(POSTS_DIR) ||
+		!fs.existsSync(NOTES_DIR) ||
+		!fs.existsSync(ESSAYS_DIR)
+	) {
 		console.error(
-			"未找到 src/content/posts 或 src/content/essays，请在项目根目录运行。",
+			"未找到 src/content/posts、src/content/notes 或 src/content/essays，请在项目根目录运行。",
 		);
 		process.exitCode = 1;
 		return;
@@ -232,10 +237,12 @@ async function main() {
 		const typeLabel = await promptSelect(
 			rl,
 			"选择类型",
-			["篇章 (posts)", "随笔 (essays)"],
+			["篇章 (posts)", "笔记 (notes)", "随笔 (essays)"],
 			0,
 		);
 		const isPost = typeLabel.startsWith("篇章");
+		const isNote = typeLabel.startsWith("笔记");
+		const isPostLike = isPost || isNote;
 
 		const structureLabel = await promptSelect(
 			rl,
@@ -258,10 +265,16 @@ async function main() {
 		});
 
 		let category = "";
-		if (isPost) {
-			const existing = collectExistingPostCategories();
+		if (isPostLike) {
+			const categoryBaseDir = isPost ? POSTS_DIR : NOTES_DIR;
+			const existing = collectExistingCategories(categoryBaseDir);
 			const options = ["(不填写)", ...existing, "(新建分类...)"];
-			const picked = await promptSelect(rl, "选择分类（仅篇章）", options, 0);
+			const picked = await promptSelect(
+				rl,
+				"选择分类（仅篇章/笔记）",
+				options,
+				0,
+			);
 			if (picked === "(不填写)") {
 				category = "";
 			} else if (picked === "(新建分类...)") {
@@ -285,7 +298,7 @@ async function main() {
 			published = `${published} ${hour}:${minute}`;
 		}
 
-		const baseDir = isPost ? POSTS_DIR : ESSAYS_DIR;
+		const baseDir = isPost ? POSTS_DIR : isNote ? NOTES_DIR : ESSAYS_DIR;
 		const targetPath = useFolder
 			? path.join(baseDir, slug, "index.md")
 			: path.join(baseDir, `${slug}.md`);
@@ -295,7 +308,7 @@ async function main() {
 		console.log(`  类型: ${typeLabel}`);
 		console.log(`  结构: ${structureLabel}`);
 		console.log(`  标题: ${title}`);
-		if (isPost) console.log(`  分类: ${category || "(不填写)"}`);
+		if (isPostLike) console.log(`  分类: ${category || "(不填写)"}`);
 		console.log(`  时间: ${published}`);
 		console.log(`  路径: ${path.relative(ROOT, targetPath)}`);
 
@@ -313,7 +326,7 @@ async function main() {
 			return;
 		}
 
-		const frontmatter = isPost
+		const frontmatter = isPostLike
 			? buildPostFrontmatter({ title, published, category })
 			: buildEssayFrontmatter({ title, published });
 

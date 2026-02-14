@@ -16,23 +16,30 @@ export function getPostUrlBySlug(slug: string): string {
 	return url(`/posts/${slug}/`);
 }
 
+export function getNoteUrlBySlug(slug: string): string {
+	return url(`/notes/${slug}/`);
+}
+
 export function getEssayUrlByRouteSlug(routeSlug: string): string {
 	return url(`/essays/${routeSlug}/`);
 }
 
-export function getTagUrl(tag: string): string {
-	if (!tag) return url("/archive/");
-	return url(`/archive/?tag=${encodeURIComponent(tag.trim())}`);
+export function getTagUrl(tag: string, basePath = "/archive/"): string {
+	if (!tag) return url(basePath);
+	return url(`${basePath}?tag=${encodeURIComponent(tag.trim())}`);
 }
 
-export function getCategoryUrl(category: string | null): string {
+export function getCategoryUrl(
+	category: string | null,
+	basePath = "/archive/",
+): string {
 	if (
 		!category ||
 		category.trim() === "" ||
 		category.trim().toLowerCase() === i18n(I18nKey.uncategorized).toLowerCase()
 	)
-		return url("/archive/?uncategorized=true");
-	return url(`/archive/?category=${encodeURIComponent(category.trim())}`);
+		return url(`${basePath}?uncategorized=true`);
+	return url(`${basePath}?category=${encodeURIComponent(category.trim())}`);
 }
 
 export function getDir(path: string): string {

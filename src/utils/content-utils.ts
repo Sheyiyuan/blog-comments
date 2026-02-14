@@ -3,6 +3,19 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
+type ContentCollection = "posts" | "notes";
+type ContentScope = ContentCollection | "all";
+
+function resolveCollections(scope: ContentScope): ContentCollection[] {
+	if (scope === "all") return ["posts", "notes"];
+	return [scope];
+}
+
+function resolveListBasePath(contentType: ContentScope): string {
+	if (contentType === "notes") return "/notes/";
+	return "/archive/";
+}
+
 // // Retrieve posts and sort them by publication date
 async function getRawSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
@@ -24,8 +37,42 @@ async function getRawSortedPosts() {
 	return sorted;
 }
 
+async function getRawSortedNotes() {
+	const allNotes = await getCollection("notes", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	});
+
+	const sorted = allNotes.sort((a, b) => {
+		const pinA = Number(a.data.pin ?? 0);
+		const pinB = Number(b.data.pin ?? 0);
+		if (pinA !== pinB) return pinB - pinA;
+
+		const dateA = new Date(a.data.published).getTime();
+		const dateB = new Date(b.data.published).getTime();
+		if (dateA !== dateB) return dateB - dateA;
+
+		return a.slug.localeCompare(b.slug);
+	});
+	return sorted;
+}
+
 export async function getSortedPosts() {
 	const sorted = await getRawSortedPosts();
+
+	for (let i = 1; i < sorted.length; i++) {
+		sorted[i].data.nextSlug = sorted[i - 1].slug;
+		sorted[i].data.nextTitle = sorted[i - 1].data.title;
+	}
+	for (let i = 0; i < sorted.length - 1; i++) {
+		sorted[i].data.prevSlug = sorted[i + 1].slug;
+		sorted[i].data.prevTitle = sorted[i + 1].data.title;
+	}
+
+	return sorted;
+}
+
+export async function getSortedNotes() {
+	const sorted = await getRawSortedNotes();
 
 	for (let i = 1; i < sorted.length; i++) {
 		sorted[i].data.nextSlug = sorted[i - 1].slug;
@@ -53,15 +100,37 @@ export async function getSortedPostsList(): Promise<PostForList[]> {
 
 	return sortedPostsList;
 }
+
+export type NoteForList = {
+	slug: string;
+	data: CollectionEntry<"notes">["data"];
+};
+
+export async function getSortedNotesList(): Promise<NoteForList[]> {
+	const sortedFullNotes = await getRawSortedNotes();
+
+	return sortedFullNotes.map((note) => ({
+		slug: note.slug,
+		data: note.data,
+	}));
+}
 export type Tag = {
 	name: string;
 	count: number;
 };
 
-export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+export async function getTagList(
+	contentType: ContentScope = "posts",
+): Promise<Tag[]> {
+	const collections = resolveCollections(contentType);
+	const grouped = await Promise.all(
+		collections.map((collection) =>
+			getCollection(collection, ({ data }) => {
+				return import.meta.env.PROD ? data.draft !== true : true;
+			}),
+		),
+	);
+	const allBlogPosts = grouped.flat();
 
 	const countMap: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { tags: string[] } }) => {
@@ -92,10 +161,18 @@ export type Category = {
 	url: string;
 };
 
-export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+export async function getCategoryList(
+	contentType: ContentScope = "posts",
+): Promise<Category[]> {
+	const collections = resolveCollections(contentType);
+	const grouped = await Promise.all(
+		collections.map((collection) =>
+			getCollection(collection, ({ data }) => {
+				return import.meta.env.PROD ? data.draft !== true : true;
+			}),
+		),
+	);
+	const allBlogPosts = grouped.flat();
 	const count: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
 		if (!post.data.category) {
@@ -117,11 +194,12 @@ export async function getCategoryList(): Promise<Category[]> {
 	});
 
 	const ret: Category[] = [];
+	const basePath = resolveListBasePath(contentType);
 	for (const c of lst) {
 		ret.push({
 			name: c,
 			count: count[c],
-			url: getCategoryUrl(c),
+			url: getCategoryUrl(c, basePath),
 		});
 	}
 	return ret;

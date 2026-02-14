@@ -11,6 +11,10 @@ export const LinkPresets: { [key in LinkPreset]: NavBarLink } = {
 		name: i18n(I18nKey.passage),
 		url: "/passage/",
 	},
+	[LinkPreset.Notes]: {
+		name: i18n(I18nKey.notes),
+		url: "/notes/",
+	},
 	[LinkPreset.Essays]: {
 		name: i18n(I18nKey.essays),
 		url: "/essays/",

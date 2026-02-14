@@ -81,7 +81,8 @@ export enum LinkPreset {
 	About = 2,
 	Friends = 3,
 	Passage = 4,
-	Essays = 5,
+	Notes = 5,
+	Essays = 6,
 }
 
 /**

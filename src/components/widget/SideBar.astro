@@ -7,16 +7,18 @@ import Tag from "./Tags.astro";
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
+	contentType?: "posts" | "notes" | "all";
 }
 
 const className = Astro.props.class;
+const contentType = Astro.props.contentType ?? "posts";
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
     <div class="flex flex-col w-full gap-4 mb-4">
         <Profile></Profile>
     </div>
     <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 sticky top-[5.5rem]">
-        <Categories class="onload-animation" style="animation-delay: 150ms"></Categories>
-        <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
+        <Categories class="onload-animation" style="animation-delay: 150ms" contentType={contentType}></Categories>
+        <Tag class="onload-animation" style="animation-delay: 200ms" contentType={contentType}></Tag>
     </div>
 </div>

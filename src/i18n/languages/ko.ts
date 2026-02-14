@@ -4,6 +4,7 @@ import type { Translation } from "../translation";
 export const ko: Translation = {
 	[Key.home]: "홈",
 	[Key.passage]: "게시글",
+	[Key.notes]: "노트",
 	[Key.essays]: "수필",
 	[Key.about]: "표제지",
 	[Key.archive]: "목차",

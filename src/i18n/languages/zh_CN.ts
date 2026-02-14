@@ -4,6 +4,7 @@ import type { Translation } from "../translation";
 export const zh_CN: Translation = {
 	[Key.home]: "封面",
 	[Key.passage]: "篇章",
+	[Key.notes]: "笔记",
 	[Key.essays]: "随笔",
 	[Key.about]: "扉页",
 	[Key.archive]: "目次",

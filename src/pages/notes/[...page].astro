@@ -1,0 +1,28 @@
+---
+import Pagination from "@components/control/Pagination.astro";
+import PostPage from "@components/PostPage.astro";
+import { PAGE_SIZE } from "@constants/constants";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedNotes } from "@utils/content-utils";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const allNotes = await getSortedNotes();
+	return paginate(allNotes, { pageSize: PAGE_SIZE });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+
+const len = page.data.length;
+---
+
+<MainGridLayout title={i18n(I18nKey.notes)} sidebarContentType="notes">
+	<PostPage page={page} contentType="notes" archiveBasePath="/notes/"></PostPage>
+	<Pagination
+		class="mx-auto onload-animation"
+		page={page}
+		style={`animation-delay: calc(var(--content-delay) + ${len * 50}ms)`}
+	></Pagination>
+</MainGridLayout>
