@@ -5,7 +5,7 @@ published: 2025-09-30
 category: "技术分享"
 tags: 
   - "arch-linux"
-  - "linux"
+  - "Linux"
   - "安装"
   - "操作系统"
   - "美化"
@@ -16,13 +16,22 @@ draft: false
 
 ## 前情提要
 
-这是主包第三次装Arch Linux。先简单介绍一下前两次翻车的原因：
+这是主包第三次安装 Arch Linux。先交代一下前两次翻车的原因：
 
-- **第一次安装：** 主包第一次安装的时候跟着网上的视频使用 `archinstall`脚本安装，大问题没有但是有不少小问题，不过凑合也能用。但是由于主包没有看arch wiki，把引导分区放在了windows磁盘，windows更新后引导项被篡改导致开不了机，并且那个时候不懂怎么抢救，索性重装了。
+- **第一次安装：** 跟着视频用 `archinstall` 装的，能用但小问题不少。更关键的是当时没认真看 Arch Wiki，把引导分区放在了 Windows 磁盘上，后来 Windows 更新改了引导项，直接无法开机。那时也不会救援，只能重装。
 
-- **第二次安装：** 主包这次跟着[archlinux 简明指南](https://arch.icekylin.online/guide/)和[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)两篇文档并参考[Arch Wiki](https://wiki.archlinux.org/)手动安装了一遍，但是由于主包当时没有记录好自己都安装了些什么，导致各种掉引导、掉驱动、掉声音、掉网络之类的问题，始终解决不掉。主包于是决定这次重装把自己的所有安装过程全部记录下来：如果成功了可以给其他想入坑 Arch 的萌新参考，失败也方便复盘查找原因。
+- **第二次安装：** 这次是按[archlinux 简明指南](https://arch.icekylin.online/guide/)、[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)和 [Arch Wiki](https://wiki.archlinux.org/)手动安装，但因为没有完整记录操作步骤，后面出现了掉引导、掉驱动、掉声音、掉网络等问题，最终还是没救回来。
 
-本文的主干部分源自[archlinux 简明指南](https://arch.icekylin.online/guide/)和[Archlinux-Gnome-FullGuide-ShorinArchExperience](https://github.com/shorinkiwata/Archlinux-Gnome-FullGuide-ShorinArchExperience/tree/main)两篇文档，并补充主包自己安装过程中与指南不一样的部分。由于主包使用实体机安装，拍照效果不好，在安装部分不会有任何我自己的图片，如果有也是从[archlinux 简明指南](https://arch.icekylin.online/guide/)上拿过来的（后期在虚拟机上重装一遍后补上也说不定（））。
+这篇文档的主干来自上面两篇指南，并补充了主包自己踩坑后总结的实战经验。由于本次是实体机安装，安装阶段图片会比较少（部分示意图来自原指南）；后续如果在虚拟机重装，会再补图完善。
+
+## 阅读导航
+
+- [前期准备](#前期准备)
+- [安装流程（archinstall）](#安装流程archinstall)
+- [系统配置（驱动、桌面与常用工具）](#系统配置驱动桌面与常用工具)
+- [系统维护与更新习惯](#系统维护与更新习惯)
+- [进阶美化与个性化配置](#进阶美化与个性化配置)
+- [收尾：给未来的你留一条回头路](#收尾给未来的你留一条回头路)
 
 ## 前期准备
 
@@ -40,53 +49,40 @@ Reg add HKLM\SYSTEM\CurrentControlSet\Control\TimeZoneInformation /v RealTimeIsU
 
 ### 准备安装启动盘
 
-我们需要一个大小不少于8G且没有重要数据的U盘（U盘在制作启动盘时会被格式化，切记提前备份数据！）用来存放系统镜像，常用的这类工具有不少，这里我们以[Ventoy](https://www.ventoy.net/cn/index.html)为例。
+我们需要一个不小于 8 GB 且没有重要数据的 U 盘（制作启动盘会格式化，务必提前备份），用来存放系统镜像。工具有很多，这里以 [Ventoy](https://www.ventoy.net/cn/index.html) 为例。
 
-用这种方法的好处是在安装后如果出现系统级的崩溃和错误，连tty都无法进入时可以用安装镜像修复系统错误或者抢救数据。并且Ventoy在一次准备后可以存放多个系统镜像，把windows安装媒介和PE都放进去，实在是居家旅行必备良品（雾）。
+用这种方法的好处是在安装后如果出现系统级的崩溃和错误，连 tty 都无法进入时也可以用安装镜像修复系统错误或者抢救数据。并且 Ventoy 在一次准备后可以存放多个系统镜像，把 Windows 安装媒介和 PE 都放进去，实在是居家旅行必备良品（雾）。
 
-Ventoy的具体使用方法参考官网教程或者网上其他文档，没有什么难度，这里不过多介绍。
+Ventoy 的具体使用方法参考官网教程或其他文档即可，操作本身不复杂，这里不展开。
 
-> Arch Linux会在每个月1号发布最新的安装镜像，由于Arch滚动更新没有版本一说，请尽可能保证你的镜像是你能拿到的最新的镜像，否则可能出现一些奇怪的错误。
+> Arch Linux 会在每个月 1 号发布最新安装镜像。由于 Arch 是滚动更新，尽量使用你能拿到的最新镜像，旧镜像可能会出现奇怪错误。
 
 ### vi 基础操作说明
 
-vi 是命令行中使用的一种文本编辑器，vim、neovim 等编辑器的操作也和 vi 类似。vi 是大部分 Linux 系统安装过程中或多或少会用到的编辑器（一般默认为 vi，不过推荐安装 vim 或 neovim 代替 vi），这里简单介绍一些常用的操作，详细文档读者可以自行查找。
+`vi` 是命令行文本编辑器，`vim`、`neovim` 的基础操作和它类似。安装系统时你基本绕不开它（虽然我更推荐后续装 `vim` 或 `neovim`）。这里先给最常用的按键：
 
-`i` 键在当前光标进入编辑模式，注意编辑模式中所有指令失效变成正常输入
+- `i`：在光标位置进入编辑模式（编辑模式下按键就是普通输入）
+- `Shift + A`：跳到行尾并进入编辑模式
+- `Esc`：退出编辑模式
+- `yy`：复制当前行
+- `dd`：剪切（删除）当前行
+- `p`：粘贴
+- `:q`：退出
+- `:w`：保存
+- `:wq`：保存并退出
+- `/关键词`：查找文本
 
-`shift+a` 大写A进入当前行末尾并进入编辑模式
-
-`esc` 编辑模式下按下 `esc`退出编辑模式
-
-`yy` 两个y复制当前行
-
-`dd` 两个d剪切当前行
-
-`p` 键粘贴
-
-`:q` 冒号小写q，退出
-
-`:w` 冒号小写w，写入
-
-`:wq` 冒号小写wq保存并退出
-
-这里的冒号都是英文冒号，中文冒号不会被识别
-
-`/` 查找接下来输入的文本
+这里的冒号必须是英文冒号，中文冒号不会被识别。
 
 ### 记好笔记
 
-搞清楚自己曾经做过什么！用文档把你每步操作记录下来！
-
-搞清楚自己曾经做过什么！用文档把你每步操作记录下来！
-
-搞清楚自己曾经做过什么！用文档把你每步操作记录下来！
+搞清楚自己做过什么，把每一步操作都记下来。真的，别偷懒。
 
 不然你为什么会看到这篇文档呢（笑）
 
-## 基础脚本安装
+## 安装流程（archinstall）
 
-### 1.连接网络
+### 1. 连接网络
 
 使用 `iwctl` 工具连接无线网络，在命令行输入 `iwctl` 后回车进入交互式命令行。需要注意这里只建议使用英文名 Wi‑Fi，使用中文可能乱码导致无法连接。
 
@@ -102,7 +98,7 @@ station wlan0 get-networks
 station wlan0 connect [wifi名称]
 # 回车后输入密码，这里密码不会显示，直接输入完后回车
 
-#退出iwctl
+# 退出 iwctl
 exit
 ```
 
@@ -117,15 +113,15 @@ pacman -Syy
 pacman -S --needed archlinux-keyring archinstall
 ```
 
-### 2.使用archinstall安装
+### 2. 使用 archinstall 安装
 
-接下来输入 `archinstall`回车进入安装配置tui界面
+接下来输入 `archinstall`，回车进入安装配置 TUI 界面：
 
 ```
 archinstall
 ```
 
-第一项是脚本语言，第二项是系统本地化，保持英文就行，改了会乱码，直接看第三项。
+第一项是脚本语言，第二项是系统本地化。建议保持英文，改成中文在某些环境可能乱码，直接看第三项即可。
 
 #### Mirrors and repositories 设置镜像源
 
@@ -135,6 +131,8 @@ archinstall
 #### Disk configuration 磁盘分区
 
 选择 partitioning 进入磁盘分区。
+
+> ⚠️ 这里开始涉及真实磁盘写入操作。执行每一步前先确认目标磁盘型号与容量，避免误操作到数据盘。
 
 - 情况一：整块空闲硬盘安装 Arch
 
@@ -178,11 +176,11 @@ archinstall
 
 #### Swap（zram交换空间）
 
-这一步是自动帮你配置zram交换空间，yes开启即可。
+这一步会自动帮你配置 zram 交换空间，选择 `Yes` 开启即可。
 
 #### Bootloader引导系统
 
-最常用的是Grub，选Grub就行。有其他需求可以自己网上查找。
+最常用的是 GRUB，选择 GRUB 即可；有其他需求再按需查文档。
 
 #### Hostname主机名
 
@@ -190,40 +188,41 @@ archinstall
 
 #### Authentication身份认证
 
-- Root password设置管理员密码
+- `Root password`：设置管理员密码。
 
-- User account > Add a user 创建普通用户 Should "xxx" be a superuser(sudo)是问你要不要给这个用户管理员权限，选yes就行。
+- `User account > Add a user`：创建普通用户。`Should "xxx" be a superuser (sudo)` 是在问要不要给该用户管理员权限，通常选择 `Yes`。
 
-- U2F login setup这个是物理密钥，有需要的自行设置
+- `U2F login setup`：物理密钥登录，有需要再配置。
 
 #### Profile
 
-这里可以选择自动安装桌面、最小化安装等等。都选择用archinstall自动安装系统那，那就顺便自动安装一下桌面吧。如果不知道自己想安装哪个就从Gnome和KDE Plasma里随便选一个。KDE更符合windows用户的直觉，系统占用更低，个性化起来更方便，多显示器支持更好。Gnome的中文输入法体验更好，更符合mac用户的直觉，外观更好看，更流畅，更简洁，更稳定。
+这里可以选择自动安装桌面、最小化安装等配置。既然都用 `archinstall` 了，桌面也可以顺手装上。如果你还没想好，先在 GNOME 和 KDE Plasma 里二选一：KDE 更接近 Windows 习惯，资源占用更低、可定制性更强；GNOME 中文输入法体验更稳定，更接近 macOS 的交互逻辑，整体更统一。
 
 - Type > Desktop > 想安装的桌面环境或者窗口管理器
 
-- Graphics driver（自动安装显卡驱动） amd选AMD/ATi (opensource) nvidia去[CodeNames · freedesktop.org](https://nouveau.freedesktop.org/CodeNames.html)这个页面搜索你的显卡型号，确认对应的NV family；NV160以后的显卡选Nvidia (open kernel module …)；NV110~NV160的选Nvidia (proprietary)，再往前的选Nvidia (open-source nouveau …)
+- `Graphics driver`（自动安装显卡驱动）：AMD 选择 `AMD/ATi (opensource)`；NVIDIA 先去 [CodeNames · freedesktop.org](https://nouveau.freedesktop.org/CodeNames.html) 查显卡对应的 NV family。通常 NV160 及以后可选 `NVIDIA (open kernel module …)`；NV110~NV160 可选 `NVIDIA (proprietary)`；更早型号用 `NVIDIA (open-source nouveau …)`。
 
-不过这里的桌面环境会附带很多无用软件，比较臃肿，建议最小化安装后手动配置，你都用archinstall帮你做了这么多杂活了自己配置一下桌面环境也没关系吧（笑）
+不过这里自动装的桌面通常会附带不少你不一定用得上的软件。追求干净系统的话，建议走最小化安装，再手动补齐自己要的组件。
 
 #### Applications（蓝牙和音视频）
 
-- Bluetooth > Yes 自动安装蓝牙
+- `Bluetooth > Yes`：自动安装蓝牙组件。
 
-- Audio > pipewire 自动安装音视频服务 pipewire是新技术，兼容旧的pulseautio等服务，选pipewire就行了。
-- Audio > pipewire 自动安装音视频服务。pipewire 是新方案，兼容旧的 pulseaudio 等服务，选 pipewire 就行。
+- `Audio > pipewire`：自动安装音视频服务。PipeWire 是当前主流方案，兼容旧的 PulseAudio 等服务，直接选 `pipewire` 即可。
 
 #### Kernel（系统内核）
 
-tab键选择。要续航选linux，要性能选linux-zen，其他选项有兴趣可以自己查询。
+按 `Tab` 键切换选项。偏续航可选 `linux`，偏性能可选 `linux-zen`。
 
 #### Network configuration （网络配置）
 
-选第三项 NetworkManager，因为跟Gnome和KDE Plasma深度集成。有别的需求自行查找。
+建议选第三项 `NetworkManager`，它和 GNOME / KDE Plasma 集成最好。
 
 #### Additional packages（自定义安装其他软件包）
 
-/左斜杠键进行搜索，tab键选择。
+按 `/` 进行搜索，按 `Tab` 键选择。
+
+> 这里的包选择会直接影响后续引导与联网体验，至少保证 `vim`、`os-prober` 这类基础组件被选中。
 
 必须安装：vim（任意文本编辑器）、os-prober（双系统需要）
 
@@ -241,20 +240,22 @@ tab键选择。要续航选linux，要性能选linux-zen，其他选项有兴趣
 
 #### Install
 
-选择install安装
+选择 `Install` 开始安装。
 
-### 3.双系统
+### 3. 双系统
 
 安装完成后配置 Windows 和 Linux 的双系统。
 
-1. 选择 exit archinstall，退出 archinstall。
+1. 选择 `Exit archinstall`，退出安装器。
 2. 挂载 Windows 的 EFI 启动分区（ESP，FAT32）。
 
 ```
    lsblk -pf #列出当前分区情况
 ```
 
-找到 Windows 所在磁盘上的 EFI System Partition（FAT32，常见类似 `nvme0n1p1`/`nvme1n1p1`）。可以用 `fdisk -l`（小写字母 l）查看更详细的分区信息。找到后挂载到 `/mnt` 下的任意一个目录，比如 `/mnt/winboot`。
+找到 Windows 所在磁盘上的 EFI System Partition（FAT32，常见类似 `nvme0n1p1`/`nvme1n1p1`）。可以用 `fdisk -l`（小写字母 l）看更详细信息。确认无误后再挂载到 `/mnt` 下任意目录（例如 `/mnt/winboot`）。
+
+> 设备名仅为示例，务必按你机器的实际输出填写，别直接照抄。
 
 ```
    mount /dev/nvme1n1p1 /mnt/winboot 
@@ -266,7 +267,7 @@ tab键选择。要续航选linux，要性能选linux-zen，其他选项有兴趣
    arch-chroot /mnt #进入刚刚安装的系统
 ```
 
-4. 编辑 grub 配置启用 os-prober
+4. 编辑 GRUB 配置启用 `os-prober`
 
 ```
    vim /etc/default/grub 
@@ -290,7 +291,7 @@ Intel CPU 用户把 `sp5100_tco` 换成 `iTCO_wdt`。
 
 6. 将 `GRUB_DEFAULT=0` 改成 `GRUB_DEFAULT=saved`，再取消 `GRUB_SAVEDEFAULT=true` 的注释。这一步用于记住上一次开机选择。
 
-7. 生成 grub 的配置文件
+7. 生成 GRUB 配置文件
 
 ```
    grub-mkconfig -o /boot/grub/grub.cfg
@@ -300,7 +301,7 @@ Intel CPU 用户把 `sp5100_tco` 换成 `iTCO_wdt`。
 9. reboot 重启
 10. 如有需要，进入 BIOS/UEFI 调整启动项顺序。
 
-## 安装桌面环境
+## 系统配置（驱动、桌面与常用工具）
 
 ### 网络连接
 
@@ -316,9 +317,9 @@ systemctl enable --now NetworkManager
 nmtui
 ```
 
-### 可选：安装fastfetch
+### 可选：安装 fastfetch
 
-`fastfetch` 可以将系统信息和发行版 logo 一并打印出来。通过 `pacman` 安装 `fastfetch`：
+`fastfetch` 可以把系统信息和发行版 Logo 一并打印出来。通过 `pacman` 安装：
 
 ```
 pacman -S fastfetch
@@ -326,7 +327,7 @@ pacman -S fastfetch
 
 ### 显卡驱动和硬件编解码
 
-以4060和780m为例
+以 4060 和 780M 为例。
 
 参考链接：[NVIDIA - ArchWiki](https://wiki.archlinux.org/title/NVIDIA)、[AMDGPU](https://wiki.archlinux.org/title/AMDGPU)
 
@@ -336,11 +337,11 @@ pacman -S fastfetch
 sudo pacman -S linux-zen-headers
 ```
 
-linux替换为自己的内核，比如zen内核是linux-zen-headers
+把 `linux` 替换成你正在使用的内核名；例如 Zen 内核对应 `linux-zen-headers`。
 
 #### 安装显卡驱动
 
-- intel核显
+- Intel 核显
 
 ```
 sudo pacman -S mesa lib32-mesa vulkan-intel lib32-vulkan-intel
@@ -354,7 +355,7 @@ sudo pacman -S --needed nvidia-dkms nvidia-settings nvidia-utils lib32-nvidia-ut
 
 显卡驱动的选择：先在[CodeNames · freedesktop.org](https://nouveau.freedesktop.org/CodeNames.html)搜索自己的显卡，确认对应的 family；然后在[NVIDIA - ArchWiki](https://wiki.archlinux.org/title/NVIDIA)查对应驱动。NV160 family 往后的显卡通常可用 `nvidia-open`；NV110~NV190 如果 `nvidia-open` 表现不佳可以使用 `nvidia`。注意：非 stable 内核要安装的驱动包可能不同，具体看 wiki，例如 zen 内核常见是 `nvidia-open-dkms`。
 
-- AMD A卡不需要自己安装驱动，检查一下vulkan驱动就行
+- AMD 显卡一般不需要额外安装专有驱动，确认 Vulkan 相关包即可。
 
 ```
   sudo pacman -S --needed vulkan-radeon vulkan-mesa-layers
@@ -362,13 +363,13 @@ sudo pacman -S --needed nvidia-dkms nvidia-settings nvidia-utils lib32-nvidia-ut
 
 #### 硬件编解码
 
-- nvidia
+- NVIDIA
 
 ```
   sudo pacman -S libva-nvidia-driver
 ```
 
-- amd 自带无需额外安装
+- AMD 自带，无需额外安装。
 
 - 重启激活显卡驱动和字体
 
@@ -378,7 +379,7 @@ sudo pacman -S --needed nvidia-dkms nvidia-settings nvidia-utils lib32-nvidia-ut
 
 ### GNOME
 
-#### 安装gnome最小环境
+#### 安装 GNOME 最小环境
 
 ```
 sudo pacman -S --needed gnome-shell gdm gnome-control-center gnome-software flatpak
@@ -390,11 +391,11 @@ sudo pacman -S --needed gnome-shell gdm gnome-control-center gnome-software flat
 
 ```
 gnome-shell GNOME 桌面最小核心
-gdm 是显示管理器(gnome display manager)
+gdm 是显示管理器（GNOME Display Manager）
 ghostty 是一个可高度自定义的终端模拟器（terminal emulator)
 gnome-control-center 是设置中心
 gnome-software 是软件商城
-flatpak 是flatpak软件，这是一种全发行版通用的软件打包形式，通常flatpak软件是最好用的
+flatpak 是跨发行版通用的软件打包形式，通常版本更新会更及时
 ```
 
 - 临时开启GDM
@@ -403,7 +404,7 @@ flatpak 是flatpak软件，这是一种全发行版通用的软件打包形式�
 systemctl start gdm 
 ```
 
-- 正常开启后设置gdm开机自启
+- 正常启动后设置 gdm 开机自启
 
 ```
 sudo systemctl enable gdm
@@ -451,11 +452,11 @@ sudo systemctl enable --now bluetooth
 sudo pacman -S --needed network-manager-applet dnsmasq
 ```
 
-#### 配置archlinuxcn源
+#### 配置 archlinuxcn 源
 
-这里我们准备好 `archlinuxcn`源，我们的代理工具和aur助手都需要从这里安装。
+这里先配置 `archlinuxcn` 源，后面的代理工具和 AUR 助手会用到。
 
-aur上面很多包没有代理是无法下载的，所以一定要先配置好代理。
+AUR 上很多包在无代理环境下很难下载，所以建议先把网络环境准备好。
 
 ```
   sudo vim /etc/pacman.conf
@@ -477,9 +478,9 @@ aur上面很多包没有代理是无法下载的，所以一定要先配置好�
   sudo pacman -Syu --needed archlinuxcn-keyring
 ```
 
-安装代理软件clash-verge-rev和aur助手yay
+安装代理软件 clash-verge-rev 和 AUR 助手 yay：
 
-> paru也是一个aur助手，但是会出现有些软件无法安装的情况，所以建议还是用yay。并且最好不要混用不同aur助手。
+> `paru` 也是 AUR 助手，但部分场景下兼容性不如 `yay`。建议固定使用一个助手，不要混用。
 
 ```
   sudo pacman -S clash-verge-rev yay 
@@ -503,9 +504,9 @@ sudo vim /etc/locale.gen
 sudo locale-gen
 ```
 
-#### 配置flatpak源
+#### 配置 Flatpak 源
 
-如果flatpak没速度或者加载不出来的话更换flatpak国内源
+如果 Flatpak 下载慢或加载异常，可以切换国内镜像源。
 
 ```
 sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
@@ -522,7 +523,7 @@ sudo pacman -S fcitx5-mozc # 日文输入引擎
 sudo pacman -S fcitx5-pinyin-moegirl # 萌娘百科词库。二刺猿必备（archlinuxcn）
 ```
 
-- 商店搜索extension，安装蓝色的extensionmanager
+- 在商店搜索 `Extension Manager`，安装蓝色图标的那个。
 
 - 安装扩展：input method panel  
     https://extensions.gnome.org/extension/261/kimpanel/
@@ -541,7 +542,7 @@ XMODIFIERS=@im=fcitx
 XDG_CURRENT_DESKTOP=GNOME #解决某些软件里面输入法吞字的问题
 ```
 
-- 卸载fcitx5
+- 卸载 fcitx5
 
 1. 删除包
 
@@ -565,7 +566,7 @@ XDG_CURRENT_DESKTOP=GNOME #解决某些软件里面输入法吞字的问题
 
 #### 自定义安装软件
 
-这是我会安装的，你可以按自己的需求安装
+下面是主包自己常装的一批软件，你可以按需裁剪。
 
 **安装软件后没显示图标的话登出一次**
 
@@ -576,20 +577,20 @@ XDG_CURRENT_DESKTOP=GNOME #解决某些软件里面输入法吞字的问题
 ```
 
 ```
-  mission-center 类似win11的任务管理器，强烈推荐
-  gnome-text-editor gnome标配记事本
+  mission-center 类似 Windows 11 的任务管理器，强烈推荐
+  gnome-text-editor GNOME 标配记事本
   gnome-disk-utility 磁盘管理工具，可以调节分区大小和格式化分区等等
   gnome-font-viewer 方便安装和查看字体
   loupe 图片查看工具
   snapshot 相机，摄像头
   baobab 磁盘使用情况分析工具
-  celluloid 是基于mpv的视频播放器
-  fragments 是符合gnome设计理念的种子下载器，或者安装qtbittorrent
+  celluloid 是基于 mpv 的视频播放器
+  fragments 是符合 GNOME 设计风格的种子下载器（也可换 qBittorrent）
   file-roller 压缩解压缩
   foliate 电子书阅读器
-  chromium 开源的chrome浏览器核心，兼容所有chrome插件生态。如果你喜欢firefox可以自行替换
-  gst-plugin-pipewire gst-plugins-good 是gnome截图工具自带的录屏，需登出一次
-  pacman-contrib 提供pacman的一些额外功能，比如checkupdates用来检查更新
+  chromium 是开源 Chromium 浏览器，兼容 Chrome 插件生态；偏好 Firefox 可自行替换
+  gst-plugin-pipewire gst-plugins-good 对 GNOME 自带录屏有帮助，安装后建议登出一次
+  pacman-contrib 提供 pacman 额外功能，比如 `checkupdates` 用于检查更新
   decibels 是可以显示波形的音频播放器，这只是个音频播放器，不是音乐播放器
 ```
 
@@ -600,36 +601,36 @@ yay -S linuxqq-appimage wechat-appimage wps-office-cn wps-office-mui-zh-cn obsid
 ```
 
 ```
-  linuxqq linux版qq
-  wechat-appimage 是appimage版微信
-  wps-office-cn 是wps
-  wps-office-mui-zh-cn 是wps的中文语言包
-  obsidian-appimage 是markdown编辑器
+  linuxqq Linux 版 QQ
+  wechat-appimage 是 AppImage 版微信
+  wps-office-cn 是 WPS
+  wps-office-mui-zh-cn 是 WPS 中文语言包
+  obsidian-appimage 是 Markdown 编辑器
 ```
 
 - 关于 WPS 打开文件的问题  
   WPS 在 Linux 上可能出现“设置打开方式后仍无法通过双击打开文档”的问题。一般在设置里切换窗口管理模式，改成“多组件模式”后即可双击打开；之后再切回原来的模式通常也不影响文件打开。（Linux，很神奇吧）
 
-- 关于字体 从网上搜索常用办公字体，下载解压后存放到 `~/.local/share/fonts`里面（在这个目录下新建文件夹整理字体文件）。放进去之后刷新字体缓存 。 `fc-cache --force`
+- 关于字体：从网上下载常用办公字体后，解压并存放到 `~/.local/share/fonts`（建议分目录整理），然后刷新字体缓存：`fc-cache --force`。
 
-- flatpak 这里都是些有趣或者实用的工具，可以从商店搜索安装，也可以用命令
+- Flatpak 这一组都是比较实用的小工具，可以在商店搜，也可以直接命令安装。
 
 ```
   flatpak install flathub be.alexandervanhee.gradia io.github.Predidit.Kazumi io.gitlab.theevilskeleton.Upscaler com.github.unrud.VideoDownloader io.github.ilya_zlobintsev.LACT com.geeks3d.furmark io.github.flattool.Warehouse com.github.tchx84.Flatseal com.dec05eba.gpu_screen_recorder
 ```
 
 ```
-  gradia编辑截图
-  kazumi追番
-  upscaler图片超分
-  video downloader下载youtube/bilibili 144p～8k视频
+  gradia 用于截图编辑
+  kazumi 用于追番
+  upscaler 用于图片超分
+  video downloader 支持下载 YouTube/Bilibili 144p～8k 视频
 ```
 
-- gradia可以对截图进行一些简单的添加文字、马赛克、图表、背景之类的操作 使用方法： 设置自定义快捷键的时候命令写 `flatpak run be.alexandervanhee.gradia --screenshot=INTERACTIVE`
+- Gradia 可以对截图做文字、马赛克、图表、背景等轻编辑。设置自定义快捷键时可使用：`flatpak run be.alexandervanhee.gradia --screenshot=INTERACTIVE`。
 
 #### 快捷键配置
 
-设置>键盘>查看自定义快捷键
+路径：设置 > 键盘 > 查看与自定义快捷键。
 
 - 导航
 
@@ -637,7 +638,7 @@ yay -S linuxqq-appimage wechat-appimage wps-office-cn wps-office-mui-zh-cn obsid
 super+shift+数字键 #将窗口移到工作区
 super+shift+A/D #将窗口左右移动工作区
 super+shift+Q/E #移动到左/右工作区
-ps：gnome默认super+滚轮上下可以左右切换工作区
+PS：GNOME 默认 `Super + 鼠标滚轮上下` 可以切换工作区。
 alt+tab #切换应用程序
 alt+` #在应用程序的窗口之间切换窗口
 ```
@@ -681,7 +682,7 @@ ctrl+alt+S gnome-control-center
 
 #### 功能性扩展
 
-> ⚠️ 警告：扩展在gnome桌面环境大版本更新的时候大概率会大面积失效，如果出现gnome桌面环境的大版本更新，一定要先关闭所有扩展，谨慎行事
+> 警告：GNOME 大版本更新时，扩展很可能大面积失效。遇到大版本更新，先禁用扩展再升级。
 
 - 从商店安装蓝色的扩展管理器
 
@@ -693,19 +694,19 @@ flatpak install flathub com.mattjakeman.ExtensionManager
 
 - caffeine 防止熄屏
 
-- lock keys 装kazimieras.vaina的那个。osd显示大写锁定和小键盘锁定。设置里把指示器风格改成show/hide cap-locks only
+- lock keys 装 kazimieras.vaina 的那个。OSD 会显示大写锁定和小键盘锁定；设置里把指示器风格改成 `show/hide cap-locks only`
 
 - Fuzzy Application Search 模糊搜索
 
 - steal my focus window 如果打开窗口时窗口已经被打开则置顶
 
-- tiling shell 窗口平铺，tilingshell是用布局平铺,另一个叫forge是hyprland那种自动平铺但是很卡。推荐用tilingshell，记得自定义快捷键，我快捷键是super+w/a/s/d对应上下左右移动窗口，Super+Alt+w/a/s/d对应上下左右扩展窗口，super+Z取消平铺，super+C把窗口移动到屏幕中心
+- tiling shell 窗口平铺。tiling shell 是布局式平铺；另一个 forge 更像 Hyprland 那种自动平铺，但在部分机器上会卡。主包更推荐 tiling shell。可自定义快捷键：`Super+W/A/S/D` 上下左右移动窗口，`Super+Alt+W/A/S/D` 上下左右扩展窗口，`Super+Z` 取消平铺，`Super+C` 窗口居中。
 
 - tiling assistant 这个扩展提供最基础的四角平铺和上下左右半屏平铺功能。设置里 gaps 和 tiling shell 调成一样的，禁用 keybinds 里 general 一项的第 1/2/4 项，仅保留 restore window size。
 
-- 可选：forge 如果你更喜欢窗口管理器那样无预设布局的自动平铺功能，可以安装 forge。装了这个就不要装 tiling shell 和 tiling assistant 了。我没有深入用过这个扩展，所以设置部分就自己探索吧。
+- 可选：forge。如果你更喜欢无预设布局的自动平铺，可以安装 forge。装了 forge 就不要再装 tiling shell 和 tiling assistant 了。
 
-- color picker 获取屏幕上的颜色，对自定义非常有用
+- color picker 用来吸取屏幕颜色，对自定义很实用。
 
 - Arch Linux Updates Indicator 在面板上显示一个和arch更新相关的图标。要安装pacman-contrib。设置取消始终显示，高级设置里命令改成
 
@@ -713,22 +714,22 @@ flatpak install flathub com.mattjakeman.ExtensionManager
   ghostty -e sudo pacman -Syu
 ```
 
-- quick settings tweaks 让右上角的快速设置面板变得更合理。包括把通知从时间面板移动到快速设置面板，缩小时间面板的占地面积，免打扰模式开关按钮移动到快速设置面板，允许调整单个应用的声音大小等等。 扩展设置的menu页面的两项可以激活，第一项让声音调整菜单以悬浮的方式显示出来，第二项给这个功能增加动画，很酷。
+- quick settings tweaks 让右上角快速设置更合理：可把通知迁移到快速设置、缩小时间面板占位、把免打扰开关移到快速设置，还能单独调应用音量。扩展设置里 `menu` 页面有两项可开启：第一项让音量菜单悬浮显示，第二项增加动画。
 
-- clipboard indicator 剪贴板历史。设置里设置super+v切换菜单
+- clipboard indicator 剪贴板历史。可在设置里把菜单快捷键改成 `Super+V`。
 
 ##### 睡眠到硬盘
 
 硬盘上必须有交换空间才能睡眠到硬盘
 
-- 添加hook
+- 添加 hook
 
 ```
 sudo vim /etc/mkinitcpio.conf
 ```
 
 ```
-在HOOKS()内添加resume,注意需要添加在udev的后面
+在 `HOOKS()` 里添加 `resume`，注意要放在 `udev` 后面。
 ```
 
 - 重新生成initramfs
@@ -787,7 +788,7 @@ nautilus -q
 
 ##### 性能模式切换工具 power-profiles-daemon
 
-性能模式切换，有三个档位，performance性能、balance平衡、powersave节电。一般平衡档位就够用了，也不需要调节风扇什么的。
+性能模式有三个档位：`performance`（性能）、`balanced`（平衡）、`power-saver`（省电）。日常一般用平衡档就够了。
 
 ```
 sudo pacman -S power-profiles-daemon
@@ -799,9 +800,9 @@ sudo systemctl enable --now power-profiles-daemon
 
 ##### 实用插件扩展
 
-power tracker 显示电池充放电  
-auto power profile 配合powerProfilesDaemon使用，可以自动切换模式  
-power profile indicator 配合powerProfilesDaemon使用，面板显示当前模式
+power tracker：显示电池充放电  
+auto power profile：配合 power-profiles-daemon 自动切换模式  
+power profile indicator：在面板显示当前模式
 
 #### 安装优化
 
@@ -811,7 +812,7 @@ power profile indicator 配合powerProfilesDaemon使用，面板显示当前模�
 sudo pacman -S gnome-tweaks
 ```
 
-在商店搜索refine设置更多缩放比例
+在商店搜索 Refine，可开启更多缩放比例。
 
 ##### 显卡切换
 
@@ -826,7 +827,7 @@ sudo systemctl enable --now switcheroo-control
 
 **另外的方法（不推荐）：**
 
-asus的电脑安装supergfxctl和扩展：
+ASUS 电脑可安装 supergfxctl 与对应扩展：
 
 ```
 yay -S supergfxctl
@@ -864,30 +865,30 @@ sudo systemctl enable --now grub-btrfsd
 
 ##### 具体使用方法
 
-打开btrfs assistant，切换到snapper settings页面。我们创建子卷的时候创建了一个@（root）子卷和一个@home（home）子卷，所以需要两个config（配置）。创建一个root配置，再创建一个home配置。然后到snapper页面下的New/Delete页面就可以新建和管理快照了，Browse/Restore页面选中快照后点restore可以恢复到那个快照的状态。如果你要同时快照root和home的话就分别创建一个root快照和home快照，恢复的时候各自恢复就行了。
+打开 btrfs-assistant，切到 Snapper Settings 页面。由于前面创建了 `@`（root）和 `@home`（home）两个子卷，所以需要分别建两个 config。之后在 Snapper 的 New/Delete 页面管理快照，在 Browse/Restore 页面选中快照后点 restore 即可恢复。若要同时快照 root 与 home，就分别创建并分别恢复。
 
-#### 关于滚挂和良好的系统使用习惯
+## 系统维护与更新习惯
 
-- 滚挂 archlinux是滚动发行版。滚动是英文直译，原词是rolling，指一种推送更新的方式，只要有新版本就会推送，由用户管理更新。对应的另一种更新方式是定期更新一个大版本，例如fedora是六个月一更新，由发行方管理更新。 滚挂，指的是滚动更新的发行版因为更新导致系统异常。这通常是用户操作不当、忽略官方公告等原因导致的。只要学习一下正确的更新方式和快照的使用方法就不用担心滚挂问题。 通常软件更新不用担心。**出现密钥（keyring）、内核、驱动、固件、引导程序之类的更新要留个心眼，先不第一时间更新，等一手社区或者官方消息。** 另一个重点是滚动更新的发行版的软件通常会适配最新的依赖，如果长期不更新可能会无法使用软件。
+- 滚挂：Arch Linux 是滚动发行版（rolling release），新版本会持续推送，由用户自己管理更新。滚挂指更新后系统异常，常见原因是误操作、忽略公告、跨版本依赖冲突。通常普通软件更新问题不大；**但涉及 keyring、内核、驱动、固件、引导程序的更新要更谨慎**，可以先观望社区反馈再更新。反过来，长期不更新也会因为依赖断层导致软件不可用。
 
-- 良好的使用习惯 btrfs 文件系统已经足够稳定，但仍建议谨慎操作。使用时遵循以下几点：
+- 良好的使用习惯：Btrfs 已经很稳定，但仍建议谨慎操作。使用时遵循以下几点：
 
 1. **别第一时间更新，也别长时间不更新；重要程序更新前创建快照；密钥相关更新多留意**
 2. **明白自己的行为会造成怎样的后果；做不了解的事情前创建快照**
 3. **定期清理较旧的快照，保持系统整洁，否则可能会导致硬盘整个被快照占满**
 
-### 进阶美化与个性化配置
+## 进阶美化与个性化配置
 
 #### zsh
 
-我们安装zsh来代替bash，并添加一些插件使其更加好用
+我们安装 zsh 替代 bash，并加几个实用插件。
 
 ```
-sudo pacman -S zsh zsh-syntax-highlighting # zsh和zsh语法高亮插件
-sudo pacman -S thefuck # thefuck 是一个纠错工具，在输入错误命令后输入fuck回车即可得到建议命令
+sudo pacman -S zsh zsh-syntax-highlighting # zsh 与语法高亮插件
+sudo pacman -S thefuck # 命令纠错工具，输错后执行 fuck 可获取建议命令
 ```
 
-安装starship对zsh进行美化
+安装 starship 美化 zsh：
 
 ```
 sudo pacman -S starship
@@ -899,7 +900,7 @@ sudo pacman -S starship
 chsh -s /usr/bin/zsh # 修改当前账户的默认 Shell
 ```
 
-关闭终端模拟器后重新打开，应该就已经开始使用zsh了，回车后创建 `.zshrc`文件并编辑：
+关闭终端后重新打开，确认已经进入 zsh。然后创建并编辑 `.zshrc`：
 
 ```
 vim ~/.zshrc
@@ -917,7 +918,7 @@ eval $(thefuck --alias)
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ```
 
-`starship`的更多主题可以前往官方网站自行寻找
+`starship` 更多主题可在官网查看。
 
 #### 壁纸
 
@@ -929,13 +930,13 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 ##### 可选：动态壁纸
 
-安装 `hidamari`作为动态壁纸引擎，这是一个支持使用视频和网页设置为动态壁纸的软件。
+安装 `hidamari` 作为动态壁纸引擎，它支持把视频或网页设置为动态壁纸。
 
 这个软件对性能有一定要求，低配电脑建议跳过这一步。
 
 #### GRUB主题
 
-使用yay安装 `grub-customizer`
+使用 yay 安装 `grub-customizer`。
 
 然后就可以快速设置你喜欢的主题了
 
@@ -950,7 +951,7 @@ sudo pacman -Syu --needed netease-cloud-music-gtk4
 yay -S netease-cloud-music-gtk4
 ```
 
-不过这个播放器的缺点是在gnome上没有实现托盘，需要使用第三方Mpris 插件来控制，这里我使用官方推荐的 `Media Controls`插件。或者你也可以用通知中心来控制音乐播放。
+这个播放器的缺点是 GNOME 下没有托盘，需要第三方 MPRIS 插件控制。主包这里用官方推荐的 `Media Controls`，你也可以直接用通知中心控制播放。
 
 > 为什么不使用 `yesplaymusic`？
 > 
@@ -958,10 +959,27 @@ yay -S netease-cloud-music-gtk4
 
 #### 游戏
 
-现在steam的安装已经非常容易了，在开启32位源的情况下直接使用pacman安装即可：
+现在 Steam 安装很简单，开启 32 位源后直接用 pacman 安装即可：
 
 ```
 sudo pacman -S steam
 ```
 
-如果要玩其他游戏，可以在steam库中添加非steam游戏的exe文件，然后在`属性-兼容性`中勾选强制使用steam运行时环境，即可快乐启动。主包已经用此方法玩了pvz、魔裁等游戏，没有发现异常。
+如果要玩其他游戏，可以在 Steam 库中添加非 Steam 游戏的 `.exe`，然后在 `属性-兼容性` 勾选强制使用 Steam 运行时环境。主包用这套方法跑过 PVZ、魔裁等游戏，暂时没遇到明显异常。
+
+## 收尾：给未来的你留一条回头路
+
+如果你能看到这里，恭喜你：你已经不只是“把 Arch 装上了”，而是把一套可维护、可回滚、可持续折腾的工作流搭起来了。
+
+最后给你一个收尾检查单，供你参考：
+
+1. **网络可用**：`NetworkManager` 正常、重启后能自动联网。
+2. **引导可用**：GRUB 能进 Linux，双系统用户能看到 Windows 启动项。
+3. **驱动可用**：显卡驱动和硬件编解码正常，常用软件启动无异常。
+4. **输入可用**：fcitx5 正常工作，常用应用不吞字。
+5. **回滚可用**：Snapper / btrfs-assistant 可创建并恢复快照。
+6. **更新有策略**：大版本与关键组件更新前先看公告、先做快照。
+
+Linux 这条路的核心从来不是“永不翻车”，而是“翻车后能自己把车扶起来”。
+
+祝你折腾顺利，系统稳定，少掉引导，少炸驱动，多写点自己的经验文档。

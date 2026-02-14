@@ -5,9 +5,9 @@ published: 2025-10-01
 category: "技术分享"
 tags: 
   - "arch-linux"
-  - "kvm"
-  - "linux"
-  - "qemu"
+  - "KVM"
+  - "Linux"
+  - "QEMU"
   - "安装"
   - "操作系统"
   - "虚拟机"
@@ -19,7 +19,7 @@ image: "images/1759294285-E3ABD65F-436A-4EFC-A655-2B1EE75C63A0.png"
 
 ## 硬件检查
 
-在开始安装之前，我们首先要开启cpu对于虚拟化的支持。KVM依赖于CPU的虚拟化技术（如intel的`intel VT-x`和AMD的`AMD-V`），使用下面的指令查看虚拟化是否开启：
+在开始安装之前，我们首先要开启 CPU 对虚拟化的支持。KVM 依赖于 CPU 的虚拟化技术（如 Intel 的 `Intel VT-x` 和 AMD 的 `AMD-V`），使用下面的指令查看虚拟化是否开启：
 
 ```
 grep -E 'vmx|svm' /proc/cpuinfo
@@ -52,7 +52,7 @@ sudo virsh net-autostart default
 
 ## 添加用户权限
 
-将当前用户添加到`libvirt`组，避免每次使用sudo：
+将当前用户添加到 `libvirt` 组，避免每次使用 sudo：
 
 ```
 sudo usermod -a -G libvirt $(whoami)

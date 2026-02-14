@@ -2,7 +2,7 @@
 title: Markdown 功能指南
 published: 2026-01-31
 description: 本博客支持的所有 Markdown 功能、组件和扩展的综合指南。
-tags: [Guide, Markdown, Features]
+tags: [guide, Markdown, features]
 category: Guides
 draft: true
 pin: 1

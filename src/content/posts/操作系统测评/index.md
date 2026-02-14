@@ -3,24 +3,24 @@ title: "你真的需要 Linux 吗？——Linux 新人避坑指南"
 published: 2026-02-06 16:26
 description: ""
 tags:
-    - "linux"
-    - "windows"
-    - "macos"
-    - "arch"
-    - "debian"
-    - "ubuntu"
-    - "fedora"
-    - "mint"
+    - "Linux"
+    - "Windows"
+    - "macOS"
+    - "Arch"
+    - "Debian"
+    - "Ubuntu"
+    - "Fedora"
+    - "Mint"
     - "desktop-environment"
-    - "gnome"
-    - "kde"
-    - "nvidia"
+    - "GNOME"
+    - "KDE"
+    - "NVIDIA"
 image: "images/linux-switch-cover.webp"
 draft: true
 ---
 
 > 本文所述内容基于作者的主观使用体验。
-> 作为一个数学/统计学背景，经历过数据丢失之痛，与 N卡驱动斗智斗勇，最终在 Debian 找到归宿的用户，希望能给犹豫不决的你一点参考。
+> 作为一个数学/统计学背景，经历过数据丢失之痛，与 N 卡驱动斗智斗勇，最终在 Debian 找到归宿的用户，希望能给犹豫不决的你一点参考。
 
 ### 前言
 
@@ -44,7 +44,7 @@ draft: true
 
 #### 第三阶段：入坑 Arch 与“核爆”现场（2025.02 - 2025.07）
 不甘心的我，在 2025 年 2 月直接挑战了传说中的 **Arch Linux**。
-不得不说，Arch 著名的 wiki 文档教会了我太多东西。那段时间我配合 KDE 桌面环境，找回了 Windows 的操作习惯，但拥有了极高的自由度。社老师和 Arch Linux 过上了幸福的生活，真是可喜可贺，可喜可贺……
+不得不说，Arch 著名的 Wiki 文档教会了我太多东西。那段时间我配合 KDE 桌面环境，找回了 Windows 的操作习惯，但拥有了极高的自由度。社老师和 Arch Linux 过上了幸福的生活，真是可喜可贺，可喜可贺……
 
 那么不出意外的话，就要出意外了。Linux 用户的宿敌出现了——**Nvidia（英伟达）**。2025 年 7 月，一次显卡驱动更新直接让我的图形界面炸裂，系统彻底黑屏。
 

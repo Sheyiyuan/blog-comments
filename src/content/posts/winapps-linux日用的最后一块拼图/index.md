@@ -5,23 +5,23 @@ published: 2025-10-07
 category: "技术分享"
 tags: 
   - "arch-linux"
-  - "kvm"
-  - "linux"
-  - "photoshop"
-  - "qemu"
-  - "rdp"
-  - "winapps"
-  - "windows"
-  - "windows11"
+  - "KVM"
+  - "Linux"
+  - "Photoshop"
+  - "QEMU"
+  - "RDP"
+  - "WinApps"
+  - "Windows"
+  - "Windows11"
   - "安装"
   - "操作系统"
   - "配置"
 image: "images/1759850655-截图-2025-10-07-23-24-05.png"
 ---
 
-尽管目前Linux的软件生态已经是一片勃勃生机，万物进发的景象犹在眼前。但是我们仍然面对Office、PhotoShop等部分软件不得不使用windows环境来运行的情况。wine对于部分软件来说仍然有兼容性问题，而直接使用虚拟机又显得不太方便。这个时候我们的WinApps出场了，WinApps使用远程桌面协议（RDP）直接与我们需要使用的windows软件交互，让我们可以不必打开vm就直接使用软件，也不用再在虚拟机内与windows桌面交互了。
+尽管目前 Linux 的软件生态已经是一片勃勃生机、万物竞发的景象犹在眼前，但是我们仍然面对 Office、Photoshop 等部分软件不得不使用 Windows 环境来运行的情况。Wine 对于部分软件来说仍然有兼容性问题，而直接使用虚拟机又显得不太方便。这个时候我们的 WinApps 出场了，WinApps 使用远程桌面协议（RDP）直接与我们需要使用的 Windows 软件交互，让我们可以不必打开 VM 就直接使用软件，也不用再在虚拟机内与 Windows 桌面交互了。
 
-下面我们以`PhotoShop`为例，演示WinApp的使用方法。
+下面我们以 `Photoshop` 为例，演示 WinApps 的使用方法。
 
 ## 安装虚拟机管理器
 
@@ -31,23 +31,23 @@ image: "images/1759850655-截图-2025-10-07-23-24-05.png"
 
 ![在首选项中选择启用xml编辑和系统托盘图标](images/txs4ug.png)
 
-## 虚拟机安装windows
+## 虚拟机安装 Windows
 
 ### 准备安装镜像
 
-我们需要准备两个安装镜像，一个是windows系统安装镜像，另一个是windows虚拟驱动的安装镜像`virtio-win`
+我们需要准备两个安装镜像，一个是 Windows 系统安装镜像，另一个是 Windows 虚拟驱动的安装镜像 `virtio-win`
 
-windows安装镜像请前往微软官网下载，而驱动这里我们选择[fedora的镜像站](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.285-1/)下载其中的`virtio-win.iso`
+Windows 安装镜像请前往微软官网下载，而驱动这里我们选择 [Fedora 的镜像站](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.285-1/) 下载其中的 `virtio-win.iso`
 
-这里我以windows11为例进行安装。
+这里我以 Windows 11 为例进行安装。
 
 ### 安装过程
 
-首先我们打开虚拟机管理器，选择`文件-新建虚拟机-本地安装介质`；
+首先我们打开虚拟机管理器，选择 `文件-新建虚拟机-本地安装介质`；
 
 ![image](images/u37dq2.png)
 
-选择本地windows系统镜像；
+选择本地 Windows 系统镜像；
 
 ![image](images/u4i8ai.png)
 
@@ -57,7 +57,7 @@ windows安装镜像请前往微软官网下载，而驱动这里我们选择[fed
 
 完成之后，我们还需要做一些别的配置：
 
-1. 在`CPU`选项中启用`复制主机CPU配置`并打开XML,确保`clock`一项与下面一致：
+1. 在 `CPU` 选项中启用 `复制主机CPU配置` 并打开 XML，确保 `clock` 一项与下面一致：
 
 ```
   <clock offset="localtime">
