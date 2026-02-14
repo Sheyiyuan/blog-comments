@@ -70,8 +70,7 @@ const backgroundOpacity = Math.min(
 	Math.max(backgroundConfig.opacity ?? defaultBackground.opacity ?? 1, 0),
 	1,
 );
-const useAutoBackground =
-	backgroundConfig.type === "auto" && !!pageCover;
+const useAutoBackground = backgroundConfig.type === "auto" && !!pageCover;
 const useImageBackground =
 	backgroundConfig.type === "image" || useAutoBackground;
 const backgroundImageSrc =
@@ -502,6 +501,36 @@ function init() {
 	showBanner();
 }
 
+function getExpectedSidebarContentType(pathname: string) {
+	if (pathname.startsWith('/notes/')) return 'notes';
+	if (pathname.startsWith('/archive/')) return 'all';
+	return 'posts';
+}
+
+async function syncSidebarIfNeeded() {
+	const sidebar = document.getElementById('sidebar');
+	if (!sidebar) return;
+
+	const expected = getExpectedSidebarContentType(window.location.pathname);
+	const current = sidebar.getAttribute('data-content-type') || 'posts';
+	if (current === expected) return;
+
+	try {
+		const res = await fetch(window.location.href, {
+			headers: { 'X-Requested-With': 'swup' },
+		});
+		if (!res.ok) return;
+		const html = await res.text();
+		const doc = new DOMParser().parseFromString(html, 'text/html');
+		const incomingSidebar = doc.querySelector('#sidebar');
+		if (incomingSidebar && sidebar.parentElement) {
+			sidebar.replaceWith(incomingSidebar);
+		}
+	} catch (_err) {
+		return;
+	}
+}
+
 /* Load settings when entering the site */
 init();
 
@@ -572,6 +601,7 @@ const setup = () => {
 		if (heightExtend) {
 			heightExtend.classList.add('hidden')
 		}
+		syncSidebarIfNeeded()
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {

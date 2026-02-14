@@ -1,35 +1,41 @@
 ---
-import MainGridLayout from "@layouts/MainGridLayout.astro";
 import EssayCard from "@components/EssayCard.astro";
 import PostCard from "@components/PostCard.astro";
-
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-
-import { homePageConfig } from "@/config";
-import { HomeSectionPreset } from "@/types/config";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedEssays, getSortedPosts } from "@utils/content-utils";
 import { getPostUrlBySlug, url } from "@utils/url-utils";
+import { homePageConfig } from "@/config";
+import { HomeSectionPreset } from "@/types/config";
 
 type GalleryImage = { src: string; alt?: string };
 
-const essaysCount = Math.max(0, Number(homePageConfig?.recentEssays?.count ?? 0));
+const essaysCount = Math.max(
+	0,
+	Number(homePageConfig?.recentEssays?.count ?? 0),
+);
 const postsCount = Math.max(0, Number(homePageConfig?.recentPosts?.count ?? 0));
 
 const sections =
 	homePageConfig?.sections ??
 	([HomeSectionPreset.Essays, HomeSectionPreset.Posts] as const);
 
-const [allEssays, allPosts] = await Promise.all([getSortedEssays(), getSortedPosts()]);
+const [allEssays, allPosts] = await Promise.all([
+	getSortedEssays(),
+	getSortedPosts(),
+]);
 const essays = allEssays.slice(0, essaysCount);
 const posts = allPosts.slice(0, postsCount);
 
 const essaysWithGallery = await Promise.all(
 	essays.map(async (entry) => {
 		const { remarkPluginFrontmatter } = await entry.render();
-		const galleryImages = (Array.isArray(remarkPluginFrontmatter?.galleryImages)
-			? remarkPluginFrontmatter.galleryImages
-			: []) as GalleryImage[];
+		const galleryImages = (
+			Array.isArray(remarkPluginFrontmatter?.galleryImages)
+				? remarkPluginFrontmatter.galleryImages
+				: []
+		) as GalleryImage[];
 		return { entry, galleryImages };
 	}),
 );
@@ -38,7 +44,7 @@ let delay = 0;
 const interval = 50;
 ---
 
-<MainGridLayout>
+<MainGridLayout sidebarContentType="all">
 	<div class="flex flex-col gap-4 mb-4">
 		{sections.map((section) => {
 			if (section === HomeSectionPreset.Essays) {
