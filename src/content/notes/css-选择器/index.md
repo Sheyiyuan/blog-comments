@@ -14,8 +14,6 @@ comments: true
 sponsor: true
 ---
 
-# CSS 选择器
-
 CSS 选择器是 CSS 规则的一部分，用于选择 HTML 元素。
 
 CSS 属性采用键值对形式：`<属性名>: <属性值>;`
