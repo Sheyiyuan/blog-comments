@@ -2,13 +2,17 @@
 import { Icon } from "astro-icon/components";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
-import { LinkPreset, type NavBarLink, type NavBarBackground } from "../types/config";
+import {
+	LinkPreset,
+	type NavBarBackground,
+	type NavBarLink,
+} from "../types/config";
 import { url } from "../utils/url-utils";
 import LightDarkSwitch from "./LightDarkSwitch.svelte";
+import ImageWrapper from "./misc/ImageWrapper.astro";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
-import ImageWrapper from "./misc/ImageWrapper.astro";
 
 const className = Astro.props.class;
 const banner: string | undefined = Astro.props.banner;
@@ -24,36 +28,36 @@ let links: NavBarLink[] = navBarConfig.links.map(
 );
 
 const defaultBackground: NavBarBackground = {
-    type: "color",
-    color: "var(--card-bg)",
-    opacity: 1,
+	type: "color",
+	color: "var(--card-bg)",
+	opacity: 1,
 };
 const backgroundConfig = navBarConfig.background ?? defaultBackground;
 const backgroundOpacity = Math.min(
-    Math.max(backgroundConfig.opacity ?? defaultBackground.opacity ?? 1, 0),
-    1,
+	Math.max(backgroundConfig.opacity ?? defaultBackground.opacity ?? 1, 0),
+	1,
 );
 const useAutoImage = backgroundConfig.type === "auto" && !!banner;
 const useImage = backgroundConfig.type === "image" || useAutoImage;
 const imageSrc =
-    backgroundConfig.type === "image" ? backgroundConfig.src : banner;
+	backgroundConfig.type === "image" ? backgroundConfig.src : banner;
 const imagePosition =
-    backgroundConfig.type === "image"
-        ? backgroundConfig.position
-        : backgroundConfig.type === "auto"
-            ? backgroundConfig.position
-            : undefined;
+	backgroundConfig.type === "image"
+		? backgroundConfig.position
+		: backgroundConfig.type === "auto"
+			? backgroundConfig.position
+			: undefined;
 const imageBasePath =
-    backgroundConfig.type === "image"
-        ? backgroundConfig.basePath
-        : bannerBasePath;
+	backgroundConfig.type === "image"
+		? backgroundConfig.basePath
+		: bannerBasePath;
 const backgroundColor =
-    backgroundConfig.type === "color" && backgroundConfig.color
-        ? backgroundConfig.color
-        : "var(--card-bg)";
+	backgroundConfig.type === "color" && backgroundConfig.color
+		? backgroundConfig.color
+		: "var(--card-bg)";
 const backgroundColorStyle = `background-color: color-mix(in oklch, ${backgroundColor} ${backgroundOpacity * 100}%, transparent);`;
 ---
-<div id="navbar" class="z-50 onload-animation relative w-full">
+<div id="navbar" class="z-50 relative w-full">
     <div class="absolute left-0 right-0 -top-8 h-[6.5rem] overflow-hidden pointer-events-none">
         {useImage && imageSrc ? (
             <ImageWrapper
@@ -69,7 +73,7 @@ const backgroundColorStyle = `background-color: color-mix(in oklch, ${background
     </div>
     <div class:list={[
         className,
-        "card-base !overflow-visible w-full h-[4.5rem] !rounded-none flex items-center justify-between px-4"]}>
+        "card-base !transition-none !overflow-visible w-full h-[4.5rem] !rounded-none flex items-center justify-between px-4"]}>
         <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
             <div class="flex flex-row text-[var(--primary)] items-center text-md">
                 <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
@@ -90,19 +94,19 @@ const backgroundColorStyle = `background-color: color-mix(in oklch, ${background
         </div>
         <div class="flex">
             <!--<SearchPanel client:load>-->
-            <Search client:only="svelte"></Search>
+            <Search client:load></Search>
             {!siteConfig.themeColor.fixed && (
                     <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
                         <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
                     </button>
             )}
-            <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
+            <LightDarkSwitch client:load></LightDarkSwitch>
             <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
         </div>
         <NavMenuPanel links={links}></NavMenuPanel>
-        <DisplaySettings client:only="svelte"></DisplaySettings>
+        <DisplaySettings client:load></DisplaySettings>
     </div>
 </div>
 

@@ -3,7 +3,7 @@ html.is-changing .transition-swup-fade {
     @apply transition-all duration-200
 }
 html.is-animating .transition-swup-fade {
-    @apply opacity-0 translate-y-4
+    @apply opacity-0
 }
 
 /* Fade-in animations for components */
@@ -26,9 +26,6 @@ html.is-animating .transition-swup-fade {
 }
 #navbar {
     animation-delay: 0ms
-}
-#sidebar {
-    animation-delay: 100ms
 }
 #swup-container {
     outline: none;

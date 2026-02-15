@@ -257,7 +257,11 @@ const bannerOffset =
 						src={backgroundImageSrc}
 						basePath={backgroundImageBasePath}
 						position={backgroundImagePosition || "center"}
-						class="w-full h-full"
+						class="w-full h-full !transition-none"
+						overlayTransition={false}
+						loading="eager"
+						decoding="sync"
+						fetchPriority="high"
 						style={`opacity: ${backgroundOpacity};`}
 					/>
 				) : (
@@ -300,6 +304,9 @@ const bannerOffset =
 		@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300
 	}
 	.enable-banner.is-home #sidebar-sticky {
+		@apply top-[calc(5.5rem_-_var(--banner-height-extend))]
+	}
+	.enable-banner.is-home #toc-wrapper {
 		@apply top-[calc(5.5rem_-_var(--banner-height-extend))]
 	}
 	.navbar-hidden {
@@ -387,6 +394,80 @@ function disableAnimation() {
 */
 
 const bannerEnabled = !!document.getElementById('banner-wrapper')
+const SIDEBAR_OUT_ANIMATION_DURATION = 200;
+const SIDEBAR_IN_ANIMATION_DURATION = 220;
+let sidebarOutAnimations: Animation[] = [];
+let pendingSidebarInSelectors: string[] = [];
+let hasSidebarNavigationTransition = false;
+let activeSidebarOutSelectors: string[] = [];
+
+function getRightSidebarMode(pathname: string) {
+	if (pathname.startsWith('/posts/') || pathname.startsWith('/notes/')) return 'toc';
+	return 'none';
+}
+
+function getSidebarAnimationTargetsBySelectors(selectors: string[]) {
+	const targets: HTMLElement[] = [];
+	for (const selector of selectors) {
+		const element = document.querySelector<HTMLElement>(selector);
+		if (!element) continue;
+		targets.push(element);
+	}
+	return targets;
+}
+
+function clearSidebarOutAnimations(selectors: string[] = activeSidebarOutSelectors) {
+	sidebarOutAnimations.forEach((animation) => animation.cancel());
+	sidebarOutAnimations = [];
+
+	for (const element of getSidebarAnimationTargetsBySelectors(selectors)) {
+		element.style.opacity = '';
+		element.style.transform = '';
+	}
+
+	activeSidebarOutSelectors = [];
+}
+
+function playSidebarOutAnimations(selectors: string[]) {
+	clearSidebarOutAnimations();
+	activeSidebarOutSelectors = [...selectors];
+
+	for (const element of getSidebarAnimationTargetsBySelectors(selectors)) {
+
+		const animation = element.animate(
+			[
+				{ opacity: 1 },
+				{ opacity: 0 },
+			],
+			{
+				duration: SIDEBAR_OUT_ANIMATION_DURATION,
+				easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+				fill: 'forwards',
+			},
+		);
+
+		sidebarOutAnimations.push(animation);
+	}
+}
+
+function playSidebarInAnimations(selectors: string[]) {
+	for (const element of getSidebarAnimationTargetsBySelectors(selectors)) {
+		element.style.opacity = '0';
+		element.animate(
+			[
+				{ opacity: 0 },
+				{ opacity: 1 },
+			],
+			{
+				duration: SIDEBAR_IN_ANIMATION_DURATION,
+				easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+				fill: 'forwards',
+			},
+		).onfinish = () => {
+			element.style.opacity = '';
+		};
+	}
+}
 
 function setClickOutsideToClose(panel: string, ignores: string[]) {
 	document.addEventListener("click", event => {
@@ -503,8 +584,68 @@ function init() {
 
 function getExpectedSidebarContentType(pathname: string) {
 	if (pathname.startsWith('/notes/')) return 'notes';
-	if (pathname.startsWith('/archive/')) return 'all';
-	return 'posts';
+	if (pathname.startsWith('/essays/')) return 'essays';
+	if (pathname.startsWith('/posts/') || pathname.startsWith('/passage/')) return 'posts';
+	return 'all';
+}
+
+function replaceSidebarWidgetIfChanged(
+	currentSidebar: HTMLElement,
+	incomingSidebar: Element,
+	widgetId: string,
+) {
+	const selector = `widget-layout[data-id="${widgetId}"]`;
+	const currentWidget = currentSidebar.querySelector(selector);
+	const incomingWidget = incomingSidebar.querySelector(selector);
+
+	if (!currentWidget && !incomingWidget) return;
+
+	if (currentWidget && !incomingWidget) {
+		currentWidget.remove();
+		return;
+	}
+
+	if (!currentWidget && incomingWidget) {
+		const sidebarSticky = currentSidebar.querySelector('#sidebar-sticky');
+		if (sidebarSticky) {
+			const widgetContainer =
+				sidebarSticky.querySelector('#sidebar-widgets') || sidebarSticky;
+			const incomingClone = incomingWidget.cloneNode(true);
+			if (widgetId === 'categories') {
+				const tagsWidget = widgetContainer.querySelector('widget-layout[data-id="tags"]');
+				if (tagsWidget) {
+					widgetContainer.insertBefore(incomingClone, tagsWidget);
+				} else {
+					widgetContainer.appendChild(incomingClone);
+				}
+			} else {
+				widgetContainer.appendChild(incomingClone);
+			}
+		}
+		return;
+	}
+
+	if (currentWidget && incomingWidget && currentWidget.outerHTML !== incomingWidget.outerHTML) {
+		currentWidget.replaceWith(incomingWidget.cloneNode(true));
+	}
+}
+
+function ensureSidebarWidgetOrder(sidebar: HTMLElement) {
+	const sidebarSticky = sidebar.querySelector('#sidebar-sticky');
+	if (!sidebarSticky) return;
+	const widgetContainer =
+		sidebarSticky.querySelector('#sidebar-widgets') || sidebarSticky;
+
+	const categoriesWidget = widgetContainer.querySelector('widget-layout[data-id="categories"]');
+	const tagsWidget = widgetContainer.querySelector('widget-layout[data-id="tags"]');
+	if (!categoriesWidget || !tagsWidget) return;
+
+	const categoriesAfterTags =
+		(categoriesWidget.compareDocumentPosition(tagsWidget) & Node.DOCUMENT_POSITION_PRECEDING) !== 0;
+
+	if (categoriesAfterTags) {
+		widgetContainer.insertBefore(categoriesWidget, tagsWidget);
+	}
 }
 
 async function syncSidebarIfNeeded() {
@@ -523,8 +664,11 @@ async function syncSidebarIfNeeded() {
 		const html = await res.text();
 		const doc = new DOMParser().parseFromString(html, 'text/html');
 		const incomingSidebar = doc.querySelector('#sidebar');
-		if (incomingSidebar && sidebar.parentElement) {
-			sidebar.replaceWith(incomingSidebar);
+		if (incomingSidebar) {
+			replaceSidebarWidgetIfChanged(sidebar, incomingSidebar, 'categories');
+			replaceSidebarWidgetIfChanged(sidebar, incomingSidebar, 'tags');
+			ensureSidebarWidgetOrder(sidebar);
+			sidebar.setAttribute('data-content-type', expected);
 		}
 	} catch (_err) {
 		return;
@@ -565,7 +709,38 @@ const setup = () => {
 		}
 	})
 	window.swup.hooks.on('content:replace', initCustomScrollbar)
-	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+	window.swup.hooks.on('visit:start', (visit: {to: {url: string}, from?: {url: string}}) => {
+		const toPathname = new URL(visit.to.url, window.location.origin).pathname;
+		const fromPathname = visit.from?.url
+			? new URL(visit.from.url, window.location.origin).pathname
+			: window.location.pathname;
+
+		const outSelectors: string[] = [];
+		const inSelectors: string[] = [];
+
+		const sidebar = document.getElementById('sidebar');
+		const fromLeftType =
+			sidebar?.getAttribute('data-content-type') ||
+			getExpectedSidebarContentType(fromPathname);
+		const toLeftType = getExpectedSidebarContentType(toPathname);
+		if (fromLeftType !== toLeftType) {
+			outSelectors.push('#sidebar-widgets');
+			inSelectors.push('#sidebar-widgets');
+		}
+
+		const fromRightMode = document.getElementById('toc-wrapper') ? 'toc' : getRightSidebarMode(fromPathname);
+		const toRightMode = getRightSidebarMode(toPathname);
+		if (fromRightMode !== toRightMode) {
+			if (fromRightMode === 'toc') outSelectors.push('#toc-wrapper');
+			if (toRightMode === 'toc') inSelectors.push('#toc-wrapper');
+		}
+
+		hasSidebarNavigationTransition = outSelectors.length > 0 || inSelectors.length > 0;
+		pendingSidebarInSelectors = inSelectors;
+		if (hasSidebarNavigationTransition && outSelectors.length > 0) {
+			playSidebarOutAnimations(outSelectors);
+		}
+
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
 		if (pathsEqual(visit.to.url, url('/'))) {
@@ -588,20 +763,29 @@ const setup = () => {
 		if (heightExtend) {
 			heightExtend.classList.remove('hidden')
 		}
-
-		// Hide the TOC while scrolling back to top
-		let toc = document.getElementById('toc-wrapper');
-		if (toc) {
-			toc.classList.add('toc-not-ready')
-		}
 	});
-	window.swup.hooks.on('page:view', () => {
+	window.swup.hooks.on('page:view', async () => {
+		const shouldRunSidebarAnimation = hasSidebarNavigationTransition;
+		if (shouldRunSidebarAnimation) {
+			await syncSidebarIfNeeded();
+			clearSidebarOutAnimations();
+			if (pendingSidebarInSelectors.length > 0) {
+				requestAnimationFrame(() => {
+					playSidebarInAnimations(pendingSidebarInSelectors);
+				});
+			}
+			hasSidebarNavigationTransition = false;
+		}
+		pendingSidebarInSelectors = [];
+
 		// hide the temp high element when the transition is done
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {
 			heightExtend.classList.add('hidden')
 		}
-		syncSidebarIfNeeded()
+		if (!shouldRunSidebarAnimation) {
+			syncSidebarIfNeeded()
+		}
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {
@@ -609,12 +793,6 @@ const setup = () => {
 			if (heightExtend) {
 				heightExtend.classList.add('hidden')
 			}
-
-            // Just make the transition looks better
-            const toc = document.getElementById('toc-wrapper');
-            if (toc) {
-                toc.classList.remove('toc-not-ready')
-            }
         }, 200)
 	});
 }
@@ -625,7 +803,6 @@ if (window?.swup?.hooks) {
 }
 
 let backToTopBtn = document.getElementById('back-to-top-btn');
-let toc = document.getElementById('toc-wrapper');
 let navbar = document.getElementById('navbar-wrapper')
 let lastScrollTop = 0;
 function scrollFunction() {
@@ -636,14 +813,6 @@ function scrollFunction() {
 			backToTopBtn.classList.remove('hide')
 		} else {
 			backToTopBtn.classList.add('hide')
-		}
-	}
-
-	if (bannerEnabled && toc) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
-			toc.classList.remove('toc-hide')
-		} else {
-			toc.classList.add('toc-hide')
 		}
 	}
 

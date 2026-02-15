@@ -16,7 +16,9 @@ for (const heading of headings) {
 }
 
 const className = Astro.props.class;
-const isPostsRoute = Astro.url.pathname.startsWith(url("/posts/"));
+const isTocRoute =
+	Astro.url.pathname.startsWith(url("/posts/")) ||
+	Astro.url.pathname.startsWith(url("/notes/"));
 
 const removeTailingHash = (text: string) => {
 	let lastIndexOfHash = text.lastIndexOf("#");
@@ -31,7 +33,7 @@ let heading1Count = 1;
 
 const maxLevel = siteConfig.toc.depth;
 ---
-{isPostsRoute &&
+{isTocRoute &&
 <table-of-contents class:list={[className, "group"]}>
     {headings.filter((heading) => heading.depth < minDepth + maxLevel).map((heading) =>
             <a href={`#${heading.slug}`} class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
@@ -71,6 +73,7 @@ class TableOfContents extends HTMLElement {
     tocEntries: HTMLAnchorElement[] = [];
     active: boolean[] = [];
     activeIndicator: HTMLElement | null = null;
+    initialized = false;
 
     constructor() {
         super();
@@ -201,15 +204,23 @@ class TableOfContents extends HTMLElement {
     };
 
     connectedCallback() {
-        // wait for the onload animation to finish, which makes the `getBoundingClientRect` return correct values
+        // Prefer waiting for onload animation, but add fallback for routes where animationend is missed.
+        const startInit = () => {
+            if (this.initialized) return;
+            this.initialized = true;
+            this.init();
+        };
+
         const element = document.querySelector('.prose');
         if (element) {
-            element.addEventListener('animationend', () => {
-                this.init();
-            }, { once: true });
-        } else {
-            console.debug('Animation element not found');
+            element.addEventListener('animationend', startInit, { once: true });
         }
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                startInit();
+            });
+        });
     };
 
     init() {
