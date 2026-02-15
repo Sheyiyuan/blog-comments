@@ -1,6 +1,7 @@
 ---
 title: "你真的需要 Linux 吗？——Linux 新人避坑指南"
 published: 2026-02-06 16:26
+category: "技术分享"
 description: "一个从 Windows 到 Arch 再回归 Debian 的真实迁移记录：谁适合 Linux，谁不适合，以及新手最该避开的坑。"
 tags:
     - "Linux"
@@ -16,7 +17,6 @@ tags:
     - "KDE"
     - "NVIDIA"
 image: "images/linux-switch-cover.webp"
-category: "技术分享"
 draft: false
 ---
 
