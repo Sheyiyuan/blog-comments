@@ -14,6 +14,7 @@ import { HomeSectionPreset, LinkPreset } from "./types/config";
 export const siteConfig: SiteConfig = {
 	title: "社亦园的旅行笔记",
 	subtitle: "平淡无奇笔记本",
+	siteStartDate: "2024-06-16",
 	dateTime: {
 		timeZone: "+08:00",
 		defaultTime: "16:00",

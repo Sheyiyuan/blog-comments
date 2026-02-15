@@ -3,16 +3,17 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-type ContentCollection = "posts" | "notes";
+type ContentCollection = "posts" | "notes" | "essays";
 type ContentScope = ContentCollection | "all";
 
 function resolveCollections(scope: ContentScope): ContentCollection[] {
-	if (scope === "all") return ["posts", "notes"];
+	if (scope === "all") return ["posts", "notes", "essays"];
 	return [scope];
 }
 
 function resolveListBasePath(contentType: ContentScope): string {
 	if (contentType === "notes") return "/notes/";
+	if (contentType === "essays") return "/essays/";
 	return "/archive/";
 }
 
@@ -174,17 +175,20 @@ export async function getCategoryList(
 	);
 	const allBlogPosts = grouped.flat();
 	const count: { [key: string]: number } = {};
-	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
-		if (!post.data.category) {
+	allBlogPosts.forEach((post) => {
+		if (!("category" in post.data)) {
+			return;
+		}
+
+		const category = post.data.category;
+		if (!category) {
 			const ucKey = i18n(I18nKey.uncategorized);
 			count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1;
 			return;
 		}
 
 		const categoryName =
-			typeof post.data.category === "string"
-				? post.data.category.trim()
-				: String(post.data.category).trim();
+			typeof category === "string" ? category.trim() : String(category).trim();
 
 		count[categoryName] = count[categoryName] ? count[categoryName] + 1 : 1;
 	});

@@ -3,6 +3,8 @@ import type { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants";
 export type SiteConfig = {
 	title: string;
 	subtitle: string;
+	/** 站点开始运行日期（YYYY-MM-DD），用于统计累计运行天数 */
+	siteStartDate?: string;
 
 	/**
 	 * 日期时间配置：用于 frontmatter 的解析、页面展示与 URL 派生等。

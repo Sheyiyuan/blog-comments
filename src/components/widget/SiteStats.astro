@@ -1,0 +1,40 @@
+---
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
+
+interface Props {
+	runtimeDays: number;
+	postsCount: number;
+	notesCount: number;
+	essaysCount: number;
+	class?: string;
+}
+
+const { runtimeDays, postsCount, notesCount, essaysCount } = Astro.props;
+const className = Astro.props.class;
+---
+
+<div class:list={["card-base sidebar-card-unified px-4 py-4", className]}>
+	<div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-1 mb-3
+		before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+		before:absolute before:left-[-16px] before:top-[5.5px]">统计</div>
+
+	<div class="grid grid-cols-3 gap-2">
+		<div class="rounded-xl bg-[var(--btn-regular-bg)] px-3 py-2">
+			<div class="text-xs text-50">{i18n(I18nKey.passage)}</div>
+			<div class="text-sm font-bold text-90 mt-1">{postsCount}</div>
+		</div>
+		<div class="rounded-xl bg-[var(--btn-regular-bg)] px-3 py-2">
+			<div class="text-xs text-50">{i18n(I18nKey.notes)}</div>
+			<div class="text-sm font-bold text-90 mt-1">{notesCount}</div>
+		</div>
+		<div class="rounded-xl bg-[var(--btn-regular-bg)] px-3 py-2">
+			<div class="text-xs text-50">{i18n(I18nKey.essays)}</div>
+			<div class="text-sm font-bold text-90 mt-1">{essaysCount}</div>
+		</div>
+	</div>
+
+	<div class="mt-3 text-xs text-50 text-center">
+		本站已累计运行 {runtimeDays} 天
+	</div>
+</div>

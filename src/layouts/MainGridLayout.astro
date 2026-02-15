@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
 import Navbar from "@components/Navbar.astro";
@@ -6,6 +7,7 @@ import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
+import SiteStats from "../components/widget/SiteStats.astro";
 import TOC from "../components/widget/TOC.astro";
 import { siteConfig } from "../config";
 import {
@@ -13,6 +15,7 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
+import { url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -23,7 +26,7 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	headings?: MarkdownHeading[];
-	sidebarContentType?: "posts" | "notes" | "all";
+	sidebarContentType?: "posts" | "notes" | "essays" | "all";
 }
 
 const {
@@ -34,11 +37,47 @@ const {
 	lang,
 	setOGTypeArticle,
 	headings = [],
-	sidebarContentType = "posts",
+	sidebarContentType,
 } = Astro.props;
+
+const resolvedSidebarContentType =
+	sidebarContentType ??
+	(Astro.url.pathname.startsWith(url("/notes/"))
+		? "notes"
+		: Astro.url.pathname.startsWith(url("/essays/"))
+			? "essays"
+			: Astro.url.pathname.startsWith(url("/posts/")) ||
+					Astro.url.pathname.startsWith(url("/passage/"))
+				? "posts"
+				: "all");
 const hasBannerCredit =
 	siteConfig.banner.enable && siteConfig.banner.credit.enable;
 const hasBannerLink = !!siteConfig.banner.credit.url;
+const isRightTocRoute =
+	Astro.url.pathname.startsWith(url("/posts/")) ||
+	Astro.url.pathname.startsWith(url("/notes/"));
+const hasRightToc =
+	siteConfig.toc.enable && isRightTocRoute && headings.length > 0;
+
+const [postsCount, notesCount, essaysCount] = await Promise.all([
+	getCollection("posts", ({ data }) =>
+		import.meta.env.PROD ? data.draft !== true : true,
+	).then((items) => items.length),
+	getCollection("notes", ({ data }) =>
+		import.meta.env.PROD ? data.draft !== true : true,
+	).then((items) => items.length),
+	getCollection("essays", ({ data }) =>
+		import.meta.env.PROD ? data.draft !== true : true,
+	).then((items) => items.length),
+]);
+
+const startDateValue = siteConfig.siteStartDate ?? "2025-01-01";
+const startDate = new Date(startDateValue);
+const now = new Date();
+const diffMs =
+	Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
+	Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+const runtimeDays = Math.max(1, Math.floor(diffMs / 86400000) + 1);
 
 const mainPanelTop = siteConfig.banner.enable
 	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
@@ -67,8 +106,8 @@ const mainPanelTop = siteConfig.banner.enable
 <div id="main-panel-wrapper" class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-0 md:px-4"
+        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)_16rem]
+    mx-auto gap-4 px-1 md:px-2"
         >
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
@@ -84,46 +123,44 @@ const mainPanelTop = siteConfig.banner.enable
             </a>}
 
 
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings} contentType={sidebarContentType}></SideBar>
+            <SideBar class="mb-4 lg:mb-0" headings={headings} contentType={resolvedSidebarContentType}></SideBar>
 
-            <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
+            <main id="swup-container" class="transition-swup-fade overflow-hidden min-w-0">
                 <div id="content-wrapper" class="onload-animation">
                     <!-- the overflow-hidden here prevent long text break the layout-->
                     <!-- make id different from windows.swup global property -->
                     <slot></slot>
-                    <div class="footer col-span-2 onload-animation hidden lg:block">
+                    <div class="footer onload-animation hidden lg:block">
                         <Footer></Footer>
                     </div>
                 </div>
             </main>
 
-            <div class="footer col-span-2 onload-animation block lg:hidden">
+            <aside id="right-sidebar" class="hidden lg:block">
+                <div id="right-sidebar-content" class="sticky top-[5.5rem]">
+                    {hasRightToc ? (
+                        <div id="toc-wrapper">
+                            <div id="toc-inner-wrapper" class="h-[calc(100vh_-_12rem)] overflow-y-auto overflow-x-hidden hide-scrollbar">
+                                <div id="toc" class="w-full h-full">
+                                    <div class="h-8 w-full"></div>
+                                    <TOC headings={headings}></TOC>
+                                    <div class="h-8 w-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+                    <div class:list={[{"mt-4": hasRightToc}]}>
+                        <SiteStats runtimeDays={runtimeDays} postsCount={postsCount} notesCount={notesCount} essaysCount={essaysCount}></SiteStats>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="footer onload-animation block lg:hidden">
                 <Footer></Footer>
             </div>
         </div>
 
         <BackToTop></BackToTop>
-    </div>
-</div>
-
-<!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
-    <div class="relative max-w-[var(--page-width)] mx-auto">
-        <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center",
-            {"toc-hide": siteConfig.banner.enable}]}
-        >
-            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                <div id="toc" class="w-full h-full transition-swup-fade ">
-                    <div class="h-8 w-full"></div>
-                    <TOC headings={headings}></TOC>
-                    <div class="h-8 w-full"></div>
-                </div>
-            </div>
-        </div>}
-
-        <!-- #toc needs to exist for Swup to work normally -->
-        {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
 </div>
 </Layout>
