@@ -15,7 +15,7 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
-import { url } from "../utils/url-utils";
+import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -82,6 +82,7 @@ const runtimeDays = Math.max(1, Math.floor(diffMs / 86400000) + 1);
 const mainPanelTop = siteConfig.banner.enable
 	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
 	: "5.5rem";
+const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -123,9 +124,16 @@ const mainPanelTop = siteConfig.banner.enable
             </a>}
 
 
-            <SideBar class="mb-4 lg:mb-0" headings={headings} contentType={resolvedSidebarContentType}></SideBar>
+            <SideBar
+                class:list={[
+                    "mb-4 lg:mb-0",
+                    { "order-2 lg:order-none": !isHomePage },
+                ]}
+                headings={headings}
+                contentType={resolvedSidebarContentType}
+            ></SideBar>
 
-            <main id="swup-container" class="transition-swup-fade overflow-hidden min-w-0">
+            <main id="swup-container" class:list={["transition-swup-fade overflow-hidden min-w-0", { "order-1 lg:order-none": !isHomePage }]}>
                 <div id="content-wrapper" class="onload-animation">
                     <!-- the overflow-hidden here prevent long text break the layout-->
                     <!-- make id different from windows.swup global property -->
@@ -155,7 +163,7 @@ const mainPanelTop = siteConfig.banner.enable
                 </div>
             </aside>
 
-            <div class="footer onload-animation block lg:hidden">
+            <div class:list={["footer onload-animation block lg:hidden", { "order-3": !isHomePage }]}>
                 <Footer></Footer>
             </div>
         </div>
