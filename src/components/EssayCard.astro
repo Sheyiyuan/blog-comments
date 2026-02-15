@@ -5,6 +5,7 @@ import { getEssayUrlByRouteSlug } from "@utils/url-utils";
 import { formatDateTimeToYYYYMMDDHHmm } from "@utils/date-utils";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
+import { Icon } from "astro-icon/components";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import {
 	getEssayExcerptFromBody,
@@ -88,6 +89,7 @@ const galleryBasePath = path.join(
 				<span class="inline-flex items-center gap-2 align-middle">
 					{isPinned && (
 						<span class="inline-flex items-center rounded-md px-2 py-0.5 text-lg md:text-xl leading-none font-semibold bg-[var(--primary)]/10 text-[var(--primary)]">
+							<Icon name="material-symbols:keep-rounded" class="mr-1 text-base"></Icon>
 							{i18n(I18nKey.pinned)}
 						</span>
 					)}
@@ -99,6 +101,7 @@ const galleryBasePath = path.join(
 				{isPinned && (
 					<div class="mb-2">
 						<span class="inline-flex items-center rounded-md px-2 py-0.5 text-lg leading-none font-semibold bg-[var(--primary)]/10 text-[var(--primary)]">
+							<Icon name="material-symbols:keep-rounded" class="mr-1 text-base"></Icon>
 							{i18n(I18nKey.pinned)}
 						</span>
 					</div>

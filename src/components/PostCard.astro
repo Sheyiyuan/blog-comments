@@ -60,6 +60,7 @@ const isPinned = Number(entry.data.pin ?? 0) > 0;
             <span class="inline-flex items-center gap-2 align-middle">
                 {isPinned && (
                     <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xl leading-none font-semibold bg-[var(--primary)]/10 text-[var(--primary)]">
+                        <Icon name="material-symbols:keep-rounded" class="mr-1 text-base"></Icon>
                         {i18n(I18nKey.pinned)}
                     </span>
                 )}
