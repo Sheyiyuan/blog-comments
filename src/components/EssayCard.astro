@@ -1,18 +1,17 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import path from "node:path";
-import { getEssayUrlByRouteSlug } from "@utils/url-utils";
-import { formatDateTimeToYYYYMMDDHHmm } from "@utils/date-utils";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import { Icon } from "astro-icon/components";
-import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import { formatDateTimeToYYYYMMDDHHmm } from "@utils/date-utils";
 import {
-	getEssayExcerptFromBody,
 	getEssayDisplayTitle,
+	getEssayExcerptFromBody,
 	getEssayRouteSlug,
 } from "@utils/essay-utils";
-import { getDir } from "@utils/url-utils";
+import { getDir, getEssayUrlByRouteSlug } from "@utils/url-utils";
+import { Icon } from "astro-icon/components";
 
 interface Props {
 	entry: CollectionEntry<"essays">;
@@ -32,7 +31,9 @@ const excerpt = getEssayExcerptFromBody(entry.body);
 const isPinned = Number(entry.data.pin ?? 0) > 0;
 
 const galleryTotal = Array.isArray(galleryImages) ? galleryImages.length : 0;
-const galleryShown = Array.isArray(galleryImages) ? galleryImages.slice(0, 9) : [];
+const galleryShown = Array.isArray(galleryImages)
+	? galleryImages.slice(0, 9)
+	: [];
 const galleryRemaining = Math.max(0, galleryTotal - galleryShown.length);
 
 const entryDir = getDir(entry.id);
