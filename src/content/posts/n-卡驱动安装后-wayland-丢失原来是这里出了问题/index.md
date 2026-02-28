@@ -15,7 +15,7 @@ tags:
     - 显卡驱动
     - 故障排查
 category: "技术分享"
-draft: true
+draft: false
 pin: 0
 lang: ""
 comments: true
