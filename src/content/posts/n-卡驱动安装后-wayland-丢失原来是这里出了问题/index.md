@@ -1,5 +1,5 @@
 ---
-title: "N 卡驱动安装后 Wayland 丢失？原来是这里出了问题"
+title: "N 卡驱动安装后 Wayland 丢失？显示器不亮？原来是这里出了问题"
 published: 2026-02-28 08:59
 description: "Debian 13 安装 NVIDIA 闭源驱动后 Wayland 选项消失？本文记录 GDM 场景下的排查思路、修复步骤与回滚方法，快速恢复 Wayland 登录。"
 image: "images/nvidia.jpg"
@@ -13,6 +13,8 @@ tags:
     - GDM
     - Xorg
     - 显卡驱动
+    - 显示器
+    - 多显示器
     - 故障排查
 category: "技术分享"
 draft: false
@@ -48,7 +50,9 @@ sponsor: true
 
 这不是每台机器都会中招，但一旦中招，症状通常都很一致：登录页没有 Wayland 可选。
 
-## 解决方法（我这台机器可用）
+## 解决方法
+
+### Part 1：解除 GDM 对 Wayland 的屏蔽
 
 我这里用的是把相关规则文件先备份掉，再重启验证。
 
@@ -64,6 +68,46 @@ sudo mv /usr/lib/udev/rules.d/61-gdm.rules /usr/lib/udev/rules.d/61-gdm.rules.ba
 ```bash
 sudo mv /usr/lib/udev/rules.d/61-gdm.rules.bak /usr/lib/udev/rules.d/61-gdm.rules
 ```
+
+### 外界显示屏无法在 Wayland 会话下显示的问题
+
+正当主包成功恢复了 Wayland 选项并进入了 Wayland 会话后，又遇到这样一个问题：**外界显示屏无法在 Wayland 会话下显示，但在 X 会话下一切正常。** 
+
+这是因为 NVIDIA 驱动需要通过 DRM (Direct Rendering Manager) 接口与 Wayland 通信，但这在默认情况下往往未启用。遇到这种问题可以参考下面的 Part 2 进行解决。
+
+### Part 2：开启内核模式设置 (DRM KMS) —— **最核心的解决方案**
+
+这是解决外接显示器不亮最关键的一步。
+
+1.  **编辑 GRUB 配置**：
+    打开终端，编辑 GRUB 配置文件：
+    ```bash
+    sudo nano /etc/default/grub
+    ```
+
+2.  **修改内核参数**：
+    找到 `GRUB_CMDLINE_LINUX_DEFAULT` 这一行，在引号内添加 `nvidia-drm.modeset=1`。
+    例如：
+    ```text
+    GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nvidia-drm.modeset=1"
+    ```
+    *(注意：如果你的电脑也是笔记本且支持 Optimus，有时还需要加上 `nvidia-drm.fbdev=1`，这在较新的驱动中能提升体验)*
+
+3.  **更新 GRUB 并重启**：
+    *   **Debian/Ubuntu/Mint/Kali**:
+        ```bash
+        sudo update-grub
+        ```
+    *   **Fedora/RHEL/CentOS**:
+        ```bash
+        sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+        ```
+    *   **Arch Linux**:
+        ```bash
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+        ```
+
+    **重启电脑**，然后进入 Wayland 会话测试。
 
 ## 碎碎念
 
