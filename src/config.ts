@@ -176,6 +176,13 @@ export const friendsConfig: FriendsConfig = {
 			avatar: "https://79d93ce9.blog-pure.pages.dev/favicon/favicon.ico",
 			newTab: true,
 		},
+		{
+			name: "moi",
+			url: "https://hagumiaoi.pages.dev/",
+			description: "moi 的个人创作小站",
+			avatar: "https://hagumiaoi.pages.dev/favicon/favicon.ico",
+			newTab: true,
+		},
 	],
 };
 
