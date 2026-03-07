@@ -1,0 +1,63 @@
+---
+interface Props {
+  summary: string;
+  open?: boolean;
+}
+
+const { summary, open = false } = Astro.props;
+---
+
+<details open={open} class="collapsible-section">
+  <summary class="collapsible-summary">
+    <span class="collapsible-arrow" aria-hidden="true"></span>
+    <span class="collapsible-text">{summary}</span>
+  </summary>
+
+  <div class="collapsible-content">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .collapsible-section {
+    margin-top: 20px;
+  }
+
+  .collapsible-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    list-style: none;
+  }
+
+  .collapsible-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .collapsible-arrow {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg) translateY(-1px);
+    transform-origin: center;
+    transition: transform 0.2s ease;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
+
+  .collapsible-section[open] .collapsible-arrow {
+    transform: rotate(45deg) translateY(-1px);
+  }
+
+  .collapsible-section[open] .collapsible-text {
+    display: none;
+  }
+
+  .collapsible-content {
+    margin-top: 20px;
+  }
+</style>
