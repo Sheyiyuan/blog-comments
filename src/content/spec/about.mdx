@@ -1,0 +1,151 @@
+import ToolGroup from '../../components/misc/ToolGroup.astro';
+import ToolCard from '../../components/misc/ToolCard.astro';
+import statusSvg from './images/status.svg';
+import hanpaiPng from './images/hanpai.png';
+
+import edgeIcon from './images/icons/edge.svg';
+import typstIcon from './images/icons/typst.svg';
+import latexIcon from './images/icons/latex.svg';
+import obsidianIcon from './images/icons/obsidian.svg';
+import docmostIcon from './images/icons/docmost.ico';
+import memosIcon from './images/icons/memos.png';
+import cherryStudioIcon from './images/icons/cherry-studio.png';
+import syncthingIcon from './images/icons/syncthing.png';
+import vscodeIcon from './images/icons/vscode.svg';
+import webstormIcon from './images/icons/webstorm.svg';
+import golandIcon from './images/icons/goland.svg';
+import pycharmIcon from './images/icons/pycharm.svg';
+import rstudioIcon from './images/icons/rstudio.svg';
+import zedIcon from './images/icons/zed.png';
+import neovimIcon from './images/icons/neovim.ico';
+import godotIcon from './images/icons/godot.svg';
+import typescriptIcon from './images/icons/typescript.svg';
+import javascriptIcon from './images/icons/javascript.svg';
+import goIcon from './images/icons/go.svg';
+import pythonIcon from './images/icons/python.svg';
+import rIcon from './images/icons/r.png';
+import dartIcon from './images/icons/dart.svg';
+import astroIcon from './images/icons/astro.svg';
+import reactIcon from './images/icons/react.svg';
+import electronIcon from './images/icons/electron.svg';
+import wailsIcon from './images/icons/wails.ico';
+import flutterIcon from './images/icons/flutter.svg';
+import fastapiIcon from './images/icons/fastapi.png';
+import ginIcon from './images/icons/gin.svg';
+import postgresqlIcon from './images/icons/postgresql.svg';
+import redisIcon from './images/icons/redis.svg';
+import dockerIcon from './images/icons/docker.svg';
+import caddyIcon from './images/icons/caddy.svg';
+import onepanelIcon from './images/icons/onepanel.png';
+import gitIcon from './images/icons/git.svg';
+import githubIcon from './images/icons/github.svg';
+import giteaIcon from './images/icons/gitea.svg';
+import githubActionsIcon from './images/icons/github-actions.svg';
+import kittyIcon from './images/icons/kitty.svg';
+import archlinuxIcon from './images/icons/archlinux.svg';
+import debianIcon from './images/icons/debian.svg';
+import rockyLinuxIcon from './images/icons/rocky-linux.svg';
+import macosIcon from './images/icons/macos.svg';
+
+<div align="center">
+  <img src={statusSvg.src} alt="status" width="100%" />
+</div>
+
+<h1 align="center">Ciallo～(∠・ω< )⌒☆</h1>
+
+我是 Sheyiyuan，也可以叫我社亦园。
+
+## 关于我
+
+我目前末流 985 :spoiler[左家垅皇家男子职业技术学校]统计学本科在读。平时做全栈开发，偶尔参与开源项目。
+
+不怎么玩游戏，偶尔会玩玩 Minecraft 和 杀戮尖塔:spoiler[第四喜欢的角色是故障机器人第四喜欢的角色是故障机器]。
+
+听歌一般听老一点的中术，动漫和小说看得比较少。
+
+TRPG 玩家，主玩 《克苏鲁的呼唤》和《最终物语》，偏向当主持人:spoiler[虽然带团技术很烂]，风格是轻松向，注重故事性，对PVP有PTSD。
+
+因为搭骰子接触到了计算机技术。这个是我家的骰娘滩间铁半拍，她很可爱，也欢迎来使用（QQ：3584400841）。
+
+<div align="center">
+  <img src={hanpaiPng.src} alt="这是半拍，她很可爱" width="30%" />
+</div>
+
+喜欢瞎折腾，但是又怕麻烦，所以经常半途而废。学过吉他、编曲和绘画但是没怎么学会。
+
+主力使用 Debian 、Arch Linux 和 MacOS，编程语言偏好 TypeScript、Go 和 Python。也会用 Godot 做一些没意思的小游戏。有自建的服务器，运行一些个人项目和服务。
+
+## 我在使用的一些工具
+
+<div style="display: flex; flex-direction: column; gap: 24px; margin-top: 20px; text-align: left;">
+
+  <ToolGroup title="效率 (Productivity)">
+    <ToolCard name="Edge" desc="浏览器" icon={edgeIcon} url="https://www.microsoft.com/edge" />
+    <ToolCard name="Typst" desc="排版工具" icon={typstIcon} url="https://typst.app/" />
+    <ToolCard name="LaTeX" desc="排版工具" icon={latexIcon} url="https://www.latex-project.org/" />
+    <ToolCard name="Obsidian" desc="笔记" icon={obsidianIcon} url="https://obsidian.md/" />
+    <ToolCard name="Docmost" desc="笔记" icon={docmostIcon} url="https://docmost.com/" />
+    <ToolCard name="Memos" desc="笔记" icon={memosIcon} url="https://usememos.com/" />
+    <ToolCard name="Cherry Studio" desc="AI" icon={cherryStudioIcon} url="https://www.cherry-ai.com/" />
+    <ToolCard name="Syncthing" desc="文件同步" icon={syncthingIcon} url="https://syncthing.net/" />
+  </ToolGroup>
+
+  <ToolGroup title="开发 (Development)">
+    <ToolCard name="VS Code" desc="IDE" icon={vscodeIcon} url="https://code.visualstudio.com/" />
+    <ToolCard name="WebStorm" desc="IDE" icon={webstormIcon} url="https://www.jetbrains.com/webstorm/" />
+    <ToolCard name="GoLand" desc="IDE" icon={golandIcon} url="https://www.jetbrains.com/go/" />
+    <ToolCard name="PyCharm" desc="IDE" icon={pycharmIcon} url="https://www.jetbrains.com/pycharm/" />
+    <ToolCard name="RStudio" desc="IDE" icon={rstudioIcon} url="https://posit.co/products/open-source/rstudio/" />
+    <ToolCard name="Zed" desc="IDE" icon={zedIcon} url="https://zed.dev/" />
+    <ToolCard name="Neovim" desc="IDE" icon={neovimIcon} url="https://neovim.io/" />
+    <ToolCard name="Godot" desc="游戏引擎" icon={godotIcon} url="https://godotengine.org/" />
+  </ToolGroup>
+
+  <ToolGroup title="语言 (Languages)">
+    <ToolCard name="TypeScript" desc="全栈开发" icon={typescriptIcon} url="https://www.typescriptlang.org/" />
+    <ToolCard name="JavaScript" desc="全栈开发" icon={javascriptIcon} url="https://developer.mozilla.org/en-US/docs/Web/JavaScript" />
+    <ToolCard name="Go" desc="后端开发" icon={goIcon} url="https://go.dev/" />
+    <ToolCard name="Python" desc="后端开发 / 数据科学" icon={pythonIcon} url="https://www.python.org/" />
+    <ToolCard name="R" desc="统计分析" icon={rIcon} url="https://www.r-project.org/" />
+    <ToolCard name="Dart" desc="客户端开发" icon={dartIcon} url="https://dart.dev/" />
+  </ToolGroup>
+
+  <ToolGroup title="技术栈 (Technologies)">
+    <ToolCard name="Astro" desc="框架" icon={astroIcon} url="https://astro.build/" />
+    <ToolCard name="React" desc="框架" icon={reactIcon} url="https://astro.build/" />
+    <ToolCard name="Electron" desc="框架" icon={electronIcon} url="https://www.electronjs.org/" />
+    <ToolCard name="Wails" desc="框架" icon={wailsIcon} url="https://wails.io/" />
+    <ToolCard name="Flutter" desc="框架" icon={flutterIcon} url="https://flutter.dev/" />
+    <ToolCard name="FastAPI" desc="框架" icon={fastapiIcon} url="https://fastapi.tiangolo.com/" />
+    <ToolCard name="Gin" desc="框架" icon={ginIcon} url="https://gin-gonic.com/" />
+    <ToolCard name="PostgreSQL" desc="数据库" icon={postgresqlIcon} url="https://www.postgresql.org/" />
+    <ToolCard name="Redis" desc="数据库" icon={redisIcon} url="https://redis.io/" />
+  </ToolGroup>
+
+  <ToolGroup title="运维 (DevOps & Tools)">
+    <ToolCard name="Docker" desc="DevOps" icon={dockerIcon} url="https://www.docker.com/" />
+    <ToolCard name="Caddy" desc="Web Server" icon={caddyIcon} url="https://caddyserver.com/" />
+    <ToolCard name="1Panel" desc="Server Panel" icon={onepanelIcon} url="https://1panel.cn/" />
+    <ToolCard name="Git" desc="VCS" icon={gitIcon} url="https://git-scm.com/" />
+    <ToolCard name="GitHub" desc="代码托管" icon={githubIcon} url="https://github.com/" />
+    <ToolCard name="Gitea" desc="代码托管" icon={giteaIcon} url="https://about.gitea.com/" />
+    <ToolCard name="GitHub Actions" desc="CI/CD" icon={githubActionsIcon} url="https://github.com/features/actions" />
+    <ToolCard name="Kitty" desc="终端模拟器" icon={kittyIcon} url="https://sw.kovidgoyal.net/kitty/" />
+  </ToolGroup>
+
+  <ToolGroup title="操作系统 (Environment)">
+    <ToolCard name="Arch Linux" desc="ThinkPad X1 Carbon" icon={archlinuxIcon} url="https://archlinux.org/" />
+    <ToolCard name="Debian" desc="ASUS FX507VV" icon={debianIcon} url="https://www.debian.org/" />
+    <ToolCard name="Rocky Linux" desc="Server" icon={rockyLinuxIcon} url="https://rockylinux.org/" />
+    <ToolCard name="macOS" desc="MacBook Air M2 2022" icon={macosIcon} url="https://www.apple.com/macos/" iconStyle="margin: 0; background: white; border-radius: 50%; padding: 2px;" />
+  </ToolGroup>
+
+</div>
+
+## 关于本站
+本站使用下面的工具和服务搭建：
+- 博客框架+主题: Astro + Fuwari
+- 部署: Cloudflare Pages / Caddy Web Server
+- 代码托管: GitHub / Gitea
+- CI/CD: GitHub Actions / Gitea Actions
+- 评论系统: Giscus

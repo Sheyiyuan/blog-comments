@@ -1,0 +1,12 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<div style="border: 1px solid rgba(128, 128, 128, 0.2); border-radius: 12px; padding: 20px; background: rgba(128, 128, 128, 0.03);">
+  <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600; opacity: 0.9; border: none; padding: 0;">{title}</h3>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">
+    <slot />
+  </div>
+</div>
