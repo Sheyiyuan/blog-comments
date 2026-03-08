@@ -14,15 +14,15 @@ type FortuneTier = {
 const fortuneTiers: FortuneTier[] = [
 	{
 		min: 1,
-		max: 1,
+		max: 5,
 		title: "大成功",
 		description: "外神眷顾！今日代码一行不改即刻上线，Arch 滚动丝滑顺畅，世界线变动率 0.00%。",
 	},
 	{
-		min: 2,
+		min: 6,
 		max: 12,
 		title: "极难成功",
-		description: "灵感迸发！这是你充满了决心，逻辑严丝合缝，足以洞穿复杂的问题。",
+		description: "灵感迸发！这使你充满了决心，逻辑严丝合缝，足以洞穿复杂的问题。",
 	},
 	{
 		min: 13,
@@ -46,7 +46,7 @@ const fortuneTiers: FortuneTier[] = [
 		min: 96,
 		max: 100,
 		title: "大失败",
-		description: "理智归零！键盘产生了自我意识并拒绝工作，建议立刻物理休眠，否则可能触发 rm -rf 惨案。",
+		description: "理智归零！键盘产生了自我意识并拒绝工作，建议立刻物理休眠，否则可能触发 rm -rf /* 惨案。",
 	},
 ];
 
