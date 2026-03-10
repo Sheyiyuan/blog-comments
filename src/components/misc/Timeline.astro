@@ -1,0 +1,36 @@
+---
+import { timelineData } from "../../constants/timeline";
+
+export interface Props {
+  items?: typeof timelineData;
+}
+
+const { items = timelineData } = Astro.props;
+---
+
+<div class="relative ml-3 md:ml-4 my-8">
+  {/* 垂直分割线 */}
+  <div class="absolute top-2 bottom-0 left-[7px] w-[2px] bg-black/10 dark:bg-white/10"></div>
+  
+  <div class="flex flex-col gap-8">
+    {items.map((item) => (
+      <div class="relative pl-8 md:pl-10">
+        {/* 时间点的小圆圈：使用 Fuwari 的原生主题色 var(--primary) 作为点缀 */}
+        <div class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-[var(--primary)] ring-4 ring-white dark:ring-[#1E1E2E] z-10 -ml-[0.5px]"></div>
+        
+        <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 mb-2">
+          <div class="text-lg font-bold text-black/90 dark:text-white/90 m-0">
+            {item.title}
+          </div>
+          <span class="text-sm font-mono text-black/50 dark:text-white/50 bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-md mt-1 sm:mt-0 w-fit">
+            {item.date}
+          </span>
+        </div>
+        
+        <div class="text-black/75 dark:text-white/70 text-sm md:text-base leading-relaxed p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] shadow-sm">
+          {item.content}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
