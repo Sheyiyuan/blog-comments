@@ -45,22 +45,35 @@ const interval = 50;
 ---
 
 <MainGridLayout sidebarContentType="all">
-	<div class="flex flex-col gap-4 mb-4">
-		{sections.map((section) => {
+	    <div class="flex flex-col gap-4 mb-4">
+	        <!-- 欢迎卡片 -->
+	        <section class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6 mb-4">
+	            <h2 class="font-bold text-xl md:text-2xl text-90 mb-4">欢迎来到我的数字营地</h2>
+	            <div class="space-y-3 text-75">
+	                <p>这里存放着我在理性代码与感性随笔间的摇摆轨迹：</p>
+	                <ul class="list-disc pl-5 space-y-1">
+	                    <li><strong>技术避坑指南</strong> - 折腾记录、故障排查、实用配置</li>
+	                    <li><strong>心理碎片档案馆</strong> - 小说、随笔、情感记录与虚构探索</li>
+	                    <li><strong>"混乱善良"观察日志</strong> - 在秩序与混乱间寻找平衡的日常</li>
+	                </ul>
+	                <p class="pt-2">从骰娘到代码，从统计学到故事，这里是我的旅行笔记。希望这些记录对你有用，或至少让你感到不孤独。</p>
+	                <div class="flex flex-wrap gap-2 mt-4">
+	                    <a href="/about/" class="btn-regular rounded-lg h-9 px-4 text-sm">关于我</a>
+	                    <a href="/passage/" class="btn-regular rounded-lg h-9 px-4 text-sm">精选文章</a>
+	                    <a href="/essays/" class="btn-regular rounded-lg h-9 px-4 text-sm">生活随笔</a>
+	                </div>
+	            </div>
+	        </section>
+
+	        {sections.map((section) => {
 			if (section === HomeSectionPreset.Essays) {
 				return (
 					<>
 						<section class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6">
-							<div class="flex items-center justify-between gap-4">
+							<div class="flex items-center gap-4">
 								<h2 class="font-bold text-xl md:text-2xl text-90">
 									{i18n(I18nKey.recentEssays)}
 								</h2>
-								<a
-									href={url("/essays/")}
-									class="btn-regular rounded-lg h-10 px-4 font-bold active:scale-95"
-								>
-									{i18n(I18nKey.more)}
-								</a>
 							</div>
 						</section>
 
@@ -79,6 +92,14 @@ const interval = 50;
 									/>
 								))}
 							</div>
+							<div class="flex justify-center mb-4">
+								<a
+									href={url("/essays/")}
+									class="btn-regular rounded-xl h-12 px-8 text-base font-bold active:scale-95"
+								>
+									查看更多历史随笔
+								</a>
+							</div>
 						)}
 					</>
 				);
@@ -88,16 +109,10 @@ const interval = 50;
 				return (
 					<>
 						<section class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6">
-							<div class="flex items-center justify-between gap-4">
+							<div class="flex items-center gap-4">
 								<h2 class="font-bold text-xl md:text-2xl text-90">
 									{i18n(I18nKey.recentPosts)}
 								</h2>
-								<a
-									href={url("/passage/")}
-									class="btn-regular rounded-lg h-10 px-4 font-bold active:scale-95"
-								>
-									{i18n(I18nKey.more)}
-								</a>
 							</div>
 						</section>
 
@@ -123,6 +138,14 @@ const interval = 50;
 										style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
 									></PostCard>
 								))}
+							</div>
+							<div class="flex justify-center mb-4">
+								<a
+									href={url("/passage/")}
+									class="btn-regular rounded-xl h-12 px-8 text-base font-bold active:scale-95"
+								>
+									查看更多历史篇章
+								</a>
 							</div>
 						)}
 					</>
