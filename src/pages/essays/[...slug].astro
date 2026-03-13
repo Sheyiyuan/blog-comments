@@ -26,6 +26,8 @@ const manualTitle = (entry.data.title ?? "").trim();
 const title = getEssayDisplayTitle(entry);
 const excerpt = getEssayExcerptFromBody(entry.body);
 
+const footnoteForI18n = getTranslation(entry.data.lang || siteConfig.lang)[I18nKey.footnotes];
+
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
@@ -101,4 +103,63 @@ const commentsClosedForEntry = entry.data.comments === false;
 			)}
 		</div>
 	</div>
+    <!-- 脚本用于处理脚注的 i18n 和样式，不修改原 DOM 以便 SEO -->
+    <script is:inline define:vars={{translatedFootnote: footnoteForI18n}}>
+        const updateFootnotes = () => {
+            const footnoteLabel = document.getElementById('footnote-label');
+            if (footnoteLabel) {
+                footnoteLabel.innerText = translatedFootnote;
+                footnoteLabel.classList.remove('sr-only');
+            }
+            const backRefs = document.querySelectorAll('.data-footnote-backref');
+            backRefs.forEach((backRef) => {
+                // 使用 SVG 替换原来的返回按钮
+                backRef.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>`;
+                backRef.classList.add('footnote-backref-icon');
+            });
+        };
+
+        const handleFootnoteBackClick = (e) => {
+            const backRef = e.target.closest('.data-footnote-backref');
+            if (backRef) {
+                const href = backRef.getAttribute('href');
+                if (!href || !href.startsWith('#')) return;
+
+                const targetId = href.substring(1);
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    e.preventDefault();
+                    // 阻止 Swup 或其他脚本处理此点击
+                    e.stopPropagation();
+
+                    const offset = 120; // 顶栏高度补偿
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.scrollY - offset;
+
+                    window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                    });
+
+                    // 更改 URL hash
+                    history.pushState(null, null, '#' + targetId);
+                }
+            }
+        };
+
+        // 使用事件委托，并在捕获阶段处理，确保优先执行
+        document.addEventListener('click', handleFootnoteBackClick, true);
+
+        updateFootnotes();
+
+        // Re-init on Swup navigation
+        if (window.swup) {
+            window.swup.hooks.on('page:view', updateFootnotes);
+        } else {
+            document.addEventListener('swup:enable', () => {
+                window.swup.hooks.on('page:view', updateFootnotes);
+            });
+        }
+    </script>
 </MainGridLayout>
