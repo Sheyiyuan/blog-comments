@@ -29,6 +29,112 @@ const fakeResult: SearchResult[] = [
 		},
 		excerpt: "Try running <mark>npm build && npm preview</mark> instead.",
 	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 1",
+		},
+		excerpt: "This is a dummy item to test the <mark>scrollbar</mark> styling.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 2",
+		},
+		excerpt: "Another dummy item to make the list longer.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 3",
+		},
+		excerpt: "We need more items so the panel overflows.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 4",
+		},
+		excerpt: "Keep scrolling down to see the effect.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 5",
+		},
+		excerpt: "Almost at the bottom of the list.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 6",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 7",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 8",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 9",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 10",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 11",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 12",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 13",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 14",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+	{
+		url: url("/"),
+		meta: {
+			title: "Scrollbar Test Item 15",
+		},
+		excerpt: "This is the last dummy item in the <mark>dev</mark> search.",
+	},
+
 ];
 
 const togglePanel = () => {
@@ -145,12 +251,12 @@ onMount(() => {
 		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
 			event.preventDefault();
 			openSearch();
-            
+
             // Check if navbar is hidden, if so, show it and scroll up
             const navbar = document.getElementById("navbar-wrapper");
             if (navbar && navbar.classList.contains("navbar-hidden")) {
                 navbar.classList.remove("navbar-hidden");
-                
+
                 // Scroll up by navbar height (72px) approx, or to top if we want to be sure
                 // The requirements said: "Scroll up by one navbar height"
                 // Let's get current scroll position and subtract 72
@@ -255,5 +361,28 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
   .search-panel {
     max-height: calc(100vh - 100px);
     overflow-y: auto;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: color-mix(in oklab, var(--primary) 45%, transparent)
+      color-mix(in oklab, var(--card-bg) 70%, transparent); /* Firefox */
+  }
+
+  /* WebKit */
+  .search-panel::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .search-panel::-webkit-scrollbar-track {
+    background: color-mix(in oklab, var(--card-bg) 70%, transparent);
+    border-radius: 999px;
+  }
+
+  .search-panel::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--primary) 45%, transparent);
+    border-radius: 999px;
+    border: 2px solid color-mix(in oklab, var(--card-bg) 70%, transparent);
+  }
+
+  .search-panel::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--primary) 60%, transparent);
   }
 </style>
