@@ -115,9 +115,9 @@ export const navBarConfig: NavBarConfig = {
  * - recentEssays / recentPosts：控制各板块展示数量
  */
 export const homePageConfig = {
-  sections: [HomeSectionPreset.Posts, HomeSectionPreset.Essays],
+  sections: [HomeSectionPreset.Essays, HomeSectionPreset.Posts],
   recentEssays: {
-    count: 3,
+    count: 4,
   },
   recentPosts: {
     count: 4,
