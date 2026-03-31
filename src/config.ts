@@ -173,7 +173,7 @@ export const friendsConfig: FriendsConfig = {
       name: "Lunarain_079's Inn",
       url: "https://www.lunarain.top/",
       description: "暂伴月将影 行乐须及春",
-      avatar: "https://79d93ce9.blog-pure.pages.dev/favicon/favicon.ico",
+      avatar: "https://www.lunarain.top/avatar.png",
       newTab: true,
     },
     {
