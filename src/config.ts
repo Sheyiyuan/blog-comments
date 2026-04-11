@@ -65,7 +65,7 @@ export const siteConfig: SiteConfig = {
 		/** 是否在文章页右侧展示目录（TOC） */
 		enable: true,
 		/** TOC 最大标题层级深度（1~3） */
-		depth: 2,
+		depth: 3,
 	},
 	background: {
 		type: "image",
@@ -191,6 +191,13 @@ export const friendsConfig: FriendsConfig = {
 				"http://blog.baios.net/wp-content/uploads/2024/07/1720800619-1718780941-1666863869324.ico",
 			newTab: true,
 		},
+		{
+			name: "YinFeng's Blog",
+			url: "https://www.windchant.online/",
+			description: "记录生活点滴，分享技术干货",
+			avatar: "http://www.windchant.online/wp-content/uploads/2026/03/Aemeath.jpg",
+			newTab: true,
+		}
 	],
 };
 

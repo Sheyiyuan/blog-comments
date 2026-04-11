@@ -1,11 +1,11 @@
 ---
 import Markdown from "@components/misc/Markdown.astro";
+import MarkdownIt from "markdown-it";
+import sanitizeHtml from "sanitize-html";
 import { friendsConfig } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
-import MarkdownIt from "markdown-it";
-import sanitizeHtml from "sanitize-html";
 
 function getFaviconUrl(siteUrl: string): string | null {
 	try {
@@ -38,7 +38,9 @@ function renderInlineMarkdown(markdown: string): string {
 const siteUrl = Astro.site?.toString() ?? "https://blog.sheyiyuan.com/";
 const siteIcon = `${siteUrl.replace(/\/+$/, "/")}icons/01.png`;
 
-const introHtml = renderInlineMarkdown(`这里收录一些我在路途中遇到的朋友们。\n`);
+const introHtml = renderInlineMarkdown(
+	"这里收录一些我在路途中遇到的朋友们。\n",
+);
 
 const contentHtml = renderInlineMarkdown(`
 ### 交换友链
@@ -99,7 +101,7 @@ const contentHtml = renderInlineMarkdown(`
 											{l.name}
 										</div>
 										{l.description && (
-											<div class="text-sm text-black/55 dark:text-white/55 line-clamp-2">
+											<div class="text-sm text-black/55 dark:text-white/55 line-clamp-1">
 												{l.description}
 											</div>
 										)}
