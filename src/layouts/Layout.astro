@@ -4,6 +4,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
+import GlobalMouseSpark from "@components/GlobalMouseSpark.astro";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import { glassConfig, profileConfig, siteConfig } from "@/config";
 import {
@@ -270,6 +271,7 @@ const bannerOffset =
 			</div>
 		)}
 		<ConfigCarrier></ConfigCarrier>
+		<GlobalMouseSpark />
 		<slot />
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->

@@ -76,6 +76,18 @@ export const siteConfig: SiteConfig = {
 		/** 背景图不透明度（0~1） */
 		opacity: 0.7,
 	},
+	mouseSpark: {
+		/** 是否启用全局鼠标特效 */
+		enable: true,
+		/** RGB 格式："R,G,B" */
+		color: "45,175,255",
+		scale: 1.4,
+		opacity: 0.9,
+		speed: 1,
+		maxTrail: 18,
+		enableTrail: true,
+		zIndex: 9999,
+	},
 	favicon: [
 		{
 			/** 浏览器标签页图标（相对 `public/`） */
@@ -195,9 +207,10 @@ export const friendsConfig: FriendsConfig = {
 			name: "YinFeng's Blog",
 			url: "https://www.windchant.online/",
 			description: "记录生活点滴，分享技术干货",
-			avatar: "http://www.windchant.online/wp-content/uploads/2026/03/Aemeath.jpg",
+			avatar:
+				"http://www.windchant.online/wp-content/uploads/2026/03/Aemeath.jpg",
 			newTab: true,
-		}
+		},
 	],
 };
 

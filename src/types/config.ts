@@ -49,6 +49,25 @@ export type SiteConfig = {
 
 	background?: SiteBackground;
 
+	/** 全局鼠标特效（原生 Canvas）配置 */
+	mouseSpark?: {
+		enable: boolean;
+		/** RGB 字符串，格式："R,G,B" */
+		color: string;
+		/** 效果尺寸缩放 */
+		scale: number;
+		/** 全局透明度（0~1） */
+		opacity: number;
+		/** 动画速度倍率 */
+		speed: number;
+		/** 尾迹最大点数 */
+		maxTrail: number;
+		/** 是否始终显示移动尾迹 */
+		enableTrail: boolean;
+		/** Canvas 层级 */
+		zIndex?: number;
+	};
+
 	favicon: Favicon[];
 };
 

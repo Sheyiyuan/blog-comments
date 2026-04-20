@@ -1,0 +1,306 @@
+---
+import { siteConfig } from "@/config";
+
+const mouseSparkConfig = {
+	enable: siteConfig.mouseSpark?.enable ?? true,
+	color: siteConfig.mouseSpark?.color ?? "45,175,255",
+	scale: siteConfig.mouseSpark?.scale ?? 1.4,
+	opacity: siteConfig.mouseSpark?.opacity ?? 0.9,
+	speed: siteConfig.mouseSpark?.speed ?? 1,
+	maxTrail: siteConfig.mouseSpark?.maxTrail ?? 18,
+	enableTrail: siteConfig.mouseSpark?.enableTrail ?? true,
+	zIndex: siteConfig.mouseSpark?.zIndex ?? 9999,
+};
+---
+
+{mouseSparkConfig.enable && (
+	<canvas
+		id="global-mouse-spark"
+		aria-hidden="true"
+		style={`z-index: ${mouseSparkConfig.zIndex};`}
+	></canvas>
+)}
+
+<style>
+	#global-mouse-spark {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: none;
+	}
+</style>
+
+<script is:inline define:vars={{ mouseSparkConfig }}>
+	(() => {
+		if (!mouseSparkConfig.enable) {
+			return;
+		}
+		if (window.__nativeMouseSparkInitialized) {
+			return;
+		}
+		window.__nativeMouseSparkInitialized = true;
+
+		const config = {
+			color: mouseSparkConfig.color,
+			scale: mouseSparkConfig.scale,
+			opacity: mouseSparkConfig.opacity,
+			speed: mouseSparkConfig.speed,
+			maxTrail: mouseSparkConfig.maxTrail,
+			enableTrail: mouseSparkConfig.enableTrail,
+		};
+
+		const state = {
+			waves: [],
+			sparks: [],
+			trail: [],
+			isDown: false,
+			lastPos: null,
+			rafId: 0,
+			lastFrameTime: performance.now(),
+			ctx: null,
+			canvas: null,
+		};
+
+		function ensureCanvas() {
+			if (state.canvas && document.body.contains(state.canvas)) {
+				return state.canvas;
+			}
+			let canvas = document.getElementById("global-mouse-spark");
+			if (!canvas) {
+				canvas = document.createElement("canvas");
+				canvas.id = "global-mouse-spark";
+				canvas.setAttribute("aria-hidden", "true");
+				document.body.appendChild(canvas);
+			}
+			state.canvas = canvas;
+			state.ctx = canvas.getContext("2d");
+			resize();
+			return canvas;
+		}
+
+		function resize() {
+			const canvas = ensureCanvas();
+			const dpr = window.devicePixelRatio || 1;
+			canvas.width = Math.max(1, Math.floor(window.innerWidth * dpr));
+			canvas.height = Math.max(1, Math.floor(window.innerHeight * dpr));
+			if (state.ctx) {
+				state.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			}
+		}
+
+		function alpha(value) {
+			return Math.max(0, Math.min(1, value * config.opacity));
+		}
+
+		function boom(x, y) {
+			state.waves.push({
+				x,
+				y,
+				life: 0,
+				max: 18,
+				r: 0,
+				ring: {
+					ang: Math.random() * Math.PI * 2,
+					segs: [
+						{ off: -0.25 * Math.PI, len: 1.15 * Math.PI },
+						{ off: 0, len: 1.15 * Math.PI },
+						{ off: 0.25 * Math.PI, len: 1.15 * Math.PI },
+					],
+					life: 0,
+					maxLife: 30,
+					rs: 0.08,
+				},
+			});
+
+			const particleCount = 4;
+			const speedAdjust = config.scale / 1.5;
+			for (let i = 0; i < particleCount; i++) {
+				const angle = Math.random() * Math.PI * 2;
+				const speed = (4.8 + Math.random() * 2) * speedAdjust;
+				state.sparks.push({
+					x,
+					y,
+					vx: Math.cos(angle) * speed,
+					vy: Math.sin(angle) * speed,
+					rot: Math.random() * Math.PI * 2,
+					rs: (Math.random() - 0.5) * 0.28,
+					s: (4 + Math.random() * 3) * config.scale,
+					a: 1,
+					f: 0.9,
+				});
+			}
+		}
+
+		function loop(now) {
+			ensureCanvas();
+			if (!state.ctx || !state.canvas) {
+				state.rafId = requestAnimationFrame(loop);
+				return;
+			}
+			const ctx = state.ctx;
+			const baseFrameMs = 1000 / 60;
+			const maxDeltaMs = 100;
+			const deltaMs = Math.min(now - state.lastFrameTime, maxDeltaMs);
+			state.lastFrameTime = now;
+			const frameScale = (deltaMs / baseFrameMs) * config.speed;
+
+			if (
+				state.waves.length > 0 ||
+				state.sparks.length > 0 ||
+				state.trail.length > 0
+			) {
+				ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
+				ctx.globalCompositeOperation = "lighter";
+
+				for (let i = state.trail.length - 1; i >= 0; i--) {
+					const t = state.trail[i];
+					t.life -= (config.enableTrail ? 0.085 : state.isDown ? 0.085 : 0.18) * frameScale;
+					if (t.life <= 0) {
+						state.trail.splice(i, 1);
+					}
+				}
+
+				if (state.trail.length > 1) {
+					ctx.lineWidth = 5;
+					ctx.shadowColor = `rgba(${config.color}, 0.6)`;
+					ctx.shadowBlur = 3;
+					const lastIdx = state.trail.length - 1;
+					for (let i = 0; i < lastIdx; i++) {
+						const p0 = state.trail[i];
+						const p1 = state.trail[i + 1];
+						const grad = ctx.createLinearGradient(p0.x, p0.y, p1.x, p1.y);
+						grad.addColorStop(0, `rgba(${config.color}, ${i / lastIdx})`);
+						grad.addColorStop(1, `rgba(${config.color}, ${(i + 1) / lastIdx})`);
+						ctx.beginPath();
+						ctx.moveTo(p0.x, p0.y);
+						ctx.lineTo(p1.x, p1.y);
+						ctx.strokeStyle = grad;
+						ctx.stroke();
+					}
+					ctx.shadowColor = "transparent";
+				}
+
+				for (let i = state.waves.length - 1; i >= 0; i--) {
+					const w = state.waves[i];
+					w.life += frameScale;
+					const progress = w.life / w.max;
+					const ease = 1 - Math.pow(1 - Math.min(progress, 1), 3);
+					w.r = 26 * config.scale * ease;
+					const a = Math.max(0, 1 - progress);
+					if (a > 0) {
+						ctx.beginPath();
+						ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
+						ctx.fillStyle = `rgba(${config.color},${alpha(a)})`;
+						ctx.fill();
+					}
+
+					w.ring.life += frameScale;
+					const ringProgress = Math.min(w.ring.life / w.ring.maxLife, 1);
+					w.ring.ang -= w.ring.rs * frameScale;
+					for (const seg of w.ring.segs) {
+						const shrink = Math.max(0, 1 - ringProgress);
+						const len = seg.len * shrink;
+						const start = w.ring.ang + seg.off;
+						ctx.beginPath();
+						ctx.arc(w.x, w.y, w.r + 3 * config.scale, start, start + len);
+						ctx.lineWidth = 3.7;
+						ctx.strokeStyle = `rgba(245,248,252,${alpha(1 - ringProgress)})`;
+						ctx.stroke();
+					}
+
+					if (progress >= 1 && ringProgress >= 1) {
+						state.waves.splice(i, 1);
+					}
+				}
+
+				for (let i = state.sparks.length - 1; i >= 0; i--) {
+					const s = state.sparks[i];
+					s.x += s.vx * frameScale;
+					s.y += s.vy * frameScale;
+					s.vx *= Math.pow(s.f, frameScale);
+					s.vy *= Math.pow(s.f, frameScale);
+					s.rot += s.rs * frameScale;
+					s.a -= 0.032 * frameScale;
+					if (s.a <= 0) {
+						state.sparks.splice(i, 1);
+						continue;
+					}
+					ctx.save();
+					ctx.translate(s.x, s.y);
+					ctx.rotate(s.rot);
+					ctx.beginPath();
+					ctx.moveTo(0, -s.s);
+					ctx.lineTo(s.s * 0.6, s.s * 0.6);
+					ctx.lineTo(-s.s * 0.6, s.s * 0.6);
+					ctx.fillStyle = `rgba(255,255,255,${alpha(s.a)})`;
+					ctx.fill();
+					ctx.restore();
+				}
+
+				ctx.globalCompositeOperation = "source-over";
+			}
+
+			state.rafId = requestAnimationFrame(loop);
+		}
+
+		function onMouseDown(e) {
+			state.isDown = true;
+			state.lastPos = { x: e.clientX, y: e.clientY };
+			boom(e.clientX, e.clientY);
+		}
+
+		function onMouseMove(e) {
+			if (!state.isDown && !config.enableTrail) {
+				return;
+			}
+			const current = { x: e.clientX, y: e.clientY };
+			if (!state.lastPos) {
+				state.lastPos = current;
+			}
+			const distance = Math.hypot(current.x - state.lastPos.x, current.y - state.lastPos.y);
+			if (distance <= 2) {
+				return;
+			}
+
+			state.trail.push({ x: current.x, y: current.y, life: 1 });
+			state.lastPos = current;
+			if (state.trail.length > config.maxTrail) {
+				state.trail.shift();
+			}
+
+			if (Math.random() < 0.3) {
+				const angle = Math.random() * Math.PI * 2;
+				const speedAdjust = config.scale / 1.5;
+				state.sparks.push({
+					x: current.x + Math.cos(angle) * 10 * config.scale,
+					y: current.y + Math.sin(angle) * 10 * config.scale,
+					vx: Math.cos(angle) * 1.3 * speedAdjust,
+					vy: Math.sin(angle) * 1.3 * speedAdjust,
+					rot: Math.random() * Math.PI * 2,
+					rs: 0.16,
+					s: 9 * config.scale,
+					a: 0.7,
+					f: 0.95,
+				});
+			}
+		}
+
+		function onMouseUp() {
+			state.isDown = false;
+		}
+
+		function onAfterSwap() {
+			ensureCanvas();
+			resize();
+		}
+
+		ensureCanvas();
+		window.addEventListener("resize", resize);
+		window.addEventListener("mousedown", onMouseDown);
+		window.addEventListener("mousemove", onMouseMove);
+		window.addEventListener("mouseup", onMouseUp);
+		document.addEventListener("astro:after-swap", onAfterSwap);
+		state.rafId = requestAnimationFrame(loop);
+	})();
+</script>
