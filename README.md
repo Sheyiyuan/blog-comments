@@ -31,6 +31,7 @@
 - 全站毛玻璃（Glass）：支持半透明 + backdrop blur，并可分别调节卡片与面板/浮层的不透明度（见 `glassConfig.cardOpacity` / `glassConfig.panelOpacity`）。
 - 文章末尾赞助按钮：在每篇文章末尾提供“赞助”按钮，点击弹窗展示赞赏码；支持全局开关与单篇关闭（见下文“赞助（Sponsor）”）。
 - 侧栏标签可收起：左侧栏 Tags 超过阈值会折叠，点击“更多”展开后，同一按钮会切换为“收起”，一键恢复折叠。
+- 全局鼠标特效（原生 JS）：新增全站 Canvas 鼠标动效（点击波纹 + 拖拽粒子尾迹），不依赖 React 水合；支持在站点配置中统一开关与参数调节（见下文“鼠标特效（Mouse Spark）”）。
 - 构建/搜索优化：`pnpm build` 会在 Astro 构建后自动运行 Pagefind；并通过 `pagefind.yml` 排除 KaTeX、搜索面板等不应被索引的内容。
 - 部署工作流（可选）：提供 Gitea Actions 工作流，在 Alpine runner 上构建并 rsync 发布到指定目录（按需修改）。
 
@@ -88,6 +89,21 @@ pnpm dev
 - `cardOpacity`：卡片区域不透明度（0~1）
 - `panelOpacity`：面板/浮层不透明度（0~1）（例如顶栏弹出面板、浮层等）
 - `border`：是否显示细边框
+
+### 鼠标特效（Mouse Spark）
+
+全站鼠标特效使用原生 Canvas 实现，相关配置统一在 `src/config.ts` 的 `siteConfig.mouseSpark`：
+
+- `enable`：是否启用
+- `color`：RGB 字符串（格式：`"R,G,B"`）
+- `scale`：效果尺寸缩放
+- `opacity`：整体透明度（0~1）
+- `speed`：动画速度倍率
+- `maxTrail`：尾迹最大点数
+- `enableTrail`：是否始终显示移动尾迹
+- `zIndex`：Canvas 层级
+
+说明：当 `enable: false` 时，不渲染特效 Canvas，也不会初始化相关事件监听。
 
 ### 评论（Giscus）
 
