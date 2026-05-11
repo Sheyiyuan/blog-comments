@@ -174,6 +174,18 @@
     height: var(--collapsedHeight);
 }
 
+.nav-link-active {
+    @apply before:scale-100 before:bg-[var(--btn-plain-bg-hover)] text-[var(--primary)];
+}
+
+.nav-menu-active {
+    @apply bg-[var(--btn-plain-bg-hover)];
+}
+
+.nav-menu-active .nav-menu-link-text {
+    @apply !text-[var(--primary)];
+}
+
 .custom-md spoiler {
   @apply bg-[var(--codeblock-bg)] hover:bg-transparent px-1 py-0.5 overflow-hidden rounded-md transition-all duration-150;
 

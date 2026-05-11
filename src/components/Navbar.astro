@@ -7,7 +7,7 @@ import {
 	type NavBarBackground,
 	type NavBarLink,
 } from "../types/config";
-import { url } from "../utils/url-utils";
+import { isActiveLink, url } from "../utils/url-utils";
 import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import ImageWrapper from "./misc/ImageWrapper.astro";
 import Search from "./Search.svelte";
@@ -17,6 +17,7 @@ import NavMenuPanel from "./widget/NavMenuPanel.astro";
 const className = Astro.props.class;
 const banner: string | undefined = Astro.props.banner;
 const bannerBasePath: string | undefined = Astro.props.bannerBasePath;
+const currentPath: string = Astro.props.currentPath ?? "";
 
 let links: NavBarLink[] = navBarConfig.links.map(
 	(item: NavBarLink | LinkPreset): NavBarLink => {
@@ -82,8 +83,13 @@ const backgroundColorStyle = `background-color: color-mix(in oklch, ${background
         </a>
         <div class="hidden md:flex">
             {links.map((l) => {
+                const active = isActiveLink(l.url, currentPath, l.external);
                 return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                          class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
+                          class:list={[
+                              "btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95",
+                              { "nav-link-active": active },
+                          ]}
+                          data-nav-link={l.external ? null : l.url}
                 >
                     <div class="flex items-center">
                         {l.name}
@@ -105,7 +111,7 @@ const backgroundColorStyle = `background-color: color-mix(in oklch, ${background
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
         </div>
-        <NavMenuPanel links={links}></NavMenuPanel>
+        <NavMenuPanel links={links} currentPath={currentPath}></NavMenuPanel>
         <DisplaySettings client:load></DisplaySettings>
     </div>
 </div>
@@ -188,3 +194,46 @@ if (document.readyState === 'loading') {
     loadPagefind();
 }
 </script>}
+
+<script is:inline define:vars={{ baseUrl: import.meta.env.BASE_URL }}>
+function updateNavActive() {
+    const current = window.location.pathname;
+    const currentPath = current.replace(/\/$/, '');
+
+    document.querySelectorAll('[data-nav-link]').forEach((el) => {
+        const rawUrl = el.getAttribute('data-nav-link');
+        if (!rawUrl) return;
+        const resolved = (baseUrl + '/' + rawUrl).replace(/\/+/g, '/').replace(/\/$/, '');
+        let isActive = false;
+        if (rawUrl === '/') {
+            isActive = currentPath === resolved;
+        } else {
+            isActive = currentPath === resolved || currentPath.startsWith(resolved + '/');
+        }
+        el.classList.toggle('nav-link-active', isActive);
+    });
+
+    document.querySelectorAll('[data-nav-menu-link]').forEach((el) => {
+        const rawUrl = el.getAttribute('data-nav-menu-link');
+        if (!rawUrl) return;
+        const resolved = (baseUrl + '/' + rawUrl).replace(/\/+/g, '/').replace(/\/$/, '');
+        let isActive = false;
+        if (rawUrl === '/') {
+            isActive = currentPath === resolved;
+        } else {
+            isActive = currentPath === resolved || currentPath.startsWith(resolved + '/');
+        }
+        el.classList.toggle('nav-menu-active', isActive);
+    });
+}
+
+updateNavActive();
+
+if (window.swup) {
+    window.swup.hooks.on('page:view', updateNavActive);
+} else {
+    document.addEventListener('swup:enable', () => {
+        window.swup?.hooks.on('page:view', updateNavActive);
+    });
+}
+</script>

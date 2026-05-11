@@ -1,22 +1,27 @@
 ---
 import { Icon } from "astro-icon/components";
 import { type NavBarLink } from "../../types/config";
-import { url } from "../../utils/url-utils";
+import { isActiveLink, url } from "../../utils/url-utils";
 
 interface Props {
 	links: NavBarLink[];
+	currentPath: string;
 }
 
-const links = Astro.props.links;
+const { links, currentPath } = Astro.props;
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}>
-    {links.map((link) => (
-        <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
-            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
-        "
+    {links.map((link) => {
+        const active = isActiveLink(link.url, currentPath, link.external);
+        return (
+        <a href={link.external ? link.url : url(link.url)} class:list={[
+                "group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition",
+                { "nav-menu-active": active },
+            ]}
            target={link.external ? "_blank" : null}
+           data-nav-menu-link={link.external ? null : link.url}
         >
-            <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
+            <div class="nav-menu-link-text transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
                 {link.name}
             </div>
             {!link.external && <Icon name="material-symbols:chevron-right-rounded"
@@ -28,5 +33,5 @@ const links = Astro.props.links;
             >
             </Icon>}
         </a>
-    ))}
+    )})}
 </div>

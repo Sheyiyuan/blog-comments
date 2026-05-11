@@ -53,3 +53,21 @@ export function getDir(path: string): string {
 export function url(path: string) {
 	return joinUrl("", import.meta.env.BASE_URL, path);
 }
+
+export function isActiveLink(
+	linkUrl: string,
+	currentPath: string,
+	external?: boolean,
+): boolean {
+	if (external) return false;
+
+	const resolvedLink = url(linkUrl);
+	const normalizedLink = resolvedLink.replace(/\/$/, "");
+	const normalizedCurrent = currentPath.replace(/\/$/, "");
+
+	if (linkUrl === "/") {
+		return normalizedLink === normalizedCurrent;
+	}
+
+	return normalizedCurrent.startsWith(normalizedLink);
+}
