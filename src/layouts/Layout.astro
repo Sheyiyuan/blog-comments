@@ -681,6 +681,44 @@ async function syncSidebarIfNeeded() {
 init();
 
 const setup = () => {
+	// Workaround for Firefox bug: clicking links with non-ASCII URLs
+	// navigates to / instead of the target URL.
+	// We intercept clicks on such links and navigate via JS instead.
+	const needsWorkaround = /firefox/i.test(navigator.userAgent);
+	if (needsWorkaround) {
+		document.addEventListener('click', (e) => {
+			const el = (e.target as Element)?.closest?.('a[href]');
+			if (!el || el.tagName !== 'A') return;
+			const a = el as HTMLAnchorElement;
+			if (!a) return;
+			// Don't interfere with modifier keys (new tab, new window)
+			if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+			const rawHref = a.getAttribute('href') || '';
+			// Only handle same-origin links with non-ASCII characters
+			// (either raw unicode or percent-encoded like %E9%81%A5)
+			const isNonAscii = /[^\x00-\x7F]/.test(rawHref)
+				|| /%[89A-Fa-f][0-9A-Fa-f]/.test(rawHref);
+			if (!rawHref.startsWith('/') || !isNonAscii) return;
+			if (a.closest('[data-no-swup]')) return;
+			const resolved = a.href;
+			if (!resolved || resolved === window.location.href) return;
+			try {
+				const target = new URL(resolved);
+				if (target.origin !== window.location.origin) return;
+			} catch {
+				return;
+			}
+			// Anchor hash navigation on same page
+			const currentPath = window.location.pathname + window.location.search;
+			const resolvedUrl = new URL(resolved);
+			const targetPath = resolvedUrl.pathname + resolvedUrl.search;
+			if (targetPath === currentPath) return;
+			e.preventDefault();
+			e.stopPropagation();
+			window.location.assign(resolved);
+		}, true);
+	}
+
 	// TODO: temp solution to change the height of the banner
 /*
 	window.swup.hooks.on('animation:out:start', () => {
