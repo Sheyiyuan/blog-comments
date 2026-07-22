@@ -48,7 +48,7 @@ const interval = 50;
 <MainGridLayout sidebarContentType="all">
 	    <div class="flex flex-col gap-4 mb-4">
 	        <!-- 欢迎卡片 -->
-	        <section class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6 mb-4">
+	        <section class="card-base onload-animation rounded-[var(--radius-large)] px-6 md:px-9 py-6 mb-4" style="animation-delay: var(--content-delay);">
 	            <h2 class="font-bold text-xl md:text-2xl text-90 mb-4">欢迎来到我的数字营地</h2>
 	            <div class="space-y-3 text-75">
 	                <p>这里存放着我在理性代码与感性随笔间的摇摆轨迹：</p>
@@ -84,7 +84,7 @@ const interval = 50;
 						</section>
 
 						{essaysWithGallery.length === 0 ? (
-							<div class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6 text-75">
+							<div class="card-base onload-animation rounded-[var(--radius-large)] px-6 md:px-9 py-6 text-75" style="animation-delay: var(--content-delay);">
 								{i18n(I18nKey.noEssays)}
 							</div>
 						) : (
@@ -121,7 +121,7 @@ const interval = 50;
 						</section>
 
 						{posts.length === 0 ? (
-							<div class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-6 text-75">
+							<div class="card-base onload-animation rounded-[var(--radius-large)] px-6 md:px-9 py-6 text-75" style="animation-delay: var(--content-delay);">
 								{i18n(I18nKey.noPosts)}
 							</div>
 						) : (

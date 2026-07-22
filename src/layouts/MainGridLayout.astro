@@ -134,7 +134,7 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
             ></SideBar>
 
             <main id="swup-container" class:list={["transition-swup-fade overflow-hidden min-w-0", { "order-1 lg:order-none": !isHomePage }]}>
-                <div id="content-wrapper" class="onload-animation">
+                <div id="content-wrapper">
                     <!-- the overflow-hidden here prevent long text break the layout-->
                     <!-- make id different from windows.swup global property -->
                     <slot></slot>

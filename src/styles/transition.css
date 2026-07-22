@@ -13,25 +13,22 @@ html.is-animating .transition-swup-fade {
         opacity: 0;
     }
     100% {
-        transform: translateY(0);
+        transform: none;
         opacity: 1;
     }
 }
 
 /* Main components */
 .onload-animation {
-    opacity: 0;
+    opacity: 1;
     animation: 300ms fade-in-up;
-    animation-fill-mode: forwards;
+    animation-fill-mode: backwards;
 }
 #navbar {
     animation-delay: 0ms
 }
 #swup-container {
     outline: none;
-}
-#content-wrapper {
-    animation-delay: var(--content-delay);
 }
 .footer {
     animation-delay: 250ms;
