@@ -12,7 +12,7 @@ tags:
     - "学习"
     - "成长"
 category: "学习经验分享"
-draft: false
+draft: true
 pin: 0
 lang: ""
 comments: true

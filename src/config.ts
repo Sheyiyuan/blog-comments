@@ -207,8 +207,14 @@ export const friendsConfig: FriendsConfig = {
 			name: "YinFeng's Blog",
 			url: "https://www.windchant.online/",
 			description: "记录生活点滴，分享技术干货",
-			avatar:
-				"http://www.windchant.online/wp-content/uploads/2026/03/Aemeath.jpg",
+			avatar: "https://www.windchant.online/favicon/favicon.ico",
+			newTab: true,
+		},
+		{
+			name: "Bakka's Blog",
+			url: "https://bakkac.github.io/BakkacBlog/",
+			description: "喜欢创作",
+			avatar: "https://bakkac.github.io/BakkacBlog/kumiko.jpg",
 			newTab: true,
 		},
 	],
