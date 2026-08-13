@@ -216,6 +216,20 @@ export const friendsConfig: FriendsConfig = {
 			description: "喜欢创作",
 			avatar: "https://bakkac.github.io/BakkacBlog/kumiko.jpg",
 			newTab: true,
+    },
+    {
+			name: "甘雨的狗",
+			url: "https://super-s-blog.pages.dev/",
+			description: "月相流转之间，我以我为锚点。",
+			avatar: "https://super-s-blog.pages.dev/image/favicon.ico",
+			newTab: true,
+      },
+		{
+			name: "冰霓の梦之旅",
+			url: "https://iceneoning-blog.pages.dev/",
+			description: "你好啊，很高心认识你。",
+			avatar: "https://iceneoning-blog.pages.dev/favicon/favicon-192.png",
+			newTab: true,
 		},
 	],
 };
