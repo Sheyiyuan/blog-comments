@@ -79,7 +79,8 @@ export type SiteBackground =
 	  }
 	| {
 			type: "image";
-			src: string;
+			/** 单图，或按亮/暗模式分别指定 */
+			src: string | { light: string; dark: string };
 			position?: "top" | "center" | "bottom";
 			basePath?: string;
 			opacity?: number;

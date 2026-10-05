@@ -69,8 +69,11 @@ export const siteConfig: SiteConfig = {
 	},
 	background: {
 		type: "image",
-		/** 背景资源路径：`src/` 下相对路径或 `public/` 绝对路径 */
-		src: "assets/images/bg.jpg",
+		/** 背景资源路径：`src/` 下相对路径或 `public/` 绝对路径；可按亮/暗模式分别指定 */
+		src: {
+			light: "assets/images/bg-l.jpg",
+			dark: "assets/images/bg.jpg",
+		},
 		/** 背景图位置（等价 object-position） */
 		position: "center",
 		/** 背景图不透明度（0~1） */

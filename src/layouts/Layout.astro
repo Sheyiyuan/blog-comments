@@ -254,17 +254,44 @@ const bannerOffset =
 		{!disableBackground && (
 			<div id="site-background" class="fixed inset-0 -z-10 pointer-events-none">
 				{useImageBackground && backgroundImageSrc ? (
-					<ImageWrapper
-						src={backgroundImageSrc}
-						basePath={backgroundImageBasePath}
-						position={backgroundImagePosition || "center"}
-						class="w-full h-full !transition-none"
-						overlayTransition={false}
-						loading="eager"
-						decoding="sync"
-						fetchPriority="high"
-						style={`opacity: ${backgroundOpacity};`}
-					/>
+					typeof backgroundImageSrc === "object" ? (
+						<>
+							<ImageWrapper
+								src={backgroundImageSrc.light}
+								basePath={backgroundImageBasePath}
+								position={backgroundImagePosition || "center"}
+								class="w-full h-full !transition-none dark:hidden"
+								overlayTransition={false}
+								loading="eager"
+								decoding="sync"
+								fetchPriority="high"
+								style={`opacity: ${backgroundOpacity};`}
+							/>
+							<ImageWrapper
+								src={backgroundImageSrc.dark}
+								basePath={backgroundImageBasePath}
+								position={backgroundImagePosition || "center"}
+								class="w-full h-full !transition-none hidden dark:block"
+								overlayTransition={false}
+								loading="eager"
+								decoding="sync"
+								fetchPriority="high"
+								style={`opacity: ${backgroundOpacity};`}
+							/>
+						</>
+					) : (
+						<ImageWrapper
+							src={backgroundImageSrc}
+							basePath={backgroundImageBasePath}
+							position={backgroundImagePosition || "center"}
+							class="w-full h-full !transition-none"
+							overlayTransition={false}
+							loading="eager"
+							decoding="sync"
+							fetchPriority="high"
+							style={`opacity: ${backgroundOpacity};`}
+						/>
+					)
 				) : (
 					<div class="w-full h-full" style={backgroundColorStyle}></div>
 				)}

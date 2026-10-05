@@ -153,4 +153,39 @@
             @apply opacity-100 !important;
         }
     }
+
+    /* Image-only paragraphs should not inherit first-line indent. */
+    &.markdown-content > p:has(img) {
+        text-indent: 0;
+    }
+}
+
+#essay-container .custom-md {
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        max-height: min(72vh, 38rem);
+        object-fit: contain;
+        border-radius: 0.75rem;
+    }
+
+    /* Consecutive images in one paragraph render as a photo row. */
+    > p:has(> img:nth-of-type(2)) {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    > p:has(> img:nth-of-type(2)) img {
+        width: 100%;
+        height: 100%;
+        max-height: min(68vh, 34rem);
+        object-fit: cover;
+        margin: 0;
+    }
 }
