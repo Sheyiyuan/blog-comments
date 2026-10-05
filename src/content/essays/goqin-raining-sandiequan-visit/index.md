@@ -4,7 +4,7 @@ title: "国庆雨天游三叠泉记"
 tags: ["随笔"]
 pin: 0
 comments: true
-draft: true
+draft: false
 slugSeed: ""
 ---
 
