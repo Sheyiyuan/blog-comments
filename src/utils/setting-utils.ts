@@ -16,19 +16,45 @@ export function getDefaultHue(): number {
 	return Number.parseInt(configCarrier?.dataset.hue || fallback, 10);
 }
 
+/**
+ * Returns the Web Storage API only when it is actually usable.
+ *
+ * `typeof localStorage === "undefined"` is NOT a safe guard: Node 25 exposes a
+ * placeholder `localStorage` object without `getItem`/`setItem`, and some
+ * browsers throw on access when storage is disabled. So verify the API exists
+ * and swallow any access error.
+ */
+function getStorage(): Storage | null {
+	try {
+		const storage = (globalThis as { localStorage?: unknown }).localStorage;
+		if (
+			storage &&
+			typeof (storage as Storage).getItem === "function" &&
+			typeof (storage as Storage).setItem === "function"
+		) {
+			return storage as Storage;
+		}
+	} catch {
+		// Ignore: storage unavailable or access denied.
+	}
+	return null;
+}
+
 export function getHue(): number {
-	if (typeof localStorage === "undefined") {
+	const storage = getStorage();
+	if (!storage) {
 		return getDefaultHue();
 	}
-	const stored = localStorage.getItem("hue");
+	const stored = storage.getItem("hue");
 	return stored ? Number.parseInt(stored, 10) : getDefaultHue();
 }
 
 export function setHue(hue: number): void {
-	if (typeof localStorage === "undefined" || typeof document === "undefined") {
+	const storage = getStorage();
+	if (!storage || typeof document === "undefined") {
 		return;
 	}
-	localStorage.setItem("hue", String(hue));
+	storage.setItem("hue", String(hue));
 	const r = document.querySelector(":root") as HTMLElement;
 	if (!r) {
 		return;
@@ -68,15 +94,17 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 }
 
 export function setTheme(theme: LIGHT_DARK_MODE): void {
-	if (typeof localStorage !== "undefined") {
-		localStorage.setItem("theme", theme);
+	const storage = getStorage();
+	if (storage) {
+		storage.setItem("theme", theme);
 	}
 	applyThemeToDocument(theme);
 }
 
 export function getStoredTheme(): LIGHT_DARK_MODE {
-	if (typeof localStorage === "undefined") {
+	const storage = getStorage();
+	if (!storage) {
 		return DEFAULT_THEME;
 	}
-	return (localStorage.getItem("theme") as LIGHT_DARK_MODE) || DEFAULT_THEME;
+	return (storage.getItem("theme") as LIGHT_DARK_MODE) || DEFAULT_THEME;
 }
