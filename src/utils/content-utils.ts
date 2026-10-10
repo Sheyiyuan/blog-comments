@@ -3,10 +3,11 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-type ContentCollection = "posts" | "notes" | "essays";
+type ContentCollection = "posts" | "notes" | "essays" | "fiction";
 type ContentScope = ContentCollection | "all";
 
 function resolveCollections(scope: ContentScope): ContentCollection[] {
+	// 「全部」只服务于首页与目次的聚合标签云（链接落到 /archive/），因此不含外篇
 	if (scope === "all") return ["posts", "notes", "essays"];
 	return [scope];
 }
@@ -14,6 +15,7 @@ function resolveCollections(scope: ContentScope): ContentCollection[] {
 function resolveListBasePath(contentType: ContentScope): string {
 	if (contentType === "notes") return "/notes/";
 	if (contentType === "essays") return "/essays/";
+	if (contentType === "fiction") return "/fiction/";
 	return "/archive/";
 }
 

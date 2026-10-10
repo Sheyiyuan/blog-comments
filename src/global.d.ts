@@ -4,6 +4,8 @@ declare global {
 	interface Window {
 		// type from '@swup/astro' is incorrect
 		swup: AstroIntegration;
+		/** 外篇客户端脚本只挂一次全局监听，跨 swup 页面切换复用 */
+		__fictionBound?: boolean;
 		pagefind: {
 			search: (query: string) => Promise<{
 				results: Array<{

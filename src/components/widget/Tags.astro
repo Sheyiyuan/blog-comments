@@ -12,7 +12,7 @@ const COLLAPSED_HEIGHT = "7.5rem";
 interface Props {
 	class?: string;
 	style?: string;
-	contentType?: "posts" | "notes" | "essays" | "all";
+	contentType?: "posts" | "notes" | "essays" | "fiction" | "all";
 }
 const className = Astro.props.class;
 const style = Astro.props.style;
@@ -25,7 +25,9 @@ const listBasePath =
 		? "/notes/"
 		: contentType === "essays"
 			? "/essays/"
-			: "/archive/";
+			: contentType === "fiction"
+				? "/fiction/"
+				: "/archive/";
 ---
 <WidgetLayout name={i18n(I18nKey.tags)} id="tags" isCollapsed={isCollapsed} canCollapse={true} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
     <div class="flex gap-2 flex-wrap">

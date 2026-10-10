@@ -79,6 +79,24 @@ const essaysCollection = defineCollection({
 	}),
 });
 
+const fictionCollection = defineCollection({
+	schema: z.object({
+		title: z.string(),
+		published: frontmatterDateTime,
+		updated: frontmatterDateTime.optional(),
+		draft: z.boolean().optional().default(false),
+		synopsis: z.string().optional().default(""),
+		cover: z.string().optional().default(""),
+		origin: z.enum(["original", "fanfic"]).optional(),
+		fandom: z.string().optional().default(""),
+		series: z.string().optional().default(""),
+		tags: z.array(z.string()).optional().default([]),
+		status: z.enum(["ongoing", "complete", "hiatus"]).optional(),
+		lang: z.string().optional().default(""),
+		comments: z.boolean().optional().default(true),
+	}),
+});
+
 const specCollection = defineCollection({
 	schema: z.object({}),
 });
@@ -86,5 +104,6 @@ export const collections = {
 	posts: postsCollection,
 	notes: notesCollection,
 	essays: essaysCollection,
+	fiction: fictionCollection,
 	spec: specCollection,
 };

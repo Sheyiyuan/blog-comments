@@ -7,7 +7,7 @@ import Tag from "./Tags.astro";
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
-	contentType?: "posts" | "notes" | "essays" | "all";
+	contentType?: "posts" | "notes" | "essays" | "fiction" | "all";
 }
 
 const className = Astro.props.class;
@@ -22,8 +22,14 @@ const contentType = Astro.props.contentType ?? "posts";
         class="transition-[top] duration-300 flex flex-col w-full gap-4 sticky top-[5.5rem]"
     >
         <div id="sidebar-widgets" class="flex flex-col w-full gap-4">
-            {contentType !== "essays" && <Categories contentType={contentType}></Categories>}
-            <Tag contentType={contentType}></Tag>
+            {contentType === "fiction" ? (
+                <Tag contentType="fiction" />
+            ) : (
+                <>
+                    {contentType !== "essays" && <Categories contentType={contentType}></Categories>}
+                    <Tag contentType={contentType}></Tag>
+                </>
+            )}
         </div>
     </div>
 </div>

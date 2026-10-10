@@ -120,6 +120,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Passage,
 		LinkPreset.Notes,
 		LinkPreset.Essays,
+		LinkPreset.Fiction,
 		LinkPreset.Friends,
 	],
 };

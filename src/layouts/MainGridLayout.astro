@@ -26,7 +26,7 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	headings?: MarkdownHeading[];
-	sidebarContentType?: "posts" | "notes" | "essays" | "all";
+	sidebarContentType?: "posts" | "notes" | "essays" | "fiction" | "all";
 }
 
 const {
@@ -42,20 +42,23 @@ const {
 
 const resolvedSidebarContentType =
 	sidebarContentType ??
-	(Astro.url.pathname.startsWith(url("/notes/"))
-		? "notes"
-		: Astro.url.pathname.startsWith(url("/essays/"))
-			? "essays"
-			: Astro.url.pathname.startsWith(url("/posts/")) ||
-					Astro.url.pathname.startsWith(url("/passage/"))
-				? "posts"
-				: "all");
+	(Astro.url.pathname.startsWith(url("/fiction/"))
+		? "fiction"
+		: Astro.url.pathname.startsWith(url("/notes/"))
+			? "notes"
+			: Astro.url.pathname.startsWith(url("/essays/"))
+				? "essays"
+				: Astro.url.pathname.startsWith(url("/posts/")) ||
+						Astro.url.pathname.startsWith(url("/passage/"))
+					? "posts"
+					: "all");
 const hasBannerCredit =
 	siteConfig.banner.enable && siteConfig.banner.credit.enable;
 const hasBannerLink = !!siteConfig.banner.credit.url;
 const isRightTocRoute =
 	Astro.url.pathname.startsWith(url("/posts/")) ||
-	Astro.url.pathname.startsWith(url("/notes/"));
+	Astro.url.pathname.startsWith(url("/notes/")) ||
+	Astro.url.pathname.startsWith(url("/fiction/"));
 const hasRightToc =
 	siteConfig.toc.enable && isRightTocRoute && headings.length > 0;
 

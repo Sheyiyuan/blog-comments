@@ -1,0 +1,205 @@
+---
+import path from "node:path";
+import FictionClient from "@components/fiction/FictionClient.astro";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { siteConfig } from "../../config";
+import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import {
+	type FictionShelf,
+	type FictionWork,
+	fictionStatusKey,
+	formatFictionNumber,
+	getFictionWorks,
+} from "../../utils/fiction-utils";
+import { getFictionWorkUrl, url } from "../../utils/url-utils";
+import "../../styles/fiction.css";
+
+const works = await getFictionWorks();
+const shelves: { key: FictionShelf; label: string; hint: string }[] = [
+	{
+		key: "serial",
+		label: i18n(I18nKey.fictionSerial),
+		hint: i18n(I18nKey.fictionOngoing),
+	},
+	{
+		key: "short",
+		label: i18n(I18nKey.fictionShort),
+		hint: i18n(I18nKey.fictionComplete),
+	},
+	{
+		key: "fanfic",
+		label: i18n(I18nKey.fictionFanfic),
+		hint: i18n(I18nKey.fictionFanfic),
+	},
+];
+
+const chapterCount = works.reduce((sum, work) => sum + work.chapterCount, 0);
+const wordCount = works.reduce((sum, work) => sum + work.words, 0);
+const ongoingCount = works.filter(
+	(work) => work.isSerial && work.status === "ongoing",
+).length;
+const stats = [
+	`${works.length} ${i18n(I18nKey.fictionWorks)}`,
+	chapterCount > 0 ? `${chapterCount} ${i18n(I18nKey.fictionChapterUnit)}` : "",
+	wordCount > 0
+		? `${formatFictionNumber(wordCount)} ${i18n(I18nKey.wordsCount)}`
+		: "",
+	ongoingCount > 0 ? `${ongoingCount} ${i18n(I18nKey.fictionOngoing)}` : "",
+].filter((item) => item.length > 0);
+
+function worksOn(shelf: FictionShelf): FictionWork[] {
+	return works.filter((work) => work.shelf === shelf);
+}
+
+/** 书架上的作品一律先进详情页，长篇从详情页的「开始阅读」进正文。 */
+function readUrl(work: FictionWork): string {
+	return getFictionWorkUrl(work.slug);
+}
+
+function shelfMeta(work: FictionWork): string {
+	if (work.isSerial) {
+		return `${work.chapterCount} ${i18n(I18nKey.fictionChapterUnit)}`;
+	}
+	if (work.origin === "fanfic" && work.fandom) return work.fandom;
+	return work.tags.join("、");
+}
+
+function lastTouched(work: FictionWork): string {
+	const time = new Date(work.activityTime);
+	return formatDateToYYYYMMDD(time);
+}
+
+let delay = 0;
+---
+
+<MainGridLayout
+	title={i18n(I18nKey.fiction)}
+	description={i18n(I18nKey.fictionDescription)}
+	sidebarContentType="fiction"
+>
+	<link
+		slot="head"
+		rel="alternate"
+		type="application/rss+xml"
+		title={`${siteConfig.title} · ${i18n(I18nKey.fiction)}`}
+		href={url("/fiction/rss.xml")}
+	/>
+
+	<header
+		class="fiction-hero card-base onload-animation mb-8 rounded-[var(--radius-large)] px-6 py-8 md:px-9 md:py-9"
+	>
+		<h1 class="text-3xl font-bold text-90 md:text-4xl">{i18n(I18nKey.fiction)}</h1>
+		<p class="mt-3 max-w-xl text-75 leading-relaxed">
+			{i18n(I18nKey.fictionDescription)}
+		</p>
+		<div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-50">
+			<span>{stats.join(" · ")}</span>
+			<a class="link text-[var(--primary)]" href={url("/fiction/rss.xml")}>RSS</a>
+		</div>
+	</header>
+
+	{
+		works.length === 0 ? (
+			<div class="card-base onload-animation rounded-[var(--radius-large)] px-6 py-6 text-75 md:px-9">
+				{i18n(I18nKey.noFiction)}
+			</div>
+		) : (
+			<>
+				{shelves.map((shelf) => {
+					const items = worksOn(shelf.key);
+					if (items.length === 0) return null;
+					return (
+						<section
+							id={shelf.key}
+							class="fiction-shelf-section"
+							data-fiction-section={shelf.key}
+						>
+							<div class="fiction-shelf-head onload-animation">
+								<h2 class="text-90">{shelf.label}</h2>
+								<span class="fiction-shelf-count">
+									{items.length} {i18n(I18nKey.fictionWorks)}
+								</span>
+							</div>
+							<div class="fiction-shelf">
+								{items.map((work) => {
+									const hasCover = work.cover.trim().length > 0;
+									const statusLabel = i18n(I18nKey[fictionStatusKey(work.status)]);
+									return (
+										<a
+											href={readUrl(work)}
+											class="fiction-book onload-animation"
+											data-fiction-book={work.slug}
+											data-fiction-tags={JSON.stringify(work.tags)}
+											data-fiction-total={work.chapterCount}
+											data-fiction-read-label={i18n(I18nKey.fictionReadTo)}
+											style={`animation-delay: calc(var(--content-delay) + ${delay++ * 50}ms);`}
+										>
+											<div class="fiction-book-cover">
+												{hasCover ? (
+													<ImageWrapper
+														src={work.cover}
+														basePath={path.join("content/fiction/", `${work.slug}/`)}
+														class="h-full w-full"
+														alt=""
+													/>
+												) : (
+													<div class="flex h-full w-full items-end p-3">
+														<span class="text-sm font-bold text-90">{work.title}</span>
+													</div>
+												)}
+												{work.isSerial && (
+													<span
+														class:list={[
+															"fiction-pill",
+															work.status === "ongoing"
+																? "fiction-pill-ongoing"
+																: work.status === "hiatus"
+																	? "fiction-pill-hiatus"
+																	: "fiction-pill-complete",
+														]}
+													>
+														{statusLabel}
+													</span>
+												)}
+												<div class="fiction-book-track" data-fiction-track hidden>
+													<i style="width: 0"></i>
+												</div>
+											</div>
+											<span class="fiction-book-title text-90">{work.title}</span>
+											<span class="fiction-book-meta" data-fiction-book-meta>
+												{shelfMeta(work)}
+											</span>
+										</a>
+									);
+								})}
+							</div>
+						</section>
+					);
+				})}
+
+				<div
+					class="card-base onload-animation rounded-[var(--radius-large)] px-6 py-6 text-75 md:px-9"
+					data-fiction-filter-empty
+					hidden
+				>
+					{i18n(I18nKey.noFictionMatch)}
+				</div>
+			</>
+		)
+	}
+
+	<footer class="onload-animation mt-2 text-sm text-50">
+		{
+			works.length > 0 && (
+				<span>
+					{i18n(I18nKey.fictionUpdatedAt)} {lastTouched(works[0])}
+				</span>
+			)
+		}
+	</footer>
+
+	<FictionClient />
+</MainGridLayout>

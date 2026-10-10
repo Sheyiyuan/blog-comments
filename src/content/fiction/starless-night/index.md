@@ -1,17 +1,16 @@
 ---
 title: "星光寥落之夜"
-
+origin: fanfic
+fandom: "明日方舟"
 published: 2022-11-16
-category: "小说"
-tags: 
-  - "博士（明日方舟）"
-  - "同人文"
+synopsis: "她在夜空的孤岛中重获新生"
+tags:
   - "明日方舟"
-  - "星极（明日方舟）"
-image: "images/1759243177-asutesia.jpg"
-firstLineIndent: "2em"
+  - "博士"
+  - "星极"
+  - "同人"
+cover: "images/1759243177-asutesia.jpg"
 ---
-
 _她在夜空的孤岛中重获新生_
 
 > 文by 社·令寄了·澄闪歪了·我歪三次·亦园  

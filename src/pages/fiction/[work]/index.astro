@@ -1,0 +1,212 @@
+---
+import path from "node:path";
+import FictionReader from "@components/FictionReader.astro";
+import FictionClient from "@components/fiction/FictionClient.astro";
+import FictionRights from "@components/misc/FictionRights.astro";
+import Giscus from "@components/misc/Giscus.astro";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import Markdown from "@components/misc/Markdown.astro";
+import I18nKey from "@i18n/i18nKey";
+import { getTranslation, i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+import { giscusConfig, siteConfig } from "../../../config";
+import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
+import {
+	fictionStatusKey,
+	formatFictionNumber,
+	getFictionWorks,
+} from "../../../utils/fiction-utils";
+import { getFictionChapterUrl, url } from "../../../utils/url-utils";
+import "../../../styles/fiction.css";
+
+export async function getStaticPaths() {
+	const works = await getFictionWorks();
+	return works.map((work) => ({
+		params: { work: work.slug },
+	}));
+}
+
+const workSlug = Astro.params.work ?? "";
+const works = await getFictionWorks();
+const work = works.find((item) => item.slug === workSlug);
+if (!work) {
+	throw new Error(`找不到外篇 ${workSlug}`);
+}
+
+const coverBasePath = path.join("content/fiction/", `${work.slug}/`);
+const tr = getTranslation(work.lang || siteConfig.lang);
+const hasBody = (work.entry.body ?? "").trim().length > 0;
+const rendered = work.isSerial && hasBody ? await work.entry.render() : null;
+const NoteContent = rendered?.Content;
+const commentsClosed = work.comments === false;
+const statusLabel = i18n(I18nKey[fictionStatusKey(work.status)]);
+const hasCover = work.cover.trim().length > 0;
+const firstChapter = work.chapters[0] ?? null;
+const latestChapter = work.latestChapter;
+const wordUnit = i18n(I18nKey.wordsCount);
+const chips = [
+	work.series,
+	work.origin === "fanfic" ? work.fandom : "",
+	...work.tags,
+].filter((item) => item.length > 0);
+const facts = [
+	`${work.chapterCount} ${i18n(I18nKey.fictionChapterUnit)}`,
+	`${formatFictionNumber(work.words)} ${wordUnit}`,
+	`${i18n(I18nKey.fictionUpdatedAt)} ${formatDateToYYYYMMDD(new Date(work.activityTime))}`,
+];
+---
+{work.isSerial ? (
+	<MainGridLayout
+		title={work.title}
+		description={work.synopsis || work.title}
+		lang={work.lang}
+		setOGTypeArticle={true}
+		headings={rendered?.headings ?? []}
+		sidebarContentType="fiction"
+	>
+		<link slot="head" rel="alternate" type="application/rss+xml" title={`${siteConfig.title} · ${i18n(I18nKey.fiction)}`} href={url("/fiction/rss.xml")} />
+
+		<div class="card-base onload-animation mb-4 rounded-[var(--radius-large)] px-6 pt-6 pb-6 md:px-9" style="animation-delay: var(--content-delay);">
+			<div class="fiction-work-grid">
+				<div>
+					{hasCover ? (
+						<ImageWrapper
+							src={work.cover}
+							basePath={coverBasePath}
+							class="fiction-work-cover"
+							alt=""
+						/>
+					) : (
+						<div class="fiction-work-cover flex items-end justify-center bg-[var(--btn-regular-bg)] p-4">
+							<span class="text-lg font-bold text-90">{work.title}</span>
+						</div>
+					)}
+				</div>
+
+				<div class="min-w-0">
+					<div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+						<span class:list={["fiction-pill", work.status === "ongoing" ? "fiction-pill-ongoing" : work.status === "hiatus" ? "fiction-pill-hiatus" : "fiction-pill-complete"]}>
+							{statusLabel}
+						</span>
+						<span class="fiction-facts">{facts.join(" · ")}</span>
+					</div>
+
+					<h1 class="mb-3 text-3xl font-bold text-90 md:text-[2.25rem]/[2.75rem]">{work.title}</h1>
+
+					{chips.length > 0 && (
+						<div class="fiction-chips mb-4">
+							{chips.map((chip) => (
+								<span class="fiction-chip">{chip}</span>
+							))}
+						</div>
+					)}
+
+					{work.synopsis && <p class="mb-5 text-75 leading-relaxed">{work.synopsis}</p>}
+
+					<div class="flex flex-wrap items-center gap-3">
+						{firstChapter && (
+							<a
+								href={getFictionChapterUrl(work.slug, firstChapter.slug)}
+								class="btn-regular h-11 gap-2 rounded-xl px-5 font-bold"
+								data-fiction-continue
+								data-fiction-work={work.slug}
+								data-fiction-continue-label={i18n(I18nKey.fictionContinueReading)}
+							>
+								<span data-fiction-continue-text>{i18n(I18nKey.fictionStartReading)}</span>
+								<Icon name="material-symbols:arrow-forward-rounded" class="text-lg" />
+							</a>
+						)}
+						{latestChapter && work.chapterCount > 1 && (
+							<a
+								href={getFictionChapterUrl(work.slug, latestChapter.slug)}
+								class="btn-plain h-11 max-w-full gap-2 rounded-xl px-4 text-sm"
+							>
+								<Icon name="material-symbols:history-rounded" class="text-lg" />
+								<span class="fiction-order">{String(latestChapter.order).padStart(2, "0")}</span>
+								<span class="max-w-[12rem] truncate">{latestChapter.title}</span>
+							</a>
+						)}
+					</div>
+				</div>
+			</div>
+
+			{NoteContent && (
+				<div class="fiction-measure mt-6 border-t border-dashed border-[var(--line-divider)] pt-5">
+					<Markdown class="markdown-content" style="--md-first-line-indent: 2em;">
+						<NoteContent />
+					</Markdown>
+				</div>
+			)}
+		</div>
+
+		<div class="card-base onload-animation mb-4 rounded-[var(--radius-large)] px-6 py-6 md:px-9">
+			<div class="fiction-shelf-head">
+				<h2 class="text-90">{i18n(I18nKey.fictionCatalog)}</h2>
+				<span class="fiction-shelf-count">{facts.slice(0, 2).join(" · ")}</span>
+			</div>
+			{work.chapters.length === 0 ? (
+				<p class="text-75">{i18n(I18nKey.fictionNoChapters)}</p>
+			) : (
+				<ol class="fiction-toc">
+					{work.chapters.map((chapter) => (
+						<li>
+							<a
+								href={getFictionChapterUrl(work.slug, chapter.slug)}
+								class="fiction-toc-row"
+								data-fiction-chapter-row
+								data-fiction-chapter={chapter.slug}
+								data-fiction-order={chapter.order}
+							>
+								<span class="fiction-order">{String(chapter.order).padStart(2, "0")}</span>
+								<span class="fiction-toc-title">{chapter.title}</span>
+								<span class="fiction-dot" aria-hidden="true"></span>
+								<span class="fiction-toc-words">{formatFictionNumber(chapter.words)} {wordUnit}</span>
+								<span class="fiction-toc-date">{formatDateToYYYYMMDD(chapter.published)}</span>
+							</a>
+						</li>
+					))}
+				</ol>
+			)}
+		</div>
+
+		<div class="card-base onload-animation mb-4 rounded-[var(--radius-large)] px-6 py-6 md:px-9">
+			<FictionRights title={work.title} pubDate={work.published} origin={work.origin} fandom={work.fandom} class="rounded-xl" />
+			{giscusConfig.enable && (
+				<div class="mt-4 rounded-xl card-base px-6 py-6 md:px-7">
+					{commentsClosed ? (
+						<div>
+							<div class="mb-1 flex items-center gap-2 text-black/60 dark:text-white/60">
+								<Icon name="material-symbols:comments-disabled-outline-rounded" class="text-[1.25rem]" />
+								<div class="font-medium">{tr[I18nKey.comments]}</div>
+							</div>
+							<div class="text-sm text-black/50 dark:text-white/50">{tr[I18nKey.commentsClosed]}</div>
+						</div>
+					) : (
+						<Giscus />
+					)}
+				</div>
+			)}
+		</div>
+
+		<FictionClient />
+	</MainGridLayout>
+) : (
+	<FictionReader
+		entry={work.entry}
+		title={work.title}
+		description={work.synopsis || work.title}
+		cover={work.cover}
+		coverBasePath={coverBasePath}
+		origin={work.origin}
+		fandom={work.fandom}
+		tags={work.tags}
+		series={work.series}
+		published={work.published}
+		updated={work.updated}
+		lang={work.lang}
+		comments={work.comments}
+		workSlug={work.slug}
+		jsonLdType={work.origin === "fanfic" ? "Article" : "ShortStory"}
+	/>
+)}

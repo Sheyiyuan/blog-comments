@@ -1,6 +1,6 @@
 内容许可（Content License）
 
-除非另有说明，本仓库中的原创文章、随笔与图片等内容（主要位于 src/content/ 及其子目录）采用以下许可协议：
+除非另有说明，本仓库中的原创文章、随笔与图片等内容（主要位于 src/content/posts、src/content/notes、src/content/essays 及其子目录）采用以下许可协议：
 
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
 https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -16,6 +16,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/
 - 相同方式共享：若改编/再创作，需以相同许可（CC BY-NC-SA 4.0）发布
 
 例外：
+- 外篇（src/content/fiction/）不采用 CC BY-NC-SA。原创外篇保留全部权利，未经许可不得转载或用于商业用途。同人外篇中，原作角色与世界观的权利归原权利人所有；作者保留自己撰写的文字，未经许可不得转载，禁止商业使用。
 - 第三方引用内容（如转载文章/图片/代码片段等）以其原许可或权利声明为准。
 
 第三方资源（图片 / 字体 / 图标等）说明：

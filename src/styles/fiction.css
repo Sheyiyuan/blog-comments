@@ -1,0 +1,553 @@
+/* ==========================================================================
+   外篇：书架、作品页与阅读页
+   约定：所有类名以 .fiction- 开头，服务端渲染与客户端脚本共用同一套标记。
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 书架总览 */
+
+.fiction-hero {
+	position: relative;
+	isolation: isolate;
+}
+
+.fiction-hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(
+			120% 140% at 100% 0%,
+			color-mix(in oklch, var(--primary) 16%, transparent),
+			transparent 60%
+		),
+		radial-gradient(
+			90% 120% at 0% 100%,
+			color-mix(in oklch, var(--primary) 10%, transparent),
+			transparent 65%
+		);
+}
+
+.fiction-shelf-section + .fiction-shelf-section {
+	margin-top: 2.75rem;
+}
+
+.fiction-shelf-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.1rem;
+}
+
+.fiction-shelf-head h2 {
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+
+.fiction-shelf-count {
+	font-size: 0.8125rem;
+	color: color-mix(in oklch, var(--deep-text) 55%, transparent);
+}
+
+.dark .fiction-shelf-count {
+	color: rgb(255 255 255 / 0.5);
+}
+
+/* 一层书架板 */
+.fiction-shelf {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(8.25rem, 1fr));
+	column-gap: 1.35rem;
+	row-gap: 2.4rem;
+	align-items: start;
+	padding: 0.25rem 0.4rem 1.3rem;
+}
+
+.fiction-shelf::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 9px;
+	border-radius: 3px;
+	background: linear-gradient(
+		to bottom,
+		color-mix(in oklch, var(--primary) 30%, var(--card-bg)),
+		color-mix(in oklch, var(--primary) 14%, var(--card-bg))
+	);
+	box-shadow: 0 5px 0 color-mix(in srgb, black 14%, transparent);
+}
+
+.fiction-book {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+}
+
+.fiction-book-cover {
+	position: relative;
+	aspect-ratio: 3 / 4;
+	width: 100%;
+	overflow: hidden;
+	border-radius: 3px 8px 8px 3px;
+	background: var(--btn-regular-bg);
+	box-shadow:
+		0 1px 2px rgb(0 0 0 / 0.18),
+		0 8px 18px -10px rgb(0 0 0 / 0.45);
+	transition:
+		transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 0.28s ease;
+}
+
+/* 书脊 */
+.fiction-book-cover::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	width: 7px;
+	background: linear-gradient(
+		to right,
+		rgb(0 0 0 / 0.28),
+		rgb(255 255 255 / 0.14) 60%,
+		rgb(0 0 0 / 0.12)
+	);
+	pointer-events: none;
+}
+
+.fiction-book:hover .fiction-book-cover {
+	transform: translateY(-4px);
+	box-shadow:
+		0 2px 4px rgb(0 0 0 / 0.2),
+		0 18px 28px -14px rgb(0 0 0 / 0.5);
+}
+
+.fiction-book-title {
+	margin-top: 0.75rem;
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	text-align: center;
+	font-size: 0.9rem;
+	font-weight: 700;
+	line-height: 1.35;
+	transition: color 0.2s ease;
+}
+
+.fiction-book:hover .fiction-book-title {
+	color: var(--primary);
+}
+
+.fiction-book-meta {
+	margin-top: 0.2rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: center;
+	font-size: 0.75rem;
+	color: color-mix(in oklch, var(--deep-text) 58%, transparent);
+}
+
+.dark .fiction-book-meta {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.fiction-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	border-radius: 999px;
+	padding: 0.1rem 0.5rem;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	line-height: 1.6;
+	backdrop-filter: blur(6px);
+}
+
+.fiction-book-cover .fiction-pill {
+	position: absolute;
+	top: 0.45rem;
+	left: 0.75rem;
+	z-index: 3;
+}
+
+.fiction-pill-ongoing {
+	background: color-mix(in oklch, var(--primary) 88%, transparent);
+	color: white;
+}
+
+.fiction-pill-complete {
+	background: rgb(0 0 0 / 0.45);
+	color: rgb(255 255 255 / 0.92);
+}
+
+.fiction-pill-hiatus {
+	background: rgb(0 0 0 / 0.4);
+	color: rgb(255 255 255 / 0.8);
+}
+
+/* 书架上的阅读进度 */
+.fiction-book-track {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 3;
+	height: 3px;
+	background: rgb(0 0 0 / 0.35);
+}
+
+.dark .fiction-book-track {
+	background: rgb(255 255 255 / 0.25);
+}
+
+.fiction-book-track > i {
+	display: block;
+	height: 100%;
+	background: var(--primary);
+	transition: width 0.3s ease;
+}
+
+/* ---------------------------------------------------------------- 作品页 */
+
+.fiction-work-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+	.fiction-work-grid {
+		grid-template-columns: 11.5rem 1fr;
+		gap: 2rem;
+	}
+}
+
+.fiction-work-cover {
+	position: relative;
+	width: 100%;
+	max-width: 11.5rem;
+	margin: 0 auto;
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
+	border-radius: 4px 10px 10px 4px;
+	box-shadow:
+		0 2px 4px rgb(0 0 0 / 0.2),
+		0 20px 32px -18px rgb(0 0 0 / 0.55);
+}
+
+.fiction-work-cover::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	width: 8px;
+	background: linear-gradient(
+		to right,
+		rgb(0 0 0 / 0.3),
+		rgb(255 255 255 / 0.14) 60%,
+		rgb(0 0 0 / 0.12)
+	);
+	pointer-events: none;
+}
+
+.fiction-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.fiction-chip {
+	border-radius: 999px;
+	background: var(--btn-regular-bg);
+	padding: 0.15rem 0.65rem;
+	font-size: 0.75rem;
+	color: color-mix(in oklch, var(--deep-text) 78%, transparent);
+}
+
+.dark .fiction-chip {
+	color: rgb(255 255 255 / 0.75);
+}
+
+.fiction-facts {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.35rem 0.9rem;
+	font-size: 0.8125rem;
+	color: color-mix(in oklch, var(--deep-text) 55%, transparent);
+}
+
+.dark .fiction-facts {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.fiction-toc {
+	display: flex;
+	flex-direction: column;
+}
+
+/* 目录文本只有两种状态：未读用满色（暗色近白、亮色近黑），已读压成灰 */
+.fiction-toc-row {
+	display: flex;
+	align-items: baseline;
+	gap: 0.9rem;
+	border-bottom: 1px dashed var(--line-divider);
+	padding: 0.7rem 0.6rem;
+	border-radius: 0.5rem;
+	color: rgb(0 0 0 / 0.9);
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+}
+
+.dark .fiction-toc-row {
+	color: rgb(255 255 255 / 0.92);
+}
+
+.fiction-toc-row.is-read {
+	color: rgb(0 0 0 / 0.38);
+}
+
+.dark .fiction-toc-row.is-read {
+	color: rgb(255 255 255 / 0.38);
+}
+
+.fiction-toc-row:hover {
+	background: var(--btn-plain-bg-hover);
+	color: var(--primary);
+}
+
+.fiction-order {
+	flex: none;
+	width: 2.25rem;
+	font-variant-numeric: tabular-nums;
+	font-size: 0.8125rem;
+	letter-spacing: 0.06em;
+	opacity: 0.75;
+}
+
+.fiction-toc-title {
+	min-width: 0;
+	flex: 1;
+	font-weight: 500;
+}
+
+.fiction-toc-words,
+.fiction-toc-date {
+	flex: none;
+	font-size: 0.8125rem;
+	font-variant-numeric: tabular-nums;
+	color: currentColor;
+	opacity: 0.7;
+}
+
+.fiction-toc-words {
+	display: none;
+}
+
+@media (min-width: 640px) {
+	.fiction-toc-words {
+		display: block;
+	}
+}
+
+/* 当前读到的那一章只靠底色、加粗与圆点区分，文字仍走已读/未读两色 */
+.fiction-toc-row.is-current {
+	background: var(--btn-plain-bg-hover);
+}
+
+.fiction-toc-row.is-current .fiction-toc-title {
+	font-weight: 700;
+}
+
+.fiction-dot {
+	flex: none;
+	width: 0.4rem;
+	height: 0.4rem;
+	border-radius: 999px;
+	background: color-mix(in oklch, var(--primary) 80%, transparent);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.fiction-toc-row.is-read .fiction-dot,
+.fiction-toc-row.is-current .fiction-dot {
+	opacity: 1;
+}
+
+/* ---------------------------------------------------------------- 阅读页 */
+
+.fiction-progress-bar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 60;
+	width: 100%;
+	height: 3px;
+	pointer-events: none;
+}
+
+.fiction-progress-bar > i {
+	display: block;
+	height: 100%;
+	width: 0;
+	background: var(--primary);
+	box-shadow: 0 0 8px color-mix(in oklch, var(--primary) 60%, transparent);
+	transition: width 0.1s linear;
+}
+
+.fiction-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem 0.55rem;
+	font-size: 0.8125rem;
+	color: color-mix(in oklch, var(--deep-text) 55%, transparent);
+}
+
+.dark .fiction-breadcrumb {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.fiction-breadcrumb a:hover {
+	color: var(--primary);
+}
+
+.fiction-order-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2rem;
+	border-radius: 0.4rem;
+	background: var(--btn-regular-bg);
+	padding: 0.05rem 0.4rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.08em;
+	color: var(--btn-content);
+}
+
+/* 正文排版：限宽、行距放宽，长段落更好读。
+   注意 .prose 上带 !max-w-none，限宽必须落在外层容器。 */
+.fiction-measure {
+	max-width: 40rem;
+	margin-inline: auto;
+}
+
+.fiction-prose.custom-md {
+	line-height: 1.95;
+	font-size: 1.0625rem;
+}
+
+.fiction-prose.custom-md > p {
+	margin-bottom: 1.15rem;
+}
+
+.fiction-prose.custom-md > p:last-child {
+	margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+	.fiction-prose.custom-md {
+		font-size: 1rem;
+		line-height: 1.9;
+	}
+}
+
+.fiction-nav {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+	.fiction-nav {
+		grid-template-columns: 1fr auto 1fr;
+		align-items: stretch;
+	}
+}
+
+.fiction-nav-btn {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 0.2rem;
+	border-radius: 0.9rem;
+	background: var(--card-bg);
+	border: 1px solid var(--line-divider);
+	padding: 0.7rem 0.9rem;
+	color: rgb(0 0 0 / 0.9);
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.dark .fiction-nav-btn {
+	color: rgb(255 255 255 / 0.92);
+}
+
+.fiction-nav-btn:hover {
+	background: var(--btn-plain-bg-hover);
+	border-color: color-mix(in oklch, var(--primary) 35%, transparent);
+}
+
+.fiction-nav-btn.is-empty {
+	opacity: 0.4;
+	pointer-events: none;
+}
+
+/* 没有下一章时，右侧不再留空位，直接报一句「已是最后一章」 */
+.fiction-nav-btn.is-last {
+	justify-content: center;
+	border-style: dashed;
+	opacity: 0.72;
+	pointer-events: none;
+}
+
+.fiction-nav-label {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.75rem;
+	color: color-mix(in oklch, var(--deep-text) 55%, transparent);
+}
+
+.dark .fiction-nav-label {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.fiction-nav-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.9375rem;
+	font-weight: 600;
+}
+
+.fiction-nav-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	border-radius: 0.9rem;
+	background: var(--btn-regular-bg);
+	padding: 0.7rem 1.1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--btn-content);
+	white-space: nowrap;
+}
+
+.fiction-nav-center:hover {
+	background: var(--btn-regular-bg-hover);
+}

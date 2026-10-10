@@ -24,6 +24,17 @@ export function getEssayUrlByRouteSlug(routeSlug: string): string {
 	return url(`/essays/${routeSlug}/`);
 }
 
+export function getFictionWorkUrl(slug: string): string {
+	return url(`/fiction/${slug}/`);
+}
+
+export function getFictionChapterUrl(
+	workSlug: string,
+	chapterSlug: string,
+): string {
+	return url(`/fiction/${workSlug}/${chapterSlug}/`);
+}
+
 export function getTagUrl(tag: string, basePath = "/archive/"): string {
 	if (!tag) return url(basePath);
 	return url(`${basePath}?tag=${encodeURIComponent(tag.trim())}`);

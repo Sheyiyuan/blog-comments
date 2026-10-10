@@ -1,0 +1,323 @@
+---
+import type { CollectionEntry } from "astro:content";
+import FictionClient from "@components/fiction/FictionClient.astro";
+import FictionRights from "@components/misc/FictionRights.astro";
+import Giscus from "@components/misc/Giscus.astro";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import Markdown from "@components/misc/Markdown.astro";
+import I18nKey from "@i18n/i18nKey";
+import { getTranslation, i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+import { giscusConfig } from "src/config";
+import { profileConfig, siteConfig } from "../config";
+import {
+	formatDateTimeToISOWithOffset,
+	formatDateTimeToYYYYMMDDHHmm,
+} from "../utils/date-utils";
+import {
+	type FictionOrigin,
+	fictionCopyrightNotice,
+} from "../utils/fiction-utils";
+import { url } from "../utils/url-utils";
+import "../styles/fiction.css";
+
+interface Neighbor {
+	href: string;
+	title: string;
+}
+
+interface Props {
+	entry: CollectionEntry<"fiction">;
+	title: string;
+	description: string;
+	cover: string;
+	coverBasePath: string;
+	origin: FictionOrigin;
+	fandom: string;
+	tags: string[];
+	series: string;
+	published: Date;
+	updated?: Date;
+	lang: string;
+	comments: boolean;
+	workSlug?: string;
+	chapterSlug?: string;
+	workHref?: string;
+	workTitle?: string;
+	prev?: Neighbor | null;
+	next?: Neighbor | null;
+	chapterOrder?: number;
+	chapterCount?: number;
+	jsonLdType: "ShortStory" | "Chapter" | "Article";
+	isPartOf?: { name: string; url: string } | null;
+}
+
+const {
+	entry,
+	title,
+	description,
+	cover,
+	coverBasePath,
+	origin,
+	fandom,
+	tags,
+	series,
+	published,
+	updated,
+	lang,
+	comments,
+	workSlug,
+	chapterSlug,
+	workHref,
+	workTitle,
+	prev = null,
+	next = null,
+	chapterOrder,
+	chapterCount,
+	jsonLdType,
+	isPartOf = null,
+} = Astro.props;
+
+const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+const tr = getTranslation(lang || siteConfig.lang);
+const footnoteForI18n = tr[I18nKey.footnotes];
+const commentsGloballyEnabled = giscusConfig.enable;
+const commentsClosedForEntry = comments === false;
+const hasCover = cover.trim().length > 0;
+const isChapter = typeof chapterOrder === "number" && chapterOrder > 0;
+const orderLabel = isChapter ? String(chapterOrder).padStart(2, "0") : "";
+const metaBits = [
+	series,
+	origin === "fanfic" && fandom ? fandom : "",
+	...tags,
+].filter((item) => item.length > 0);
+const readingBits = [
+	formatDateTimeToYYYYMMDDHHmm(published),
+	`${remarkPluginFrontmatter.words} ${i18n(I18nKey.wordsCount)}`,
+	`${remarkPluginFrontmatter.minutes} ${i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}`,
+];
+const hasChapterNav = Boolean(prev || next || workHref);
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": jsonLdType,
+	headline: title,
+	name: title,
+	description: description || title,
+	keywords: tags,
+	author: {
+		"@type": "Person",
+		name: profileConfig.name,
+		url: Astro.site,
+	},
+	datePublished: formatDateTimeToISOWithOffset(published),
+	...(updated && updated.getTime() !== published.getTime()
+		? { dateModified: formatDateTimeToISOWithOffset(updated) }
+		: {}),
+	inLanguage: (lang || siteConfig.lang).replace("_", "-"),
+	copyrightNotice: fictionCopyrightNotice({ origin, fandom }),
+	...(isPartOf
+		? {
+				isPartOf: {
+					"@type": "Book",
+					name: isPartOf.name,
+					url: isPartOf.url,
+				},
+			}
+		: {}),
+};
+---
+
+<MainGridLayout
+	banner={hasCover ? cover : undefined}
+	bannerBasePath={coverBasePath}
+	title={title}
+	description={description}
+	lang={lang}
+	setOGTypeArticle={true}
+	headings={headings}
+	sidebarContentType="fiction"
+>
+	<link slot="head" rel="alternate" type="application/rss+xml" title={`${siteConfig.title} · ${i18n(I18nKey.fiction)}`} href={url("/fiction/rss.xml")} />
+	<script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+
+	<div class="fiction-progress-bar" id="fiction-progress-bar" aria-hidden="true"><i></i></div>
+
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
+		data-fiction-read
+		data-fiction-work={workSlug}
+		data-fiction-chapter={chapterSlug ?? entry.id.split("/").pop()}
+		data-fiction-order={isChapter ? chapterOrder : 0}
+		data-fiction-total={isChapter ? (chapterCount ?? 0) : 0}
+		data-fiction-done={isChapter ? "0" : "1"}
+	>
+		<div id="post-container" class="card-base onload-animation z-10 px-6 md:px-9 pt-6 pb-5 relative w-full" style="animation-delay: var(--content-delay);">
+			<div class="fiction-breadcrumb onload-animation mb-3">
+				<a class="link text-[var(--primary)]" href={url("/fiction/")}>{i18n(I18nKey.fiction)}</a>
+				{isChapter && workHref && workTitle && (
+					<>
+						<span>/</span>
+						<a class="link" href={workHref}>{workTitle}</a>
+						<span class="fiction-order-badge">{orderLabel}</span>
+						{typeof chapterCount === "number" && chapterCount > 0 && (
+							<span>{chapterCount} {i18n(I18nKey.fictionChapterUnit)}</span>
+						)}
+					</>
+				)}
+			</div>
+
+			<div class="relative onload-animation">
+				<h1
+					data-pagefind-body
+					data-pagefind-weight="10"
+					data-pagefind-meta="title"
+					class="transition w-full block font-bold mb-3 text-3xl md:text-[2.25rem]/[2.75rem] text-black/90 dark:text-white/90 md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)] before:absolute before:top-[0.75rem] before:left-[-1.125rem]"
+				>
+					{title}
+				</h1>
+			</div>
+
+			<div class="onload-animation mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-50">
+				{readingBits.map((bit, index) => (
+					<>
+						{index > 0 && <span class="opacity-40">·</span>}
+						<span>{bit}</span>
+					</>
+				))}
+			</div>
+
+			{metaBits.length > 0 && (
+				<div class="onload-animation fiction-chips mb-5">
+					{metaBits.map((bit) => (
+						<span class="fiction-chip">{bit}</span>
+					))}
+				</div>
+			)}
+
+			{hasCover && (
+				<div class="fiction-measure">
+					<ImageWrapper id="post-cover" src={cover} basePath={coverBasePath} class="mb-8 rounded-xl banner-container onload-animation" alt="" />
+				</div>
+			)}
+			{!hasCover && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-6"></div>}
+
+			<div class="fiction-measure">
+				<Markdown class="mb-6 markdown-content fiction-prose onload-animation" style="--md-first-line-indent: 2em;">
+					<Content />
+				</Markdown>
+			</div>
+
+			{hasChapterNav && (
+				<nav class="fiction-measure fiction-nav onload-animation mb-6">
+					{prev ? (
+						<a class="fiction-nav-btn" href={prev.href} data-fiction-prev>
+							<span class="fiction-nav-label">
+								<Icon name="material-symbols:chevron-left-rounded" class="text-base" />
+								{i18n(I18nKey.fictionPrevChapter)}
+							</span>
+							<span class="fiction-nav-title">{prev.title}</span>
+						</a>
+					) : (
+						<span class="fiction-nav-btn is-empty">
+							<span class="fiction-nav-label">{i18n(I18nKey.fictionPrevChapter)}</span>
+							<span class="fiction-nav-title">—</span>
+						</span>
+					)}
+
+					<a class="fiction-nav-center" href={workHref ?? url("/fiction/")}>
+						<Icon name="material-symbols:list-alt-rounded" class="text-base" />
+						{i18n(I18nKey.fictionCatalog)}
+					</a>
+
+					{next ? (
+						<a class="fiction-nav-btn items-end text-right" href={next.href} data-fiction-next>
+							<span class="fiction-nav-label">
+								{i18n(I18nKey.fictionNextChapter)}
+								<Icon name="material-symbols:chevron-right-rounded" class="text-base" />
+							</span>
+							<span class="fiction-nav-title">{next.title}</span>
+						</a>
+					) : (
+						<span class="fiction-nav-btn is-last items-end text-right">
+							<span class="fiction-nav-title">{i18n(I18nKey.fictionLastChapter)}</span>
+						</span>
+					)}
+				</nav>
+			)}
+
+			{!isChapter && (
+				<div class="fiction-measure mb-6 flex justify-center onload-animation">
+					<a class="btn-regular h-11 gap-2 rounded-xl px-5 font-bold" href={url("/fiction/")}>
+						<Icon name="material-symbols:library-books-rounded" class="text-lg" />
+						{i18n(I18nKey.fiction)}
+					</a>
+				</div>
+			)}
+
+			<div class="fiction-measure">
+				<FictionRights title={title} pubDate={published} origin={origin} fandom={fandom} class="mb-6 rounded-xl onload-animation" />
+			</div>
+
+			{commentsGloballyEnabled && (
+				<div class="fiction-measure mb-6 rounded-xl card-base px-6 md:px-7 py-6 onload-animation">
+					{commentsClosedForEntry ? (
+						<div>
+							<div class="flex items-center gap-2 mb-1 text-black/60 dark:text-white/60">
+								<Icon name="material-symbols:comments-disabled-outline-rounded" class="text-[1.25rem]" />
+								<div class="font-medium">{tr[I18nKey.comments]}</div>
+							</div>
+							<div class="text-sm text-black/50 dark:text-white/50">{tr[I18nKey.commentsClosed]}</div>
+						</div>
+					) : (
+						<Giscus />
+					)}
+				</div>
+			)}
+		</div>
+	</div>
+
+	<FictionClient />
+
+	<script is:inline define:vars={{ translatedFootnote: footnoteForI18n }}>
+		const updateFootnotes = () => {
+			const footnoteLabel = document.getElementById("footnote-label");
+			if (footnoteLabel) {
+				footnoteLabel.innerText = translatedFootnote;
+				footnoteLabel.classList.remove("sr-only");
+			}
+			const backRefs = document.querySelectorAll(".data-footnote-backref");
+			backRefs.forEach((backRef) => {
+				backRef.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>`;
+				backRef.classList.add("footnote-backref-icon");
+			});
+		};
+
+		const handleFootnoteBackClick = (e) => {
+			const backRef = e.target.closest(".data-footnote-backref");
+			if (!backRef) return;
+			const href = backRef.getAttribute("href");
+			if (!href || !href.startsWith("#")) return;
+			const targetId = href.substring(1);
+			const targetElement = document.getElementById(targetId);
+			if (!targetElement) return;
+			e.preventDefault();
+			e.stopPropagation();
+			const offset = 120;
+			const offsetPosition = targetElement.getBoundingClientRect().top + window.scrollY - offset;
+			window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+			history.pushState(null, null, "#" + targetId);
+		};
+
+		document.addEventListener("click", handleFootnoteBackClick, true);
+		updateFootnotes();
+		if (window.swup) {
+			window.swup.hooks.on("page:view", updateFootnotes);
+		} else {
+			document.addEventListener("swup:enable", () => {
+				window.swup.hooks.on("page:view", updateFootnotes);
+			});
+		}
+	</script>
+</MainGridLayout>

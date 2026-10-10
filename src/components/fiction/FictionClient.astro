@@ -1,0 +1,201 @@
+---
+/**
+ * 外篇的客户端行为，三个页面共用：
+ * 1. 书架上的阅读进度
+ * 2. 作品页的「继续阅读」与目录里的已读标记
+ * 3. 阅读页的进度条、阅读位置记录与左右键翻章
+ * 全部是渐进增强，脚本失效时页面仍然可读。
+ */
+import { FICTION_PROGRESS_PREFIX } from "../../utils/fiction-utils";
+---
+
+<script is:inline define:vars={{ progressPrefix: FICTION_PROGRESS_PREFIX }}>
+	const readFictionState = (slug) => {
+		if (!slug) return null;
+		try {
+			const raw = localStorage.getItem(progressPrefix + slug);
+			return raw ? JSON.parse(raw) : null;
+		} catch {
+			return null;
+		}
+	};
+
+	const writeFictionState = (slug, state) => {
+		if (!slug) return;
+		try {
+			localStorage.setItem(progressPrefix + slug, JSON.stringify(state));
+		} catch {
+			/* 隐私模式下写不进去，忽略 */
+		}
+	};
+
+	const padFictionOrder = (n) => String(n).padStart(2, "0");
+
+	const updateFictionBar = () => {
+		const bar = document.querySelector("#fiction-progress-bar > i");
+		if (!bar) return;
+		const height =
+			document.documentElement.scrollHeight - window.innerHeight;
+		const ratio = height > 0 ? window.scrollY / height : 0;
+		bar.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+	};
+
+	const handleFictionKey = (event) => {
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+		const target = event.target;
+		if (
+			target instanceof HTMLElement &&
+			(target.isContentEditable ||
+				["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
+		) {
+			return;
+		}
+		const pick =
+			event.key === "ArrowLeft"
+				? "a[data-fiction-prev]"
+				: event.key === "ArrowRight"
+					? "a[data-fiction-next]"
+					: null;
+		if (!pick) return;
+		const link = document.querySelector(pick);
+		if (link) window.location.href = link.getAttribute("href") || "";
+	};
+
+	if (!window.__fictionBound) {
+		window.__fictionBound = true;
+		window.addEventListener("scroll", updateFictionBar, { passive: true });
+		window.addEventListener("resize", updateFictionBar);
+		document.addEventListener("keydown", handleFictionKey);
+	}
+
+	const initFiction = () => {
+		/* ---------- 书架：标签筛选 ---------- */
+		if (document.querySelector("[data-fiction-book]")) {
+			const wanted = Array.from(
+				new URLSearchParams(window.location.search).getAll("tag"),
+			)
+				.map((tag) => tag.trim())
+				.filter((tag) => tag.length > 0);
+			let shown = 0;
+			document.querySelectorAll("[data-fiction-book]").forEach((book) => {
+				let tags = [];
+				try {
+					const parsed = JSON.parse(
+						book.getAttribute("data-fiction-tags") || "[]",
+					);
+					if (Array.isArray(parsed)) tags = parsed;
+				} catch {
+					tags = [];
+				}
+				const hit =
+					wanted.length === 0 ||
+					tags.some((tag) => wanted.includes(String(tag).trim()));
+				book.hidden = !hit;
+				if (hit) shown += 1;
+			});
+			document.querySelectorAll("[data-fiction-section]").forEach((section) => {
+				section.hidden = !section.querySelector(
+					"[data-fiction-book]:not([hidden])",
+				);
+			});
+			const empty = document.querySelector("[data-fiction-filter-empty]");
+			if (empty) empty.hidden = wanted.length === 0 || shown > 0;
+		}
+
+		/* ---------- 书架：阅读进度 ---------- */
+		document.querySelectorAll("[data-fiction-book]").forEach((book) => {
+			const slug = book.getAttribute("data-fiction-book");
+			const state = readFictionState(slug);
+			if (!state) return;
+			const total = Number(book.getAttribute("data-fiction-total") || 0);
+			const readTo = Math.max(
+				Number(state.max || 0),
+				Number(state.order || 0),
+			);
+			const track = book.querySelector("[data-fiction-track]");
+			if (track) {
+				const percent =
+					total > 0
+						? Math.min(100, Math.round((readTo / total) * 100))
+						: state.done
+							? 100
+							: 0;
+				const fill = track.querySelector("i");
+				if (fill) fill.style.width = `${percent}%`;
+				track.hidden = percent <= 0;
+			}
+			const meta = book.querySelector("[data-fiction-book-meta]");
+			const label = book.getAttribute("data-fiction-read-label");
+			if (meta && label && readTo > 0) {
+				meta.textContent = `${label} ${padFictionOrder(readTo)}`;
+			}
+		});
+
+		/* ---------- 作品页 ---------- */
+		const continueLink = document.querySelector("[data-fiction-continue]");
+		if (continueLink) {
+			const slug = continueLink.getAttribute("data-fiction-work");
+			const continueLabel =
+				continueLink.getAttribute("data-fiction-continue-label") || "";
+			const state = readFictionState(slug);
+			const rows = Array.from(
+				document.querySelectorAll("[data-fiction-chapter-row]"),
+			);
+			if (state && rows.length > 0) {
+				const readTo = Math.max(
+					Number(state.max || 0),
+					Number(state.order || 0),
+				);
+				for (const row of rows) {
+					const order = Number(row.getAttribute("data-fiction-order") || 0);
+					if (order <= readTo) row.classList.add("is-read");
+				}
+				const resume =
+					rows.find(
+						(row) =>
+							row.getAttribute("data-fiction-chapter") === state.chapter,
+					) ||
+					rows.find(
+						(row) =>
+							Number(row.getAttribute("data-fiction-order") || 0) === readTo,
+					);
+				if (resume) {
+					resume.classList.add("is-current");
+					continueLink.setAttribute("href", resume.getAttribute("href"));
+					const text = continueLink.querySelector(
+						"[data-fiction-continue-text]",
+					);
+					if (text && continueLabel) {
+						text.textContent = `${continueLabel} · ${padFictionOrder(readTo)}`;
+					}
+				}
+			}
+		}
+
+		/* ---------- 阅读页 ---------- */
+		const marker = document.querySelector("[data-fiction-read]");
+		if (marker) {
+			const slug = marker.getAttribute("data-fiction-work");
+			const state = {
+				chapter: marker.getAttribute("data-fiction-chapter") || "",
+				order: Number(marker.getAttribute("data-fiction-order") || 0),
+				total: Number(marker.getAttribute("data-fiction-total") || 0),
+				done: marker.getAttribute("data-fiction-done") === "1",
+				at: Date.now(),
+			};
+			const previous = readFictionState(slug);
+			state.max = Math.max(Number(previous?.max || 0), state.order);
+			writeFictionState(slug, state);
+			updateFictionBar();
+		}
+	};
+
+	initFiction();
+	if (window.swup) {
+		window.swup.hooks.on("page:view", initFiction);
+	} else {
+		document.addEventListener("swup:enable", () => {
+			window.swup?.hooks.on("page:view", initFiction);
+		});
+	}
+</script>

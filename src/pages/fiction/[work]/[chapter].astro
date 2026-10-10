@@ -1,0 +1,61 @@
+---
+import path from "node:path";
+import FictionReader from "@components/FictionReader.astro";
+import { getFictionWorks } from "../../../utils/fiction-utils";
+import {
+	getFictionChapterUrl,
+	getFictionWorkUrl,
+} from "../../../utils/url-utils";
+
+export async function getStaticPaths() {
+	const works = await getFictionWorks();
+	return works.flatMap((work) =>
+		work.chapters.map((chapter) => ({
+			params: { work: work.slug, chapter: chapter.slug },
+		})),
+	);
+}
+
+const workSlug = Astro.params.work ?? "";
+const chapterSlug = Astro.params.chapter ?? "";
+const works = await getFictionWorks();
+const work = works.find((item) => item.slug === workSlug);
+const chapterIndex =
+	work?.chapters.findIndex((item) => item.slug === chapterSlug) ?? -1;
+const chapter = chapterIndex >= 0 ? work?.chapters[chapterIndex] : undefined;
+if (!work || !chapter) {
+	throw new Error(`找不到外篇章节 ${workSlug}/${chapterSlug}`);
+}
+
+const prev = chapterIndex > 0 ? work.chapters[chapterIndex - 1] : null;
+const next =
+	chapterIndex < work.chapters.length - 1
+		? work.chapters[chapterIndex + 1]
+		: null;
+const workUrl = getFictionWorkUrl(work.slug);
+---
+<FictionReader
+	entry={chapter.entry}
+	title={chapter.title}
+	description={work.synopsis || chapter.title}
+	cover=""
+	coverBasePath={path.join("content/fiction/", work.slug, "chapters/")}
+	origin={work.origin}
+	fandom={work.fandom}
+	tags={work.tags}
+	series={work.series}
+	published={chapter.published}
+	updated={chapter.updated}
+	lang={work.lang}
+	comments={chapter.comments}
+	workSlug={work.slug}
+	chapterSlug={chapter.slug}
+	workHref={workUrl}
+	workTitle={work.title}
+	chapterOrder={chapter.order}
+	chapterCount={work.chapters.length}
+	prev={prev ? { href: getFictionChapterUrl(work.slug, prev.slug), title: prev.title } : null}
+	next={next ? { href: getFictionChapterUrl(work.slug, next.slug), title: next.title } : null}
+	jsonLdType="Chapter"
+	isPartOf={{ name: work.title, url: new URL(workUrl, Astro.site ?? "https://blog.sheyiyuan.com/").toString() }}
+/>
