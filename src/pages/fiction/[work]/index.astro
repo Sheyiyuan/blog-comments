@@ -17,7 +17,7 @@ import {
 	formatFictionNumber,
 	getFictionWorks,
 } from "../../../utils/fiction-utils";
-import { getFictionChapterUrl, url } from "../../../utils/url-utils";
+import { getFictionChapterUrl } from "../../../utils/url-utils";
 import "../../../styles/fiction.css";
 
 export async function getStaticPaths() {
@@ -65,8 +65,6 @@ const facts = [
 		headings={rendered?.headings ?? []}
 		sidebarContentType="fiction"
 	>
-		<link slot="head" rel="alternate" type="application/rss+xml" title={`${siteConfig.title} · ${i18n(I18nKey.fiction)}`} href={url("/fiction/rss.xml")} />
-
 		<div class="card-base onload-animation mb-4 rounded-[var(--radius-large)] px-6 pt-6 pb-6 md:px-9" style="animation-delay: var(--content-delay);">
 			<div class="fiction-work-grid">
 				<div>

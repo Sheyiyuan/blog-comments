@@ -5,7 +5,6 @@ import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 import {
 	type FictionShelf,
@@ -80,14 +79,6 @@ let delay = 0;
 	description={i18n(I18nKey.fictionDescription)}
 	sidebarContentType="fiction"
 >
-	<link
-		slot="head"
-		rel="alternate"
-		type="application/rss+xml"
-		title={`${siteConfig.title} · ${i18n(I18nKey.fiction)}`}
-		href={url("/fiction/rss.xml")}
-	/>
-
 	<header
 		class="fiction-hero card-base onload-animation mb-8 rounded-[var(--radius-large)] px-6 py-8 md:px-9 md:py-9"
 	>
@@ -97,7 +88,7 @@ let delay = 0;
 		</p>
 		<div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-50">
 			<span>{stats.join(" · ")}</span>
-			<a class="link text-[var(--primary)]" href={url("/fiction/rss.xml")}>RSS</a>
+			<a class="link text-[var(--primary)]" href={url("/rss.xml")} title="全站 RSS 订阅">RSS</a>
 		</div>
 	</header>
 
