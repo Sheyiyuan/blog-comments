@@ -1,3 +1,4 @@
+import { availableMemory } from "node:process";
 import type {
 	ExpressiveCodeConfig,
 	FriendsConfig,
@@ -216,9 +217,9 @@ export const friendsConfig: FriendsConfig = {
 		},
 		{
 			name: "Bakka's Blog",
-			url: "https://bakkac.github.io/BakkacBlog/",
+			url: "https://bakkac-blog.pages.dev/",
 			description: "喜欢创作",
-			avatar: "https://bakkac.github.io/BakkacBlog/kumiko.jpg",
+			avatar: "https://bakkac-blog.pages.dev/kumiko-avatar.webp",
 			newTab: true,
     },
     {
@@ -231,7 +232,7 @@ export const friendsConfig: FriendsConfig = {
 		{
 			name: "冰霓の梦之旅",
 			url: "https://iceneoning-blog.pages.dev/",
-			description: "你好啊，很高心认识你。",
+			description: "分享生活趣事，学习技术，做好游戏。",
 			avatar: "https://iceneoning-blog.pages.dev/favicon/favicon-192.png",
 			newTab: true,
 		},
