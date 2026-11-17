@@ -16,6 +16,44 @@
         @apply text-3xl;
     }
 
+    /* Body headings are shifted under the page title. Keep the original rank's size. */
+    :is(h1, h2, h3, h4, h5, h6)[data-heading-rank="1"] {
+        font-size: 1.875rem;
+        line-height: 2.25rem;
+        font-weight: 800;
+        margin-top: 0;
+        margin-bottom: 0.8888889em;
+    }
+    :is(h1, h2, h3, h4, h5, h6)[data-heading-rank="2"] {
+        font-size: 1.5em;
+        line-height: 1.3333333;
+        font-weight: 700;
+        margin-top: 2em;
+        margin-bottom: 1em;
+    }
+    :is(h1, h2, h3, h4, h5, h6)[data-heading-rank="3"] {
+        font-size: 1.25em;
+        line-height: 1.6;
+        font-weight: 600;
+        margin-top: 1.6em;
+        margin-bottom: 0.6em;
+    }
+    :is(h1, h2, h3, h4, h5, h6)[data-heading-rank="4"] {
+        font-size: 1em;
+        line-height: 1.5;
+        font-weight: 600;
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+    }
+    :is(h1, h2, h3, h4, h5, h6)[data-heading-rank="5"],
+    :is(h1, h2, h3, h4, h5, h6)[data-heading-rank="6"] {
+        font-size: 1em;
+        line-height: 1.5;
+        font-weight: 600;
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+    }
+
     h1, h2, h3, h4, h5, h6 {
         .anchor {
             @apply transition -m-0.5 ml-[0.2ch] p-0.5 select-none opacity-0 no-underline !important;

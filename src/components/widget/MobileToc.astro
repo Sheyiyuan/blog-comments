@@ -1,0 +1,21 @@
+---
+import type { MarkdownHeading } from "astro";
+import TOC from "./TOC.astro";
+
+interface Props {
+	headings?: MarkdownHeading[];
+}
+
+const { headings = [] } = Astro.props;
+---
+
+{
+	headings.length > 0 && (
+		<details class="toc-mobile card-base mb-6 rounded-xl px-4 py-3 lg:hidden">
+			<summary class="cursor-pointer select-none font-bold text-90">目录</summary>
+			<div class="toc-scroll mt-3 max-h-[min(24rem,50dvh)] overflow-y-auto overscroll-y-contain pr-1">
+				<TOC headings={headings} />
+			</div>
+		</details>
+	)
+}

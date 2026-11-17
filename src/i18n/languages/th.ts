@@ -13,6 +13,8 @@ export const th: Translation = {
 	[Key.search]: "ค้นหา",
 
 	[Key.tags]: "ป้ายกำกับ",
+	[Key.essayTags]: "แท็กเรียงความ",
+	[Key.essayTagsHint]: "แท็กของเรียงความทั้งส่วนนี้ ไม่ใช่แค่บทความนี้",
 	[Key.categories]: "หมวดหมู่",
 	[Key.recentPosts]: "โพสต์ล่าสุด",
 	[Key.recentEssays]: "บันทึกสั้นล่าสุด",

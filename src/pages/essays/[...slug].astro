@@ -1,15 +1,25 @@
 ---
-import MainGridLayout from "@layouts/MainGridLayout.astro";
-import Markdown from "@components/misc/Markdown.astro";
+import path from "node:path";
 import Giscus from "@components/misc/Giscus.astro";
+import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { getTranslation } from "@i18n/translation";
-import { giscusConfig } from "@/config";
-import { siteConfig, profileConfig } from "@/config";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedEssays } from "@utils/content-utils";
-import { getEssayExcerptFromBody, getEssayDisplayTitle, getEssayRouteSlug } from "@utils/essay-utils";
-import { formatDateTimeToISOWithOffset, formatDateTimeToYYYYMMDDHHmm } from "@utils/date-utils";
+import {
+	formatDateTimeToISOWithOffset,
+	formatDateTimeToYYYYMMDDHHmm,
+} from "@utils/date-utils";
+import {
+	getEssayDisplayTitle,
+	getEssayExcerptFromBody,
+	getEssayRouteSlug,
+} from "@utils/essay-utils";
+import { resolveMetaDescription } from "@utils/plain-text";
+import { resolveShareImage } from "@utils/share-image";
+import { getDir, getEssayUrlByRouteSlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
+import { giscusConfig, profileConfig, siteConfig } from "@/config";
 
 export async function getStaticPaths() {
 	const entries = await getSortedEssays();
@@ -20,19 +30,47 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render();
+const { Content, headings, remarkPluginFrontmatter } = await entry.render();
 
 const manualTitle = (entry.data.title ?? "").trim();
 const title = getEssayDisplayTitle(entry);
 const excerpt = getEssayExcerptFromBody(entry.body);
+const metaDescription = resolveMetaDescription({
+	excerpt,
+	title,
+	fallback: siteConfig.subtitle,
+});
+const galleryImages = (
+	Array.isArray(remarkPluginFrontmatter?.galleryImages)
+		? remarkPluginFrontmatter.galleryImages
+		: []
+) as { src?: string }[];
+const entryDir = getDir(entry.id);
+const essayBasePath = path.join(
+	"content/essays/",
+	entryDir === "/" ? "" : entryDir,
+);
+const shareImage = await resolveShareImage(
+	Astro.site,
+	galleryImages[0]?.src,
+	essayBasePath,
+);
+const canonical = new URL(
+	getEssayUrlByRouteSlug(getEssayRouteSlug(entry)),
+	Astro.site ?? "https://blog.sheyiyuan.com/",
+).href;
 
-const footnoteForI18n = getTranslation(entry.data.lang || siteConfig.lang)[I18nKey.footnotes];
+const footnoteForI18n = getTranslation(entry.data.lang || siteConfig.lang)[
+	I18nKey.footnotes
+];
 
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
 	headline: title,
-	description: excerpt || title,
+	description: metaDescription,
+	image: shareImage,
+	url: canonical,
 	keywords: entry.data.tags,
 	author: {
 		"@type": "Person",
@@ -50,7 +88,7 @@ const commentsGloballyEnabled = giscusConfig.enable;
 const commentsClosedForEntry = entry.data.comments === false;
 ---
 
-<MainGridLayout title={title} description={excerpt} headings={headings} setOGTypeArticle={true}>
+<MainGridLayout title={title} description={metaDescription} ogImage={shareImage} headings={headings} setOGTypeArticle={true} sidebarContentType="essays" activeTags={entry.data.tags}>
 	<script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
 	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
@@ -58,11 +96,11 @@ const commentsClosedForEntry = entry.data.comments === false;
 			<div class="relative onload-animation">
 				<!-- Keep Pagefind meta title for search even if UI title is hidden -->
 				<span data-pagefind-meta="title" class="sr-only">{title}</span>
-				{manualTitle && (
-					<div
+				{manualTitle ? (
+					<h1
 						data-pagefind-body
 						data-pagefind-weight="10"
-						class="transition w-full block font-bold mb-3
+						class="transition mt-0 w-full block font-bold mb-3
 							text-3xl md:text-[2.25rem]/[2.75rem]
 							text-black/90 dark:text-white/90
 							md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
@@ -70,7 +108,9 @@ const commentsClosedForEntry = entry.data.comments === false;
 						"
 					>
 						{manualTitle}
-					</div>
+					</h1>
+				) : (
+					<h1 class="sr-only">{title}</h1>
 				)}
 			</div>
 

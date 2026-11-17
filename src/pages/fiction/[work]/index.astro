@@ -10,14 +10,23 @@ import I18nKey from "@i18n/i18nKey";
 import { getTranslation, i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { Icon } from "astro-icon/components";
-import { giscusConfig, siteConfig } from "../../../config";
-import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
+import MobileToc from "../../../components/widget/MobileToc.astro";
+import { giscusConfig, profileConfig, siteConfig } from "../../../config";
+import {
+	formatDateTimeToISOWithOffset,
+	formatDateToYYYYMMDD,
+} from "../../../utils/date-utils";
 import {
 	fictionStatusKey,
 	formatFictionNumber,
 	getFictionWorks,
 } from "../../../utils/fiction-utils";
-import { getFictionChapterUrl } from "../../../utils/url-utils";
+import { resolveMetaDescription } from "../../../utils/plain-text";
+import { resolveShareImage } from "../../../utils/share-image";
+import {
+	getFictionChapterUrl,
+	getFictionWorkUrl,
+} from "../../../utils/url-utils";
 import "../../../styles/fiction.css";
 
 export async function getStaticPaths() {
@@ -50,6 +59,37 @@ const chips = [
 	work.origin === "fanfic" ? work.fandom : "",
 	...work.tags,
 ].filter((item) => item.length > 0);
+const metaDescription = resolveMetaDescription({
+	explicit: work.synopsis,
+	excerpt: rendered?.remarkPluginFrontmatter?.excerpt,
+	title: work.title,
+	fallback: siteConfig.subtitle,
+});
+const shareImage = await resolveShareImage(
+	Astro.site,
+	hasCover ? work.cover : "",
+	coverBasePath,
+);
+const workCanonical = new URL(
+	getFictionWorkUrl(work.slug),
+	Astro.site ?? "https://blog.sheyiyuan.com/",
+).href;
+const serialJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "Book",
+	name: work.title,
+	headline: work.title,
+	description: metaDescription,
+	image: shareImage,
+	url: workCanonical,
+	keywords: work.tags,
+	author: {
+		"@type": "Person",
+		name: profileConfig.name,
+		url: Astro.site,
+	},
+	datePublished: formatDateTimeToISOWithOffset(work.published),
+};
 const facts = [
 	`${work.chapterCount} ${i18n(I18nKey.fictionChapterUnit)}`,
 	`${formatFictionNumber(work.words)} ${wordUnit}`,
@@ -59,12 +99,14 @@ const facts = [
 {work.isSerial ? (
 	<MainGridLayout
 		title={work.title}
-		description={work.synopsis || work.title}
+		description={metaDescription}
+		ogImage={shareImage}
 		lang={work.lang}
 		setOGTypeArticle={true}
 		headings={rendered?.headings ?? []}
 		sidebarContentType="fiction"
 	>
+		<script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(serialJsonLd)}></script>
 		<div class="card-base onload-animation mb-4 rounded-[var(--radius-large)] px-6 pt-6 pb-6 md:px-9" style="animation-delay: var(--content-delay);">
 			<div class="fiction-work-grid">
 				<div>
@@ -129,6 +171,7 @@ const facts = [
 				</div>
 			</div>
 
+			<MobileToc headings={rendered?.headings ?? []} />
 			{NoteContent && (
 				<div class="fiction-measure mt-6 border-t border-dashed border-[var(--line-divider)] pt-5">
 					<Markdown class="markdown-content" style="--md-first-line-indent: 2em;">

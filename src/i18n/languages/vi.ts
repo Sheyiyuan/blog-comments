@@ -13,6 +13,8 @@ export const vi: Translation = {
 	[Key.search]: "Tìm kiếm",
 
 	[Key.tags]: "Thẻ",
+	[Key.essayTags]: "Thẻ tùy bút",
+	[Key.essayTagsHint]: "Thẻ của mọi tùy bút trong mục này, không chỉ bài này.",
 	[Key.categories]: "Danh mục",
 	[Key.recentPosts]: "Bài viết mới nhất",
 	[Key.recentEssays]: "Tản văn mới nhất",
@@ -20,7 +22,8 @@ export const vi: Translation = {
 	[Key.noEssays]: "Chưa có tản văn.",
 	[Key.essaysDescription]: "Ghi chú ngắn và suy nghĩ rời rạc",
 	[Key.passageDescription]: "Bài viết và bài dài",
-	[Key.fictionDescription]: "Có những người ở lại ngoài trang giấy, và sống trong những câu chuyện này.",
+	[Key.fictionDescription]:
+		"Có những người ở lại ngoài trang giấy, và sống trong những câu chuyện này.",
 	[Key.noFiction]: "Chưa có ngoại truyện.",
 	[Key.fictionShort]: "Truyện ngắn",
 	[Key.fictionFanfic]: "Đồng nhân",

@@ -8,10 +8,12 @@ interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
 	contentType?: "posts" | "notes" | "essays" | "fiction" | "all";
+	activeTags?: string[];
 }
 
 const className = Astro.props.class;
 const contentType = Astro.props.contentType ?? "posts";
+const activeTags = Astro.props.activeTags ?? [];
 ---
 <div id="sidebar" data-content-type={contentType} class:list={[className, "w-full"]}>
     <div class="flex flex-col w-full gap-4 mb-4">
@@ -23,11 +25,11 @@ const contentType = Astro.props.contentType ?? "posts";
     >
         <div id="sidebar-widgets" class="flex flex-col w-full gap-4">
             {contentType === "fiction" ? (
-                <Tag contentType="fiction" />
+                <Tag contentType="fiction" activeTags={activeTags} />
             ) : (
                 <>
                     {contentType !== "essays" && <Categories contentType={contentType}></Categories>}
-                    <Tag contentType={contentType}></Tag>
+                    <Tag contentType={contentType} activeTags={activeTags}></Tag>
                 </>
             )}
         </div>

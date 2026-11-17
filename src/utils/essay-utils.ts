@@ -1,62 +1,14 @@
 import type { CollectionEntry } from "astro:content";
 import crypto from "node:crypto";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
-
-function stripMarkdownInline(text: string): string {
-	return text
-		.replace(/`([^`]+)`/g, "$1")
-		.replace(/\*\*([^*]+)\*\*/g, "$1")
-		.replace(/\*([^*]+)\*/g, "$1")
-		.replace(/_([^_]+)_/g, "$1")
-		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
-		.replace(/<[^>]+>/g, "")
-		.trim();
-}
-
-function firstParagraph(rawBody: string): string {
-	const lines = rawBody.split(/\r?\n/);
-	let inFence = false;
-	const buf: string[] = [];
-
-	for (const rawLine of lines) {
-		const line = rawLine.trim();
-		if (!line) {
-			if (buf.length > 0) break;
-			continue;
-		}
-
-		if (line.startsWith("```")) {
-			inFence = !inFence;
-			continue;
-		}
-		if (inFence) continue;
-
-		buf.push(line);
-	}
-
-	return buf.join(" ");
-}
+import { excerptFromMarkdown, titleFromMarkdown } from "@utils/plain-text";
 
 export function getEssayExcerptFromBody(rawBody: string, maxLen = 160): string {
-	const paragraph = stripMarkdownInline(firstParagraph(rawBody));
-	if (!paragraph) return "";
-	if (paragraph.length <= maxLen) return paragraph;
-	return `${paragraph.slice(0, maxLen).trim()}…`;
+	return excerptFromMarkdown(rawBody, maxLen);
 }
 
 export function getEssayDerivedTitleFromBody(rawBody: string): string {
-	const paragraph = firstParagraph(rawBody);
-	if (!paragraph) return "";
-
-	// Prefer a heading-like first line if present.
-	const firstLine = rawBody
-		.split(/\r?\n/)
-		.map((l) => l.trim())
-		.find((l) => l.length > 0 && !l.startsWith("```"));
-
-	const candidate = firstLine ?? paragraph;
-	const normalized = stripMarkdownInline(candidate.replace(/^#{1,6}\s+/, ""));
-	return normalized;
+	return titleFromMarkdown(rawBody);
 }
 
 export function getEssaySeed(entry: CollectionEntry<"essays">): string {

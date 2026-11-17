@@ -10,6 +10,8 @@ enum I18nKey {
 	search = "search",
 
 	tags = "tags",
+	essayTags = "essayTags",
+	essayTagsHint = "essayTagsHint",
 	categories = "categories",
 	recentPosts = "recentPosts",
 	recentEssays = "recentEssays",

@@ -3,23 +3,26 @@ import { onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
+import {
+	type ArchiveKind,
+	type ArchiveListItem,
+	filterArchiveItems,
+} from "../utils/archive-list";
 
-export let sortedPosts: Post[] = [];
+export let sortedPosts: ArchiveListItem[] = [];
 
 let tags: string[] = [];
 let categories: string[] = [];
 let uncategorized: string | null = null;
 
-interface Post {
-	slug: string;
-    url: string;
-	data: {
-		title: string;
-		tags: string[];
-        category?: string | null;
-        published: Date | string;
-	};
-}
+type Post = ArchiveListItem;
+
+const kindLabel: Record<ArchiveKind, string> = {
+	post: i18n(I18nKey.passage),
+	note: i18n(I18nKey.notes),
+	essay: i18n(I18nKey.essays),
+	fiction: i18n(I18nKey.fiction),
+};
 
 interface Group {
 	year: number;
@@ -35,8 +38,8 @@ function formatDate(date: Date) {
 }
 
 function toDate(value: Date | string) {
-    if (value instanceof Date) return value;
-    return new Date(value);
+	if (value instanceof Date) return value;
+	return new Date(value);
 }
 
 function formatTag(tagList: string[]) {
@@ -44,45 +47,31 @@ function formatTag(tagList: string[]) {
 }
 
 onMount(async () => {
-    const params = new URLSearchParams(window.location.search);
-    tags = params.has("tag") ? params.getAll("tag") : [];
-    categories = params.has("category") ? params.getAll("category") : [];
-    uncategorized = params.get("uncategorized");
+	const params = new URLSearchParams(window.location.search);
+	tags = params.has("tag") ? params.getAll("tag") : [];
+	categories = params.has("category") ? params.getAll("category") : [];
+	uncategorized = params.get("uncategorized");
 
-	let filteredPosts: Post[] = sortedPosts;
-
-	if (tags.length > 0) {
-		filteredPosts = filteredPosts.filter(
-			(post) =>
-				Array.isArray(post.data.tags) &&
-				post.data.tags.some((tag) => tags.includes(tag)),
-		);
-	}
-
-	if (categories.length > 0) {
-		filteredPosts = filteredPosts.filter(
-			(post) => post.data.category && categories.includes(post.data.category),
-		);
-	}
-
-	if (uncategorized) {
-		filteredPosts = filteredPosts.filter((post) => !post.data.category);
-	}
+	let filteredPosts: Post[] = filterArchiveItems(sortedPosts, {
+		tags,
+		categories,
+		uncategorized: Boolean(uncategorized),
+	});
 
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
-            const published = toDate(post.data.published);
-            const year = published.getFullYear();
+			const published = toDate(post.data.published);
+			const year = published.getFullYear();
 			if (!acc[year]) {
 				acc[year] = [];
 			}
-            acc[year].push({
-                ...post,
-                data: {
-                    ...post.data,
-                    published,
-                },
-            });
+			acc[year].push({
+				...post,
+				data: {
+					...post.data,
+					published,
+				},
+			});
 			return acc;
 		},
 		{} as Record<number, Post[]>,
@@ -100,6 +89,9 @@ onMount(async () => {
 </script>
 
 <div class="card-base onload-animation px-8 py-6" style="animation-delay: var(--content-delay);">
+    {#if groups.length === 0}
+        <p class="text-75">没有找到匹配的条目。</p>
+    {/if}
     {#each groups as group}
         <div>
             <div class="flex flex-row w-full items-center h-[3.75rem]">
@@ -147,7 +139,7 @@ onMount(async () => {
                      group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
                      text-75 pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
                         >
-                            {post.data.title}
+                            <span class="mr-2 font-medium text-30">{kindLabel[post.kind]}</span>{post.data.title}
                         </div>
 
                         <!-- tag list -->

@@ -13,6 +13,9 @@ export const es: Translation = {
 	[Key.search]: "Buscar",
 
 	[Key.tags]: "Etiquetas",
+	[Key.essayTags]: "Etiquetas de ensayos",
+	[Key.essayTagsHint]:
+		"Etiquetas de todos los ensayos de esta sección, no solo de este texto.",
 	[Key.categories]: "Categorías",
 	[Key.recentPosts]: "Publicaciones recientes",
 	[Key.recentEssays]: "Ensayos recientes",
@@ -20,7 +23,8 @@ export const es: Translation = {
 	[Key.noEssays]: "Aún no hay ensayos.",
 	[Key.essaysDescription]: "Notas cortas y pensamientos fragmentados",
 	[Key.passageDescription]: "Publicaciones y artículos largos",
-	[Key.fictionDescription]: "Algunas personas se quedan fuera del papel y viven en estas historias.",
+	[Key.fictionDescription]:
+		"Algunas personas se quedan fuera del papel y viven en estas historias.",
 	[Key.noFiction]: "Aún no hay relatos.",
 	[Key.fictionShort]: "Relato",
 	[Key.fictionFanfic]: "Fanfic",

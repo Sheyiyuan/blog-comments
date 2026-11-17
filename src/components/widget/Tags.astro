@@ -13,10 +13,18 @@ interface Props {
 	class?: string;
 	style?: string;
 	contentType?: "posts" | "notes" | "essays" | "fiction" | "all";
+	activeTags?: string[];
 }
 const className = Astro.props.class;
 const style = Astro.props.style;
 const contentType = Astro.props.contentType ?? "posts";
+const activeTags = new Set(
+	(Astro.props.activeTags ?? []).map((tag) => tag.trim()).filter(Boolean),
+);
+const isEssaySection = contentType === "essays";
+const widgetName = isEssaySection
+	? i18n(I18nKey.essayTags)
+	: i18n(I18nKey.tags);
 
 const tags = await getTagList(contentType);
 const isCollapsed = tags.length >= 20;
@@ -29,12 +37,22 @@ const listBasePath =
 				? "/fiction/"
 				: "/archive/";
 ---
-<WidgetLayout name={i18n(I18nKey.tags)} id="tags" isCollapsed={isCollapsed} canCollapse={true} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
+<WidgetLayout name={widgetName} id="tags" isCollapsed={isCollapsed} canCollapse={true} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
+    {isEssaySection && activeTags.size > 0 && (
+        <p class="text-xs text-50 mb-3 leading-relaxed">{i18n(I18nKey.essayTagsHint)}</p>
+    )}
     <div class="flex gap-2 flex-wrap">
-        {tags.map(t => (
-            <ButtonTag href={getTagUrl(t.name, listBasePath)} label={`View all posts with the ${t.name.trim()} tag`}>
-                {t.name.trim()}
+        {tags.map(t => {
+            const name = t.name.trim();
+            const current = activeTags.has(name);
+            const label = isEssaySection
+                ? `查看带有「${name}」标签的全部随笔`
+                : `View all posts with the ${name} tag`;
+            return (
+            <ButtonTag href={getTagUrl(name, listBasePath)} label={label} current={current}>
+                {name}
             </ButtonTag>
-        ))}
+            );
+        })}
     </div>
 </WidgetLayout>

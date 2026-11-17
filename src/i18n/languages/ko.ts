@@ -13,6 +13,8 @@ export const ko: Translation = {
 	[Key.search]: "검색",
 
 	[Key.tags]: "태그",
+	[Key.essayTags]: "수필 태그",
+	[Key.essayTagsHint]: "이 글만의 태그가 아니라, 수필란 전체의 태그입니다.",
 	[Key.categories]: "카테고리",
 	[Key.recentPosts]: "최근 게시물",
 	[Key.recentEssays]: "최근 수필",

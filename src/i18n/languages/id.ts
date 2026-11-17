@@ -13,6 +13,9 @@ export const id: Translation = {
 	[Key.search]: "Cari",
 
 	[Key.tags]: "Tag",
+	[Key.essayTags]: "Tag esai",
+	[Key.essayTagsHint]:
+		"Tag untuk semua esai di bagian ini, bukan hanya tulisan ini.",
 	[Key.categories]: "Kategori",
 	[Key.recentPosts]: "Postingan Terbaru",
 	[Key.recentEssays]: "Esai Terbaru",
@@ -20,7 +23,8 @@ export const id: Translation = {
 	[Key.noEssays]: "Belum ada esai.",
 	[Key.essaysDescription]: "Catatan singkat dan pikiran terpecah",
 	[Key.passageDescription]: "Postingan dan artikel panjang",
-	[Key.fictionDescription]: "Ada orang yang tinggal di luar kertas, dan hidup di dalam cerita-cerita ini.",
+	[Key.fictionDescription]:
+		"Ada orang yang tinggal di luar kertas, dan hidup di dalam cerita-cerita ini.",
 	[Key.noFiction]: "Belum ada cerita.",
 	[Key.fictionShort]: "Pendek",
 	[Key.fictionFanfic]: "Fanfic",

@@ -13,6 +13,9 @@ export const tr: Translation = {
 	[Key.search]: "Ara",
 
 	[Key.tags]: "Taglar",
+	[Key.essayTags]: "Deneme etiketleri",
+	[Key.essayTagsHint]:
+		"Bu bölümdeki tüm denemelerin etiketleri, yalnızca bu yazının değil.",
 	[Key.categories]: "Katagoriler",
 	[Key.recentPosts]: "Son Paylaşımlar",
 	[Key.recentEssays]: "Son Denemeler",
@@ -20,7 +23,8 @@ export const tr: Translation = {
 	[Key.noEssays]: "Henüz deneme yok.",
 	[Key.essaysDescription]: "Kısa notlar ve parçalı düşünceler",
 	[Key.passageDescription]: "Yazılar ve uzun makaleler",
-	[Key.fictionDescription]: "Kimileri kâğıdın dışında kalır ve bu öykülerin içinde yaşar.",
+	[Key.fictionDescription]:
+		"Kimileri kâğıdın dışında kalır ve bu öykülerin içinde yaşar.",
 	[Key.noFiction]: "Henüz öykü yok.",
 	[Key.fictionShort]: "Öykü",
 	[Key.fictionFanfic]: "Fanfic",

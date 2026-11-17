@@ -13,6 +13,8 @@ export const zh_TW: Translation = {
 	[Key.search]: "搜尋",
 
 	[Key.tags]: "標籤",
+	[Key.essayTags]: "隨筆標籤",
+	[Key.essayTagsHint]: "這裡是全部隨筆的標籤，不是這一篇自己的標籤。",
 	[Key.categories]: "分類",
 	[Key.recentPosts]: "最新篇章",
 	[Key.recentEssays]: "最新隨筆",
@@ -54,8 +56,8 @@ export const zh_TW: Translation = {
 	[Key.wordsCount]: "字",
 	[Key.minuteCount]: "分鐘",
 	[Key.minutesCount]: "分鐘",
-	[Key.postCount]: "篇文章",
-	[Key.postsCount]: "篇文章",
+	[Key.postCount]: "篇",
+	[Key.postsCount]: "篇",
 
 	[Key.themeColor]: "主題色",
 
