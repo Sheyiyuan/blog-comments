@@ -13,8 +13,11 @@ import { giscusConfig, licenseConfig, sponsorConfig } from "src/config";
 import Giscus from "../../components/misc/Giscus.astro";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
+import MobileToc from "../../components/widget/MobileToc.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateTimeToISOWithOffset } from "../../utils/date-utils";
+import { resolveMetaDescription } from "../../utils/plain-text";
+import { resolveShareImage } from "../../utils/share-image";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
@@ -25,9 +28,23 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render();
-
-const { remarkPluginFrontmatter } = await entry.render();
+const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+const postBasePath = path.join("content/posts/", getDir(entry.id));
+const metaDescription = resolveMetaDescription({
+	explicit: entry.data.description,
+	excerpt: remarkPluginFrontmatter.excerpt,
+	title: entry.data.title,
+	fallback: siteConfig.subtitle,
+});
+const shareImage = await resolveShareImage(
+	Astro.site,
+	entry.data.image,
+	postBasePath,
+);
+const canonical = new URL(
+	getPostUrlBySlug(entry.slug),
+	Astro.site ?? "https://blog.sheyiyuan.com/",
+).href;
 
 const tr = getTranslation(entry.data.lang || siteConfig.lang);
 const footnoteForI18n = tr[I18nKey.footnotes];
@@ -36,7 +53,9 @@ const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
 	headline: entry.data.title,
-	description: entry.data.description || entry.data.title,
+	description: metaDescription,
+	image: shareImage,
+	url: canonical,
 	keywords: entry.data.tags,
 	author: {
 		"@type": "Person",
@@ -59,7 +78,7 @@ const commentsClosedForEntry = entry.data.comments === false;
 const sponsorEnabled = entry.data.sponsor !== false && sponsorConfig.enable;
 const firstLineIndent = entry.data.firstLineIndent || "0em";
 ---
-<MainGridLayout banner={entry.data.image} bannerBasePath={path.join("content/posts/", getDir(entry.id))} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings}>
+<MainGridLayout banner={entry.data.image} bannerBasePath={postBasePath} title={entry.data.title} description={metaDescription} ogImage={shareImage} lang={entry.data.lang} setOGTypeArticle={true} headings={headings}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
         <div id="post-container" class:list={["card-base onload-animation z-10 px-6 md:px-9 pt-6 pb-4 relative w-full ",
@@ -85,16 +104,16 @@ const firstLineIndent = entry.data.firstLineIndent || "0em";
 
             <!-- title -->
             <div class="relative onload-animation">
-                <div
+                <h1
                     data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title"
-                    class="transition w-full block font-bold mb-3
+                    class="transition mt-0 w-full block font-bold mb-3
                     text-3xl md:text-[2.25rem]/[2.75rem]
                     text-black/90 dark:text-white/90
                     md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
                     before:absolute before:top-[0.75rem] before:left-[-1.125rem]
                 ">
                     {entry.data.title}
-                </div>
+                </h1>
             </div>
 
             <!-- metadata -->
@@ -112,9 +131,10 @@ const firstLineIndent = entry.data.firstLineIndent || "0em";
             <!-- always show cover as long as it has one -->
 
             {entry.data.image &&
-                <ImageWrapper id="post-cover" src={entry.data.image} basePath={path.join("content/posts/", getDir(entry.id))} class="mb-8 rounded-xl banner-container onload-animation"/>
+                <ImageWrapper id="post-cover" src={entry.data.image} basePath={postBasePath} class="mb-8 rounded-xl banner-container onload-animation"/>
             }
 
+            <MobileToc headings={headings} />
 
 			<Markdown class="mb-6 markdown-content onload-animation" style={`--md-first-line-indent: ${firstLineIndent};`}>
                 <Content />

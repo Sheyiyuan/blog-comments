@@ -1,32 +1,35 @@
 ---
-import type { GetStaticPaths } from "astro";
 import { PAGE_SIZE } from "@constants/constants";
 import { getSortedPosts } from "@utils/content-utils";
-import { url } from "@utils/url-utils";
+import { toAbsoluteUrl } from "@utils/plain-text";
+import type { GetStaticPaths } from "astro";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
-	return paginate(allBlogPosts, { pageSize: PAGE_SIZE });
+	// Page 1 is the real homepage in index.astro. Later pages are legacy URLs.
+	return paginate(allBlogPosts, { pageSize: PAGE_SIZE }).filter(
+		(entry) => Number(entry.props?.page?.currentPage ?? 1) > 1,
+	);
 }) satisfies GetStaticPaths;
-// https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
 const { page } = Astro.props;
 
 const currentPage = Number(page?.currentPage ?? 1);
-const targetUrl =
-	currentPage <= 1 ? url("/passage/") : url(`/passage/${currentPage}/`);
+const targetPath = currentPage <= 1 ? "/passage/" : `/passage/${currentPage}/`;
+const targetUrl = toAbsoluteUrl(Astro.site, targetPath);
 ---
 
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<meta charset="utf-8" />
+		<meta name="robots" content="noindex, nofollow" />
 		<meta http-equiv="refresh" content={`0; url=${targetUrl}`} />
 		<link rel="canonical" href={targetUrl} />
-		<title>Moved</title>
+		<title>页面已移动</title>
 	</head>
 	<body>
 		<p>
-			Moved to <a href={targetUrl}>{targetUrl}</a>
+			页面已移动到 <a href={targetUrl}>{targetUrl}</a>
 		</p>
 	</body>
 </html>

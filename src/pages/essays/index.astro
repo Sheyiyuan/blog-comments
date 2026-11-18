@@ -1,9 +1,9 @@
 ---
-import MainGridLayout from "@layouts/MainGridLayout.astro";
 import EssayCard from "@components/EssayCard.astro";
-import { getSortedEssays } from "@utils/content-utils";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedEssays } from "@utils/content-utils";
 
 const essays = await getSortedEssays();
 
@@ -14,9 +14,11 @@ type EssayWithGallery = { entry: EssayEntry; galleryImages: GalleryImage[] };
 const essaysWithGallery: EssayWithGallery[] = await Promise.all(
 	essays.map(async (entry) => {
 		const { remarkPluginFrontmatter } = await entry.render();
-		const galleryImages = (Array.isArray(remarkPluginFrontmatter?.galleryImages)
-			? remarkPluginFrontmatter.galleryImages
-			: []) as GalleryImage[];
+		const galleryImages = (
+			Array.isArray(remarkPluginFrontmatter?.galleryImages)
+				? remarkPluginFrontmatter.galleryImages
+				: []
+		) as GalleryImage[];
 		return { entry, galleryImages };
 	}),
 );
@@ -41,5 +43,8 @@ const interval = 50;
 				/>
 			))
 		)}
+		<p id="essay-tag-empty" class="card-base hidden rounded-[var(--radius-large)] px-6 py-6 text-75 md:px-9">
+			没有找到带这个标签的随笔。
+		</p>
 	</div>
 </MainGridLayout>

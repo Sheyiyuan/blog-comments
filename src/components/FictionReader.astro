@@ -19,7 +19,10 @@ import {
 	type FictionOrigin,
 	fictionCopyrightNotice,
 } from "../utils/fiction-utils";
+import { resolveMetaDescription } from "../utils/plain-text";
+import { resolveShareImage } from "../utils/share-image";
 import { url } from "../utils/url-utils";
+import MobileToc from "./widget/MobileToc.astro";
 import "../styles/fiction.css";
 
 interface Neighbor {
@@ -80,11 +83,22 @@ const {
 } = Astro.props;
 
 const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+const hasCover = cover.trim().length > 0;
+const metaDescription = resolveMetaDescription({
+	explicit: description,
+	excerpt: remarkPluginFrontmatter.excerpt,
+	title,
+	fallback: siteConfig.subtitle,
+});
+const shareImage = await resolveShareImage(
+	Astro.site,
+	hasCover ? cover : "",
+	coverBasePath,
+);
 const tr = getTranslation(lang || siteConfig.lang);
 const footnoteForI18n = tr[I18nKey.footnotes];
 const commentsGloballyEnabled = giscusConfig.enable;
 const commentsClosedForEntry = comments === false;
-const hasCover = cover.trim().length > 0;
 const isChapter = typeof chapterOrder === "number" && chapterOrder > 0;
 const orderLabel = isChapter ? String(chapterOrder).padStart(2, "0") : "";
 const metaBits = [
@@ -104,7 +118,8 @@ const jsonLd = {
 	"@type": jsonLdType,
 	headline: title,
 	name: title,
-	description: description || title,
+	description: metaDescription,
+	image: shareImage,
 	keywords: tags,
 	author: {
 		"@type": "Person",
@@ -133,7 +148,8 @@ const jsonLd = {
 	banner={hasCover ? cover : undefined}
 	bannerBasePath={coverBasePath}
 	title={title}
-	description={description}
+	description={metaDescription}
+	ogImage={shareImage}
 	lang={lang}
 	setOGTypeArticle={true}
 	headings={headings}
@@ -202,6 +218,7 @@ const jsonLd = {
 			)}
 			{!hasCover && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-6"></div>}
 
+			<MobileToc headings={headings} />
 			<div class="fiction-measure">
 				<Markdown class="mb-6 markdown-content fiction-prose onload-animation" style="--md-first-line-indent: 2em;">
 					<Content />

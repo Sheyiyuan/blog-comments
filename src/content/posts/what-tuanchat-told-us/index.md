@@ -17,7 +17,7 @@ sponsor: true
 > 
 > *by Sheyiyuan*
 
-阅读了 [@甘雨的狗](https://github.com/ganyudedog) 大佬（后文简称「南柯」）的最新文章 [《置身 tuan 内》](https://super-s-blog.pages.dev/posts/essays/in-tuan-chat/in-tuan-chat/)，让我不由得开始回忆起了曾经最好的 [团剧共创](tuan.chat) （tuanchat）。
+阅读了 [@甘雨的狗](https://github.com/ganyudedog) 大佬（后文简称「南柯」）的最新文章 [《置身 tuan 内》](https://super-s-blog.pages.dev/posts/essays/in-tuan-chat/in-tuan-chat/)，让我不由得开始回忆起了曾经最好的 [团剧共创](https://tuan.chat) （tuanchat）。
 
 作为一个参与过团剧共创很多方向讨论和功能设计的贡献者，我对于团剧共创有着一种很特殊的感情。看她初具雏形，看她羽翼渐丰，看她误入歧途，看她归于沉寂……然后在之后新项目的无数次会议的每个功能讨论时，我们时常会把团剧共创拿出来先作为反面教材「批斗」一番。
 

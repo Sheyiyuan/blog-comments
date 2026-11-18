@@ -13,6 +13,9 @@ export const en: Translation = {
 	[Key.search]: "Search",
 
 	[Key.tags]: "Tags",
+	[Key.essayTags]: "Essay tags",
+	[Key.essayTagsHint]:
+		"Tags for every essay in this section, not only this piece.",
 	[Key.categories]: "Categories",
 	[Key.recentPosts]: "Recent Posts",
 	[Key.recentEssays]: "Recent Essays",
@@ -20,7 +23,8 @@ export const en: Translation = {
 	[Key.noEssays]: "No essays yet.",
 	[Key.essaysDescription]: "Short notes and fragmented thoughts",
 	[Key.passageDescription]: "Posts and longer articles",
-	[Key.fictionDescription]: "Some people stay off the page, and live in these stories.",
+	[Key.fictionDescription]:
+		"Some people stay off the page, and live in these stories.",
 	[Key.noFiction]: "No stories yet.",
 	[Key.fictionShort]: "Short",
 	[Key.fictionFanfic]: "Fanfic",

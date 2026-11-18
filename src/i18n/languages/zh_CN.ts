@@ -13,6 +13,8 @@ export const zh_CN: Translation = {
 	[Key.search]: "搜索",
 
 	[Key.tags]: "标签",
+	[Key.essayTags]: "随笔标签",
+	[Key.essayTagsHint]: "这里是全部随笔的标签，不是这一篇自己的标签。",
 	[Key.categories]: "分类",
 	[Key.recentPosts]: "最新篇章",
 	[Key.recentEssays]: "最新随笔",
@@ -54,8 +56,8 @@ export const zh_CN: Translation = {
 	[Key.wordsCount]: "字",
 	[Key.minuteCount]: "分钟",
 	[Key.minutesCount]: "分钟",
-	[Key.postCount]: "篇文章",
-	[Key.postsCount]: "篇文章",
+	[Key.postCount]: "篇",
+	[Key.postsCount]: "篇",
 
 	[Key.themeColor]: "主题色",
 

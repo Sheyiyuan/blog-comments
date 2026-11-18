@@ -51,13 +51,13 @@ const maxLevel = siteConfig.toc.depth;
                     {heading.depth == minDepth + 1 && <div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div>}
                     {heading.depth == minDepth + 2 && <div class="transition w-1.5 h-1.5 rounded-sm bg-black/5 dark:bg-white/10"></div>}
                 </div>
-                <div class:list={["transition text-sm", {
+                <div class:list={["min-w-0 whitespace-normal break-words transition text-sm", {
                     "text-50": heading.depth == minDepth || heading.depth == minDepth + 1,
                     "text-30": heading.depth == minDepth + 2,
                 }]}>{removeTailingHash(heading.text)}</div>
             </a>
     )}
-    <div id="active-indicator" style="opacity: 0" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
+    <div class="toc-active-indicator" style="opacity: 0" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
         "group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"]}></div>
 </table-of-contents>}
 
@@ -224,20 +224,17 @@ class TableOfContents extends HTMLElement {
     };
 
     init() {
-        this.tocEl = document.getElementById(
-            "toc-inner-wrapper"
-        );
-
-        if (!this.tocEl) return;
+        const scrollParent = this.closest<HTMLElement>(".toc-scroll");
+        this.tocEl = scrollParent ?? this;
 
         this.tocEl.addEventListener("click", this.handleAnchorClick, {
             capture: true,
         });
 
-        this.activeIndicator = document.getElementById("active-indicator");
+        this.activeIndicator = this.querySelector<HTMLElement>(".toc-active-indicator");
 
         this.tocEntries = Array.from(
-            document.querySelectorAll<HTMLAnchorElement>("#toc a[href^='#']")
+            this.querySelectorAll<HTMLAnchorElement>("a[href^='#']")
         );
 
         if (this.tocEntries.length === 0) return;

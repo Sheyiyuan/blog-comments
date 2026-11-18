@@ -4,10 +4,11 @@ interface Props {
 	dot?: boolean;
 	href?: string;
 	label?: string;
+	current?: boolean;
 }
-const { dot, href, label }: Props = Astro.props;
+const { dot, href, label, current = false }: Props = Astro.props;
 ---
-<a href={href} aria-label={label} class="btn-regular min-h-8 h-auto text-sm px-3 py-1 rounded-lg max-w-full min-w-0">
+<a href={href} aria-label={label} aria-current={current ? "true" : undefined} class:list={["btn-regular min-h-8 h-auto text-sm px-3 py-1 rounded-lg max-w-full min-w-0", { "outline outline-2 outline-[var(--primary)]": current }]}>
     {dot && <div class="h-1 w-1 bg-[var(--btn-content)] dark:bg-[var(--card-bg)] transition rounded-md mr-2"></div>}
 	<span class="min-w-0 whitespace-normal break-words [overflow-wrap:anywhere]"><slot></slot></span>
 </a>

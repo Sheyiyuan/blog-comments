@@ -3,39 +3,89 @@ import ArchivePanel from "@components/ArchivePanel.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getNoteUrlBySlug, getPostUrlBySlug } from "@utils/url-utils";
-import { getSortedNotesList, getSortedPostsList } from "../utils/content-utils";
+import {
+	getEssayUrlByRouteSlug,
+	getFictionWorkUrl,
+	getNoteUrlBySlug,
+	getPostUrlBySlug,
+} from "@utils/url-utils";
+import { type ArchiveListItem, sortArchiveItems } from "../utils/archive-list";
+import {
+	getSortedEssays,
+	getSortedNotesList,
+	getSortedPostsList,
+} from "../utils/content-utils";
+import { getEssayDisplayTitle, getEssayRouteSlug } from "../utils/essay-utils";
+import { getFictionWorks } from "../utils/fiction-utils";
 
-const [sortedPostsList, sortedNotesList] = await Promise.all([
-	getSortedPostsList(),
-	getSortedNotesList(),
+const [sortedPostsList, sortedNotesList, essays, fictionWorks] =
+	await Promise.all([
+		getSortedPostsList(),
+		getSortedNotesList(),
+		getSortedEssays(),
+		getFictionWorks(),
+	]);
+
+const mergedList = sortArchiveItems([
+	...sortedPostsList.map(
+		(item): ArchiveListItem => ({
+			slug: item.slug,
+			url: getPostUrlBySlug(item.slug),
+			kind: "post",
+			data: {
+				title: item.data.title,
+				tags: item.data.tags,
+				category: item.data.category,
+				published: item.data.published,
+				pin: item.data.pin,
+			},
+		}),
+	),
+	...sortedNotesList.map(
+		(item): ArchiveListItem => ({
+			slug: item.slug,
+			url: getNoteUrlBySlug(item.slug),
+			kind: "note",
+			data: {
+				title: item.data.title,
+				tags: item.data.tags,
+				category: item.data.category,
+				published: item.data.published,
+				pin: item.data.pin,
+			},
+		}),
+	),
+	...essays.map(
+		(entry): ArchiveListItem => ({
+			slug: getEssayRouteSlug(entry),
+			url: getEssayUrlByRouteSlug(getEssayRouteSlug(entry)),
+			kind: "essay",
+			data: {
+				title: getEssayDisplayTitle(entry),
+				tags: entry.data.tags,
+				category: null,
+				published: entry.data.published,
+				pin: entry.data.pin,
+			},
+		}),
+	),
+	...fictionWorks.map(
+		(work): ArchiveListItem => ({
+			slug: work.slug,
+			url: getFictionWorkUrl(work.slug),
+			kind: "fiction",
+			data: {
+				title: work.title,
+				tags: work.tags,
+				category: null,
+				published: work.published,
+				pin: 0,
+			},
+		}),
+	),
 ]);
-
-const mergedList = [
-	...sortedPostsList.map((item) => ({
-		slug: item.slug,
-		url: getPostUrlBySlug(item.slug),
-		data: item.data,
-	})),
-	...sortedNotesList.map((item) => ({
-		slug: item.slug,
-		url: getNoteUrlBySlug(item.slug),
-		data: item.data,
-	})),
-].sort((a, b) => {
-	const pinA = Number(a.data.pin ?? 0);
-	const pinB = Number(b.data.pin ?? 0);
-	if (pinA !== pinB) return pinB - pinA;
-
-	const dateA = new Date(a.data.published).getTime();
-	const dateB = new Date(b.data.published).getTime();
-	if (dateA !== dateB) return dateB - dateA;
-
-	return a.slug.localeCompare(b.slug);
-});
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)} sidebarContentType="all">
     <ArchivePanel sortedPosts={mergedList} client:only="svelte"></ArchivePanel>
 </MainGridLayout>
-

@@ -13,6 +13,9 @@ export const ja: Translation = {
 	[Key.search]: "検索",
 
 	[Key.tags]: "タグ",
+	[Key.essayTags]: "随筆のタグ",
+	[Key.essayTagsHint]:
+		"この欄の随筆全体のタグです。この一篇だけのタグではありません。",
 	[Key.categories]: "カテゴリ",
 	[Key.recentPosts]: "最近の投稿",
 	[Key.recentEssays]: "最近の随筆",

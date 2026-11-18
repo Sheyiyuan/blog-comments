@@ -23,11 +23,16 @@ import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badg
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { BilibiliComponent } from "./src/plugins/rehype-component-bilibili.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
+import { rehypeHeadingHierarchy } from "./src/plugins/rehype-heading-hierarchy.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkEssaysGallery } from "./src/plugins/remark-essays-gallery.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkMermaidAddon } from "./src/plugins/remark-mermaid-addon.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
+import {
+	includeInSitemap,
+	legacyRedirects,
+} from "./src/utils/legacy-redirects.ts";
 
 // https://astro.build/config
 const site = process.env.ASTRO_SITE ?? "https://blog.sheyiyuan.com/";
@@ -38,6 +43,7 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "always",
 	outDir,
+	redirects: legacyRedirects,
 	integrations: [
 		tailwind({
 			nesting: true,
@@ -111,7 +117,9 @@ export default defineConfig({
 		}),
 		mdx(),
 		svelte(),
-		sitemap(),
+		sitemap({
+			filter: includeInSitemap,
+		}),
 	],
 	markdown: {
 		remarkPlugins: [
@@ -128,6 +136,7 @@ export default defineConfig({
 		rehypePlugins: [
 			rehypeKatex,
 			rehypeSlug,
+			rehypeHeadingHierarchy,
 			[
 				rehypeComponents,
 				{

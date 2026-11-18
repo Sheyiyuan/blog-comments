@@ -19,6 +19,11 @@ import {
 } from "../constants/constants";
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon, SiteBackground } from "../types/config";
+import {
+	DEFAULT_SHARE_IMAGE,
+	resolveMetaDescription,
+	toAbsoluteUrl,
+} from "../utils/plain-text";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
 
@@ -30,6 +35,7 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	disableBackground?: boolean;
+	ogImage?: string;
 }
 
 let {
@@ -40,6 +46,7 @@ let {
 	lang,
 	setOGTypeArticle,
 	disableBackground = false,
+	ogImage,
 } = Astro.props;
 
 const pageCover = banner;
@@ -103,6 +110,15 @@ if (title) {
 const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
 
+const metaDescription = resolveMetaDescription({
+	explicit: description,
+	title,
+	fallback: siteConfig.subtitle,
+});
+const canonicalURL = toAbsoluteUrl(Astro.site, Astro.url.pathname);
+const shareImage = toAbsoluteUrl(Astro.site, ogImage || DEFAULT_SHARE_IMAGE);
+const shareImageAlt = title || siteConfig.title;
+
 // const siteLang = siteConfig.lang.replace('_', '-')
 if (!lang) {
 	lang = `${siteConfig.lang}`;
@@ -127,13 +143,16 @@ const bannerOffset =
 		<title>{pageTitle}</title>
 
 		<meta charset="UTF-8" />
-		<meta name="description" content={description || pageTitle}>
+		<meta name="description" content={metaDescription}>
+		<link rel="canonical" href={canonicalURL} />
 		<meta name="author" content={profileConfig.name}>
 
 		<meta property="og:site_name" content={siteConfig.title}>
-		<meta property="og:url" content={Astro.url}>
+		<meta property="og:url" content={canonicalURL}>
 		<meta property="og:title" content={pageTitle}>
-		<meta property="og:description" content={description || pageTitle}>
+		<meta property="og:description" content={metaDescription}>
+		<meta property="og:image" content={shareImage}>
+		<meta property="og:image:alt" content={shareImageAlt}>
 		{setOGTypeArticle ? (
         <meta property="og:type" content="article" />
         ) : (
@@ -141,9 +160,11 @@ const bannerOffset =
         )}
 
 		<meta name="twitter:card" content="summary_large_image">
-		<meta property="twitter:url" content={Astro.url}>
+		<meta property="twitter:url" content={canonicalURL}>
 		<meta name="twitter:title" content={pageTitle}>
-		<meta name="twitter:description" content={description || pageTitle}>
+		<meta name="twitter:description" content={metaDescription}>
+		<meta name="twitter:image" content={shareImage}>
+		<meta name="twitter:image:alt" content={shareImageAlt}>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
@@ -604,12 +625,46 @@ function showBanner() {
 	banner.classList.remove('opacity-0', 'scale-105');
 }
 
+function applyEssayIndexTagFilter() {
+	const path = window.location.pathname.replace(/\/$/, "") || "/";
+	const cards = document.querySelectorAll<HTMLElement>("[data-essay-card]");
+	const empty = document.getElementById("essay-tag-empty");
+	if (path !== "/essays" || cards.length === 0) return;
+
+	const tags = new URLSearchParams(window.location.search)
+		.getAll("tag")
+		.map((tag) => tag.trim())
+		.filter((tag) => tag.length > 0);
+
+	if (tags.length === 0) {
+		cards.forEach((card) => card.classList.remove("hidden"));
+		empty?.classList.add("hidden");
+		return;
+	}
+
+	let shown = 0;
+	cards.forEach((card) => {
+		let own: string[] = [];
+		try {
+			const parsed = JSON.parse(card.dataset.tags || "[]");
+			own = Array.isArray(parsed) ? parsed.map((tag) => String(tag).trim()) : [];
+		} catch {
+			own = [];
+		}
+		const match = own.some((tag) => tags.includes(tag));
+		card.classList.toggle("hidden", !match);
+		if (match) shown += 1;
+	});
+	empty?.classList.toggle("hidden", shown !== 0);
+}
+
 function init() {
 	// disableAnimation()()		// TODO
 	loadTheme();
 	loadHue();
 	initCustomScrollbar();
 	showBanner();
+	applyEssayIndexTagFilter();
 }
 
 function getExpectedSidebarContentType(pathname: string) {
@@ -854,6 +909,7 @@ const setup = () => {
 		if (!shouldRunSidebarAnimation) {
 			syncSidebarIfNeeded()
 		}
+		applyEssayIndexTagFilter();
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {

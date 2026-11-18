@@ -7,8 +7,8 @@ type ContentCollection = "posts" | "notes" | "essays" | "fiction";
 type ContentScope = ContentCollection | "all";
 
 function resolveCollections(scope: ContentScope): ContentCollection[] {
-	// 「全部」只服务于首页与目次的聚合标签云（链接落到 /archive/），因此不含外篇
-	if (scope === "all") return ["posts", "notes", "essays"];
+	// 「全部」服务于首页与目次。目次现在包含外篇，标签云与之保持同一范围。
+	if (scope === "all") return ["posts", "notes", "essays", "fiction"];
 	return [scope];
 }
 
